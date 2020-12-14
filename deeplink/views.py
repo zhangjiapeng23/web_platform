@@ -1,7 +1,16 @@
 from django.shortcuts import render, HttpResponse
 
-# Create your views here.
+from deeplink import models
 
 
 def index(request):
-    return HttpResponse('deelpink index page')
+    projects = models.Project.objects.all()
+    for i in projects:
+        print(i.name)
+
+    return render(request, 'deeplink/index.html', context={'projects': projects,
+                                                            })
+
+
+def list(request, project):
+    return HttpResponse('%s deeplink list page' % project)
