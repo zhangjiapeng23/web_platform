@@ -5,11 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deeplink</title>
     <link rel='stylesheet' href="/static/bs/dist/css/bootstrap.css">
+    <script src="/static/js/jquery-3.5.1.js"></script>
     <style>
         a {
             text-align: center;
             text-decoration: none;
         }
+        .create_workspace {
+            margin-top: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        .project_name {
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+        .glyphicon-plus {
+            padding: 100px;
+        }
+
 
     </style>
 
@@ -18,21 +32,40 @@
 
 <body>
 
+    <div class="page-header text-center">
+        <h1>Deeplink Page</h1>
+    </div>
+    
+    <div class="row create_workspace">
+        <div class="col-md-3 col-lg-offset-2">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Project</span>
+                <input type="text" class="form-control" placeholder="Project Name" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Scheme</span>
+                <input type="text" class="form-control" placeholder="example: gametime/.." aria-describedby="basic-addon1">
+            </div>
+        </div>
+        <button class="btn btn-success ">CREATE</button>
+    </div>
 
 
 
     <div class="container-fluid" >
         <div class="row">
             {% for project in projects %}
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <a href={% url 'deeplink:index' %}list/{{ project.name }} class="thumbnail">
-                        <h3>{{ project.name }}</h3>
+                        <h3 class="project_name">{{ project.name }}</h3>
                     </a>
                 </div>
             {% endfor %}
-            <div class="col-md-4">
-                <a href="#" class="thumbnail">
-                    <h3>Create</h3>
+            <div class="col-md-3">
+                <a href="#" class="thumbnail create">
+                    <span class="glyphicon glyphicon-plus"></span>
                 </a>
             </div>
         </div>
@@ -40,5 +73,15 @@
         
     </div>
     
+
+<script>
+    $('.create').click(function(){
+        $('.create_workspace').css({display: 'block'})
+
+    })
+
+
+</script>
+
 </body>
 </html>
