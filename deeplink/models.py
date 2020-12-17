@@ -19,7 +19,7 @@ class Contents(models.Model):
     create_time = models.DateTimeField(verbose_name='Create Time', auto_now_add=True)
     classification = models.CharField(verbose_name="Classification", null=True, max_length=32)
     # foreign key to Project nid
-    scheme = models.ForeignKey(verbose_name='Prefix Name', to='Project', to_field='nid', on_delete=models.CASCADE)
+    project = models.ForeignKey(verbose_name='Project Name', to='Project', to_field='nid', default=None, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.body
