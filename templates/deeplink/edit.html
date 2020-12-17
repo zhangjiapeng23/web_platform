@@ -12,11 +12,16 @@
         .container-fluid {
             margin-top: 20px;
         }
+        .remove_project {
+            border: none;
+            width: 100px;
+        }
     </style>
 </head>
 <body>
     <div class="page-header text-center">
-        <h1>{{ project }} Deeplink Page</h1>
+        <h1>{{ project }}</h1>
+         <button class="glyphicon glyphicon-trash remove_project"></button>
     </div>
 
     <div class="row add_workspace">
