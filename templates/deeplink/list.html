@@ -5,18 +5,67 @@
     <title>{{ project }} Deeplink Page</title>
     <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
     <script src="/static/js/jquery-3.5.1.js"></script>
+    <style>
+        .edit_project {
+            display: inline-block;
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+            font-size: 25px;
+            border: none;
+            background-color: white;
+            outline: none;
+        }
+        .page-header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        h1 {
+            margin: 0 auto;
+        }
+        .list-group-item {
+            padding: 20px;
+            font-size: 18px;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="page-header text-center">
+    <div class="page-header">
         <h1>{{ project }} Deeplink Page</h1>
+        <button class="glyphicon glyphicon-pencil edit_project"></button>
     </div>
-    <ul>
-        {% for content in contents %}
-            <li>
-                <h4>{{ content }}</h4>
-            </li>
-        {% endfor %}
-    </ul>
 
+    <div class="row">
+        <div class="col-md-3"></div>
+    </div>
+
+    <div class="row container-fluid">
+        <div class="col-md-8 col-lg-offset-2">
+            <ul class="list-group">
+                 <li class="list-group-item">
+                    <a href="https://www.baidu.com">test 1</a>
+                 </li>
+            <li class="list-group-item">
+                    <a href="https://qq.com">test 2</a>
+                 </li>
+                {% for content in contents %}
+                    <li class="list-group-item">
+                    <h4>{{ content }}</h4>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+    <script>
+        $('.edit_project').click(function (){
+            location.href = "{% url 'deeplink:deeplink_edit' project %}"
+        })
+
+
+    </script>
 </body>
 </html>

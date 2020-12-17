@@ -26,7 +26,13 @@
         .error-msg {
             margin-top: 10px;
         }
-
+        .thumbnail {
+            background-color: #fff7ef;
+            font-size: 30px;
+        }
+        .create_message {
+            margin-bottom: 15px;
+        }
     </style>
 
 
@@ -37,10 +43,16 @@
     <div class="page-header text-center">
         <h1>Deeplink Page</h1>
     </div>
-    
+
+    <div class="row create_message">
+        <div class="col-md-3 col-lg-offset-5">
+            <h4>Please select or <a class="create"><strong><i>create</i></strong></a> a project</h4>
+        </div>
+    </div>
+
     <div class="row create_workspace">
         {% csrf_token %}
-        <div class="col-md-3 col-lg-offset-2">
+        <div class="col-md-3 col-lg-offset-3">
             <div class="input-group">
                 <span class="input-group-addon" id="basic-addon1">Project</span>
                 <input id="project_name" type="text" class="form-control" placeholder="Project Name" aria-describedby="basic-addon1">
@@ -53,25 +65,25 @@
             </div>
         </div>
         <button class="btn btn-success " id="">CREATE</button>
-        <div class="col-md-6 col-lg-offset-2 error-msg">
+        <div class="col-md-6 col-lg-offset-3 error-msg">
             <span class="error"></span>
         </div>
     </div>
 
 
 
-    <div class="container-fluid" >
+    <div class="container" >
         <div class="row">
             {% for project in projects %}
-                <div class="col-md-3">
+                <div class="col-md-3 project_model">
                     <a href={% url 'deeplink:index' %}list/{{ project.name }} class="thumbnail">
                         <h3 class="project_name">{{ project.name }}</h3>
                     </a>
                 </div>
             {% endfor %}
-            <div class="col-md-3">
+            <div class="col-md-3 create_model">
                 <a href="#" class="thumbnail create">
-                    <span class="glyphicon glyphicon-plus"></span>
+                    <span class="glyphicon glyphicon-plus" ></span>
                 </a>
             </div>
         </div>
@@ -83,6 +95,7 @@
 <script>
     $('.create').click(function(){
         $('.create_workspace').css({display: 'block'})
+        $('.create_message').css({display: 'none'})
 
     })
 

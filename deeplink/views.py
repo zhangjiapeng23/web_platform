@@ -38,7 +38,7 @@ def deeplink_list(request, project):
 
 def edit_project(request, project):
 
-    return HttpResponse('%s edit' % project)
+    return render(request, 'deeplink/edit.html', context={'project': project})
 
 
 def remove_project(request, project):

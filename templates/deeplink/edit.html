@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ project }} Deeplink Page</title>
+    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
+    <script src="/static/js/jquery-3.5.1.js"></script>
+    <style>
+        .btn-success {
+            width: 70px;
+        }
+        .container-fluid {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header text-center">
+        <h1>{{ project }} Deeplink Page</h1>
+    </div>
+
+    <div class="row add_workspace">
+        <div class="col-md-5 col-lg-offset-3">
+             <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">scheme://</span>
+                <input id="deeplink_body" type="text" class="form-control" placeholder="deeplink content" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        <button class="btn btn-success">Add</button>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10 col-lg-offset-1">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    test
+                </li>
+                <li class="list-group-item">
+                    test 2
+                </li>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
