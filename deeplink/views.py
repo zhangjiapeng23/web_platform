@@ -22,23 +22,47 @@ def index(request):
 
 
     projects = models.Project.objects.all()
-    for i in projects:
-        print(i.name)
+
 
     return render(request, 'deeplink/index.html', context={'projects': projects,
                                                             })
 
 
 def deeplink_list(request, project):
+    project_boj = models.Project.objects.filter(name=project).first()
     contents = models.Contents.objects.filter(project__name=project).all()
-    return render(request, 'deeplink/list.html', context={'project': project,
-                                                          'contents': contents,
+    scheme = project_boj.scheme
+    full_deeplink = []
+    for content in contents:
+        full_deeplink.append(scheme + '://' + content.body)
+    return render(request, 'deeplink/list.html', context={'project': project_boj,
+                                                          'full_deeplink': full_deeplink,
                                                           })
 
 
 def edit_project(request, project):
+    project_obj = models.Project.objects.filter(name=project).first()
+    scheme = project_obj.scheme
 
-    return render(request, 'deeplink/edit.html', context={'project': project})
+    if request.is_ajax():
+        response = {'code': 'fail', 'msg': None}
+        body = request.POST.get('body')
+        if not body:
+            response['msg'] = 'Deeplink content is required.'
+        else:
+            models.Contents.objects.create(body=body, project=project_obj)
+            response['code'] = 'success'
+            response['msg'] = scheme + '://' + body
+        return JsonResponse(response)
+
+    contents = models.Contents.objects.filter(project=project_obj).all()
+    full_deeplink = []
+    for content in contents:
+        full_deeplink.append(scheme + '://' + content.body)
+
+    return render(request, 'deeplink/edit.html', context={'project': project_obj,
+                                                          'full_deeplink': full_deeplink,
+                                                          })
 
 
 def remove_project(request, project):
