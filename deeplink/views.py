@@ -30,7 +30,7 @@ def index(request):
 
 def deeplink_list(request, project):
     project_boj = models.Project.objects.filter(name=project).first()
-    contents = models.Contents.objects.filter(project__name=project).all()
+    contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
     scheme = project_boj.scheme
     full_deeplink = []
     for content in contents:
@@ -45,26 +45,64 @@ def edit_project(request, project):
     scheme = project_obj.scheme
 
     if request.is_ajax():
-        response = {'code': 'fail', 'msg': None}
+        response = {'code': 'fail', 'msg': {}}
         body = request.POST.get('body')
         if not body:
-            response['msg'] = 'Deeplink content is required.'
+            response['msg']['error'] = 'Deeplink content is required.'
         else:
-            models.Contents.objects.create(body=body, project=project_obj)
+            res_obj = models.Contents.objects.create(body=body, project=project_obj)
             response['code'] = 'success'
-            response['msg'] = scheme + '://' + body
+            response['msg']['deeplink'] = scheme + '://' + body
+            response['msg']['nid'] = res_obj.nid
         return JsonResponse(response)
 
-    contents = models.Contents.objects.filter(project=project_obj).all()
+    contents = models.Contents.objects.filter(project=project_obj).all().order_by('-create_time')
     full_deeplink = []
     for content in contents:
-        full_deeplink.append(scheme + '://' + content.body)
+        _deeplink = {}
+        _deeplink['deeplink'] = scheme + '://' + content.body
+        _deeplink['nid'] = content.nid
+        _deeplink['classification'] = content.classification
+        full_deeplink.append(_deeplink)
 
     return render(request, 'deeplink/edit.html', context={'project': project_obj,
                                                           'full_deeplink': full_deeplink,
                                                           })
 
 
-def remove_project(request, project):
+def remove_project(request):
+    if request.is_ajax():
+        response = {'code': 'fail', 'msg': None}
+        prject_name = request.POST.get('project')
+        res = models.Project.objects.filter(name=prject_name).delete()
+        if res:
+            response['code'] = 'success'
+            response['msg'] = '%s project delete successful.' % prject_name
+            return JsonResponse(response)
+        else:
+            response['msg']= '%s project delete failed.' % prject_name
+            return JsonResponse(response)
 
-    return HttpResponse('%s remove' % project)
+
+
+def modify_project(request):
+
+    return HttpResponse('modify project' )
+
+
+def remove_deeplink(request):
+    if request.is_ajax():
+        response = {'code': 'fail', 'msg': None}
+        deeplink_id = request.POST.get('nid')
+        res = models.Contents.objects.filter(nid=deeplink_id).delete()
+        if res:
+            response['code'] = 'success'
+            response['msg'] = 'Remove successful.'
+            return JsonResponse(response)
+        else:
+            response['msg'] = 'Remove failed.'
+            return JsonResponse(response)
+
+def modify_deeplink(request):
+
+    return HttpResponse('deeplink modify')

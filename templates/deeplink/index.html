@@ -21,17 +21,20 @@
             padding-bottom: 80px;
         }
         .glyphicon-plus {
-            padding: 100px;
+            padding: 95px;
         }
         .error-msg {
             margin-top: 10px;
         }
         .thumbnail {
-            background-color: #fff7ef;
+            background-color: #eeeeee;
             font-size: 25px;
         }
         .create_message {
             margin-bottom: 15px;
+        }
+        .project_model a{
+            text-decoration: none;
         }
     </style>
 
@@ -62,7 +65,7 @@
                 <input id="project_scheme" type="text" class="form-control" placeholder="example: gametime/.." aria-describedby="basic-addon1">
             </div>
         </div>
-        <button class="btn btn-success " id="">CREATE</button>
+        <button class="btn btn-success">CREATE</button>
         <div class="col-md-6 col-lg-offset-3 error-msg">
             <span class="error"></span>
         </div>
@@ -94,7 +97,7 @@
     $('.create').click(function(){
         $('.create_workspace').css({display: 'block'})
         $('.create_message').css({display: 'none'})
-
+        $('#project_name').focus()
     })
 
     $('.btn-success').click(function (){

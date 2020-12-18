@@ -27,8 +27,22 @@
         tr {
             height: 50px;
         }
-        #deeplink_item {
+        .list-group-item {
+            height: 50px;
+            border-left: white;
+            border-right: white;
+
+        }
+        .list-group-item a {
             line-height: 30px;
+            margin-left: 30px;
+        }
+        .no-content {
+            text-align: center;
+            margin-top: 100px;
+        }
+        #list {
+            margin-top: 50px;
         }
 
 
@@ -40,31 +54,56 @@
         <button class="glyphicon glyphicon-pencil edit_project"></button>
     </div>
 
-    <div class="row">
-        <div class="col-md-3"></div>
-    </div>
-
-    <div class="row container-fluid">
+    <div id='list' class="row container-fluid">
         <div class="col-md-10 col-lg-offset-1">
-             <table class="table table-striped table-hover">
-                    <tbody>
-                        {% for deeplink in full_deeplink %}
-                            <tr>
-                                <td>
-                                    <a id="deeplink_item" href={{ deeplink }}>{{ deeplink }}</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-             </table>
+            {% if full_deeplink %}
+                <ul class="list-group">
+                {% for deeplink in full_deeplink %}
+                    {% if forloop.counter|divisibleby:2 %}
+                        <li class="list-group-item" has-color="true" style="background-color: #eeeeee">
+                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item" has-color="false" style="background-color: white">
+                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% else %}
+                <h3 class="no-content">No content to display, Please
+                    <i><strong><a href="#">edit</a></strong></i> project to add content.</h3>
+            {% endif %}
         </div>
     </div>
 
 
     <script>
-        $('.edit_project').click(function (){
+        function bindEdit(){
             location.href = "{% url 'deeplink:deeplink_edit' project %}"
+        }
+        $('.edit_project').click(bindEdit)
+
+        $('.no-content a').click(bindEdit)
+
+        $(function (){
+            let litItem = $('.list-group-item');
+            let orgColor = litItem.css('background-color');
+            console.log(orgColor);
+            litItem.hover(function (){
+                $(this).css('background-color', '#FBFCFC')
+            }, function (){
+                let color = $(this).attr('has-color')
+                if (color == 'true'){
+                    $(this).css('background-color', '#eeeeee')
+                } else{
+                    $(this).css('background-color', 'white')
+                }
+            })
+
         })
+
+
 
 
     </script>
