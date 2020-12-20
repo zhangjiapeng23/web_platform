@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 
@@ -20,27 +22,42 @@ def index(request):
             response['msg'] = 'Project %s create successful.'
         return JsonResponse(response)
 
-
     projects = models.Project.objects.all()
 
-
-    return render(request, 'deeplink/index.html', context={'projects': projects,
-                                                            })
+    return render(request, 'deeplink/index.html', context={'projects': projects, })
 
 
 def deeplink_list(request, project):
-    project_boj = models.Project.objects.filter(name=project).first()
-    contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
-    scheme = project_boj.scheme
-    full_deeplink = []
-    for content in contents:
-        full_deeplink.append(scheme + '://' + content.body)
-    return render(request, 'deeplink/list.html', context={'project': project_boj,
-                                                          'full_deeplink': full_deeplink,
-                                                          })
+    if request.method == 'GET':
+        set_grouping = request.GET.get('grouping', default='true')
+        project_obj = models.Project.objects.filter(name=project).first()
+        if project_obj:
+            contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
+            scheme = project_obj.scheme
+            # grounping
+            if set_grouping == 'true':
+                project_dict = defaultdict(list)
+                for content in contents:
+                    deeplink_path = scheme + '://' + content.body 
+                    project_dict[content.classification].append(deeplink_path)
+                print(project_dict)
+                return render(request, 'deeplink/list.html', context={'project': project_obj,
+                                                                    'set_grouping': set_grouping,
+                                                                    'full_deeplink_group': project_dict,
+                                                                    })
+            else:
+                # not grouping
+                full_deeplink = []
+                for content in contents:
+                    full_deeplink.append(scheme + '://' + content.body)
+                return render(request, 'deeplink/list.html', context={'project': project_obj,
+                                                                        'set_grouping': set_grouping,
+                                                                        'full_deeplink': full_deeplink,
+                                                                        })
+    return HttpResponse('404')
 
 
-def edit_project(request, project):
+def add_deeplink(request, project):
     project_obj = models.Project.objects.filter(name=project).first()
     scheme = project_obj.scheme
 
@@ -50,7 +67,12 @@ def edit_project(request, project):
         if not body:
             response['msg']['error'] = 'Deeplink content is required.'
         else:
-            res_obj = models.Contents.objects.create(body=body, project=project_obj)
+            body_alice = body.split('/')
+            if (len(body_alice) > 1):
+                classification = body_alice[0]
+                res_obj = models.Contents.objects.create(body=body, classification=classification, project=project_obj)
+            else:
+                res_obj = models.Contents.objects.create(body=body, project=project_obj)
             response['code'] = 'success'
             response['msg']['deeplink'] = scheme + '://' + body
             response['msg']['nid'] = res_obj.nid
@@ -61,6 +83,7 @@ def edit_project(request, project):
     for content in contents:
         _deeplink = {}
         _deeplink['deeplink'] = scheme + '://' + content.body
+        _deeplink['body'] = content.body
         _deeplink['nid'] = content.nid
         _deeplink['classification'] = content.classification
         full_deeplink.append(_deeplink)
@@ -80,14 +103,24 @@ def remove_project(request):
             response['msg'] = '%s project delete successful.' % prject_name
             return JsonResponse(response)
         else:
-            response['msg']= '%s project delete failed.' % prject_name
+            response['msg'] = '%s project delete failed.' % prject_name
             return JsonResponse(response)
 
 
-
 def modify_project(request):
+    if request.is_ajax():
+        response = {'code': 'fail', 'msg': None}
+        scheme = request.POST.get('scheme')
+        nid = request.POST.get('nid')
+        if not scheme:
+            response['msg'] = 'Scheme is required.'
+        else:
+            res = models.Project.objects.filter(nid=nid).update(scheme=scheme)
+            if res:
+                response['code'] = 'success'
+                response['msg'] = 'Project scheme modify successful.'
 
-    return HttpResponse('modify project' )
+    return JsonResponse(response)
 
 
 def remove_deeplink(request):
@@ -103,6 +136,26 @@ def remove_deeplink(request):
             response['msg'] = 'Remove failed.'
             return JsonResponse(response)
 
-def modify_deeplink(request):
 
-    return HttpResponse('deeplink modify')
+def modify_deeplink(request):
+    if request.is_ajax():
+        response = {'code': 'fail', 'msg': None}
+        deeplink_id = request.POST.get('deeplink_id')
+        deeplink_body = request.POST.get('deeplink_body')
+        if not deeplink_body:
+            response['msg'] = 'Deeplink content is required.'
+        else:
+            deeplink_item = models.Contents.objects.filter(nid=deeplink_id).all()
+            body_alice = deeplink_body.split('/')
+            if (len(body_alice) > 1):
+                res = deeplink_item.update(body=deeplink_body, classification=body_alice[0])
+            else:
+                res = deeplink_item.update(body=deeplink_body, classification='Default')
+            scheme = deeplink_item[0].project.scheme
+            if res:
+                response['code'] = 'success'
+                response['msg'] = scheme + '://' + deeplink_body
+            else:
+                response['msg'] = 'Modify fail. Please try again.'
+
+        return JsonResponse(response)

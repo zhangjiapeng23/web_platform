@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ project.name }} Deep Link Page</title>
     <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
     <script src="/static/js/jquery-3.5.1.js"></script>
     <style>
-        .edit_project {
-            display: inline-block;
-            margin-right: 10px;
-            width: 50px;
-            height: 50px;
-            font-size: 25px;
+      
+        .page-header .glyphicon{
             border: none;
+            width: 40px;
+            font-size: 23px;
             background-color: white;
             outline: none;
+            margin-right: 30px;
         }
         .page-header {
             display: flex;
@@ -44,32 +44,78 @@
         #list {
             margin-top: 50px;
         }
-
-
+        .group-title {
+            margin-left: 30px;
+            font-size: 20px;
+            line-height: 10px;
+            font-weight: bold;
+            font-style: italic;
+        }
     </style>
+    {% load dict_filter %}
 </head>
 <body>
     <div class="page-header">
         <h1>{{ project.name }}</h1>
+        <button class="glyphicon glyphicon-th-list format"></button>
+        <button class="glyphicon glyphicon-th-large format"></button>
         <button class="glyphicon glyphicon-pencil edit_project"></button>
     </div>
 
     <div id='list' class="row container-fluid">
-        <div class="col-md-10 col-lg-offset-1">
-            {% if full_deeplink %}
+        <div class="col-md-10 col-md-offset-1">
+            {% if full_deeplink or full_deeplink_group %}
                 <ul class="list-group">
-                {% for deeplink in full_deeplink %}
-                    {% if forloop.counter|divisibleby:2 %}
-                        <li class="list-group-item" has-color="true" style="background-color: #eeeeee">
-                            <a href={{ deeplink }}>{{ deeplink }}</a>
-                        </li>
+                    {% if set_grouping == 'true' %}
+                        {% if full_deeplink_group.Default %}
+                            <li class="list-group-item disabled" style="background-color: rgb(134, 196, 236)">
+                                <h5 class="group-title">Default</h3>
+                            </li>
+                            {% for deeplink in full_deeplink_group.Default %}
+                                {% if forloop.counter|divisibleby:2 %}
+                                    <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
+                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
+                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% for group, deeplinks in full_deeplink_group|unpack_dict %}
+                            {% if group != 'Default' %}
+                                <li class="list-group-item disabled" style="background-color: rgb(134, 196, 236)">
+                                    <h5 class="group-title">{{ group|lower|capfirst }}</h3>
+                                </li>
+                                {% for deeplink in deeplinks %}
+                                    {% if forloop.counter|divisibleby:2 %}
+                                        <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
+                                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
+                                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %} 
+                            {% endif %}
+                        {% endfor %}
+                        
                     {% else %}
-                        <li class="list-group-item" has-color="false" style="background-color: white">
-                            <a href={{ deeplink }}>{{ deeplink }}</a>
-                        </li>
+                        {% for deeplink in full_deeplink %}
+                            {% if forloop.counter|divisibleby:2 %}
+                                <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
+                                    <a href={{ deeplink }}>{{ deeplink }}</a>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
+                                    <a href={{ deeplink }}>{{ deeplink }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
-                {% endfor %}
-            </ul>
+                </ul>
             {% else %}
                 <h3 class="no-content">No content to display, Please
                     <i><strong><a href="#">edit</a></strong></i> project to add content.</h3>
@@ -87,9 +133,8 @@
         $('.no-content a').click(bindEdit)
 
         $(function (){
-            let litItem = $('.list-group-item');
+            let litItem = $('.deeplink-item');
             let orgColor = litItem.css('background-color');
-            console.log(orgColor);
             litItem.hover(function (){
                 $(this).css('background-color', '#FBFCFC')
             }, function (){
@@ -102,6 +147,24 @@
             })
 
         })
+
+        $(function (){
+            let groupButton = $('.glyphicon-th-large')
+            let listButton = $('.glyphicon-th-list')
+            if ($('.group-title').length > 0) {
+                groupButton.css('display', 'none')
+                listButton.click(function(){
+                    location.href = "{% url 'deeplink:deeplink_list' project %}" + "?grouping=false"
+                })
+            } else {
+                listButton.css('display', 'none')
+                groupButton.click(function(){
+                    location.href = "{% url 'deeplink:deeplink_list' project %}"
+
+                })
+
+            }
+         })
 
 
 

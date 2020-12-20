@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ project.name }} Deeplink Page</title>
     <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
     <script src="/static/js/jquery-3.5.1.js"></script>
@@ -14,10 +15,11 @@
         }
         .page-header .glyphicon{
             border: none;
-            width: 90px;
+            width: 40px;
             font-size: 23px;
             background-color: white;
             outline: none;
+            margin-right: 30px;
         }
         .page-header {
             display: flex;
@@ -34,24 +36,13 @@
             height: 50px;
         }
         .list-group-item {
-            height: 50px;
             border-left: white;
             border-right: white;
 
         }
-        .list-group-item a {
-            line-height: 30px;
-            margin-left: 30px;
-        }
-        .deeplink-modify {
-            display: inline-block;
-        }
         .deeplink-modify button {
             background-color: transparent;
             border: none;
-            margin-right: 5px;
-            height: 30px;
-            width: 30px;
             font-size: 16px;
             outline: none;
         }
@@ -59,55 +50,98 @@
             text-align: center;
             margin-top: 100px;
         }
+        .modify-row {
+            display: none;
+        }
+        .modify-row span{
+            border: none;
+            background-color: transparent;
+            
+        }
+        .modify-row input{
+            background-color: transparent;
+        }
+        .col-xs-12 {
+            margin-bottom: 5px;
+        }
+        .a-deeplink {
+            margin-left: 10px;
+        }
 
     </style>
 </head>
 <body>
     <div class="page-header">
         <h1>{{ project }}</h1>
-        <button class="glyphicon glyphicon-th-list"></button>
+        <button class="glyphicon glyphicon-cog edit-switch"></button>
         <button class="glyphicon glyphicon-trash remove_project"></button>
     </div>
 
-    <div class="row add_workspace">
-        {% csrf_token %}
-        <div class="col-md-5 col-lg-offset-3">
-             <div class="input-group">
-                <span class="input-group-addon" id="basic-addon1">{{ project.scheme }}://</span>
-                <input id="deeplink_body" type="text" class="form-control" placeholder="deeplink content" aria-describedby="basic-addon1">
+    <div class="container">
+        <!-- add deeplink workspace -->
+        <div class="row add_workspace">
+            {% csrf_token %}
+            <div class="col-md-4 col-xs-12 col-md-offset-3">
+                 <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">{{ project.scheme }}://</span>
+                    <input id="deeplink_body" type="text" class="form-control" placeholder="deeplink content" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <button class="btn btn-success">Add</button>
+            </div>
+            <div class="col-md-5 col-xs-12 col-md-offset-3 error_msg">
+                <span class="error"></span>
             </div>
         </div>
-        <button class="btn btn-success">Add</button>
-        <div class="col-md-5 col-lg-offset-3 error_msg">
-            <span class="error"></span>
+        <!-- edit project workspace -->
+        <div class="row edit-project-workspace" style="display: none;">
+            {% csrf_token %}
+            <div class="col-md-4 col-xs-12 col-md-offset-3">
+                 <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">Scheme</span>
+                    <input id="project_scheme" type="text" class="form-control" placeholder="" aria-describedby="basic-addon1" value="{{ project.scheme }}">
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <button class="btn btn-warning">Confirm</button>
+            </div>
+            <div class="col-md-5 col-xs-12 col-md-offset-3 error_msg">
+                <span class="error"></span>
+            </div>
         </div>
     </div>
+    
 
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-            <div id='main' class="col-md-10 col-lg-offset-1">
+            <div id='main' class="col-md-12 col-xs-12">
                 {% if full_deeplink %}
                     <ul class="list-group">
                     {% for deeplink in full_deeplink %}
                         {% if forloop.counter|divisibleby:2 %}
-                            <li class="list-group-item" id={{ deeplink.nid }} has-color="true" style="background-color: #eeeeee">
-                                <a href={{ deeplink.deeplink }}>{{ deeplink.deeplink }}</a>
-                                <div class="deeplink-modify pull-right">
-                                    <button class="glyphicon glyphicon-edit"></button>
-                                    <button class="glyphicon glyphicon-minus-sign"></button>
-                                </div>
-                            </li>
+                            <li class="list-group-item" id={{ deeplink.nid }} has-color="true" style="background-color: #eeeeee;">
                         {% else %}
-                            <li class="list-group-item" id={{ deeplink.nid }} has-color="false" style="background-color: white">
-                                <a href={{ deeplink.deeplink }}>{{ deeplink.deeplink }}</a>
-                                <div class="deeplink-modify pull-right">
+                            <li class="list-group-item" id={{ deeplink.nid }} has-color="false" style="background-color: white;">
+                        {% endif %}
+                        <div class="list-row row">
+                            <div class="col-md-5 col-xs-9">
+                                <a class="a-deeplink" href='{{ deeplink.deeplink }}'>{{ deeplink.deeplink }}</a>
+                                <div class="input-group modify-row">
+                                    <span class="input-group-addon" id="basic-addon{{ deeplink.nid }}">{{ project.scheme }}://</span>
+                                    <input id="edit{{ deeplink.nid }}" class="form-control" aria-describedby="basic-addon{{ deeplink.nid }}" value="{{ deeplink.body }}">
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <div class="deeplink-modify">
                                     <button class="glyphicon glyphicon-edit"></button>
                                     <button class="glyphicon glyphicon-minus-sign"></button>
                                 </div>
+                            </div>
+                        </div>
                             </li>
-                        {% endif %}
-                {% endfor %}
-            </ul>
+                    {% endfor %}
+                    </ul>
                 {% else %}
                     <h3 class="no-content">No content to display, Please <i><strong><a href="#">add</a></strong></i> in the input box above.</h3>
                 {% endif %}
@@ -117,10 +151,10 @@
 
     <script>
 
-         function removeItem (){
-             let listItem = $(this).parent().parent()
+        function bindRemoveItem (){
+             let listItem = $(this).parents('.list-group-item')
              $.ajax({
-                 url: '{% url 'deeplink:remove_deeplink' %}',
+                 url: "{% url 'deeplink:remove_deeplink' %}",
                  type: 'post',
                  data: {
                      csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
@@ -146,11 +180,11 @@
              })
          }
 
-         function addFocus(){
+        function addFocus(){
              $('#deeplink_body').focus()
          }
 
-         function hoverItem (){
+        function hoverItem (){
             let litItem = $('.list-group-item');
             let orgColor = litItem.css('background-color');
             litItem.hover(function (){
@@ -165,14 +199,64 @@
             })
 
         }
+        
+        function bindEditItem(){
+             const listRow = $(this).parents('.list-row');
+             const aDeeplink = listRow.find('.a-deeplink');
+             const modifyRow = listRow.find('.modify-row');
+             const inputBox = listRow.find('.form-control');
+             aDeeplink.toggle();
+             modifyRow.css('display', 'table');
+             $(this).attr('class', 'glyphicon glyphicon-floppy-save');
+             $(this).off();
+             $(this).on('click', bindSaveItem);
+             inputBox.focus();
+             const text = inputBox.val();
+             inputBox.val('');
+             inputBox.val(text);
+         }
 
-         $('.btn-success').click(function (){
+        function bindSaveItem(){
+            const listRow = $(this).parents('.list-row');
+            const aDeeplink = listRow.find('.a-deeplink');
+            const modifyRow = listRow.find('.modify-row');
+            const inputBox = listRow.find('.form-control');
+            const saveButton = $(this)
+            $.ajax({
+                url: "{% url 'deeplink:modify_deeplink' %}",
+                type: "post",
+                data: {
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                    deeplink_id: $(this).parents('.list-group-item').attr('id'),
+                    deeplink_body: listRow.find('.form-control').val()
+                },
+                success: function(data){
+                    if (data.code == 'fail'){
+                        inputBox.focus()
+                        alert(data.msg)
+                    } else {
+                        aDeeplink.text(data.msg)
+                        aDeeplink.attr('href', data.msg)
+                        modifyRow.toggle()
+                        aDeeplink.toggle()
+                        saveButton.attr('class', 'glyphicon glyphicon-edit')
+                        saveButton.off()
+                        saveButton.on('click', bindEditItem)
+                    }
+                }
+             })
+
+         }
+
+        // bind click event for create deeplink button.
+        $('.btn-success').click(function (){
             let deeplinkBody = $('#deeplink_body')
+            let bodyContent = deeplinkBody.val()
             $.ajax({
                 url: '',
                 type: 'post',
                 data: {
-                    body: deeplinkBody.val(),
+                    body: bodyContent,
                     csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
                 },
                 success: function (data){
@@ -199,10 +283,20 @@
                         }
                         const deeplinkItem = `
                                 <li class="list-group-item" id=${nid} has-color=${colorBool} style="background-color: ${setColor}">
-                                    <a href=${deeplink}>${deeplink}</a>
-                                    <div class="deeplink-modify pull-right">
-                                        <button class="glyphicon glyphicon-edit"></button>
-                                         <button class="glyphicon glyphicon-minus-sign"></button>
+                                    <div class="list-row row">
+                                        <div class="col-md-5 col-xs-9">
+                                            <a class="a-deeplink" href='${deeplink}'>${deeplink}</a>
+                                            <div class="input-group modify-row" style="display: none;">
+                                                 <span class="input-group-addon" id="basic-addon{{ deeplink.nid }}">{{ project.scheme }}://</span>
+                                                 <input id="edit${nid}" class="form-control" aria-describedby="basic-addon${nid}" value="${bodyContent}">
+                                            </div>
+                                        </div>
+                                        <div class="pull-right">
+                                            <div class="deeplink-modify">
+                                                <button class="glyphicon glyphicon-edit"></button>
+                                                <button class="glyphicon glyphicon-minus-sign"></button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </li>`
                          colorBool = !colorBool
@@ -215,7 +309,8 @@
                         }
                         listGroup = $('.list-group')
                         listGroup.prepend(deeplinkItem)
-                        $('.list-group li:first-child').on('click', '.glyphicon-minus-sign', removeItem)
+                        $('.list-group li:first-child').find('.glyphicon-minus-sign').on('click', bindRemoveItem)
+                        $('.list-group li:first-child').find('.glyphicon-edit').on('click', bindEditItem)
                         hoverItem()
                     }
 
@@ -225,16 +320,46 @@
 
         })
 
-         $(hoverItem)
+        // bind click event for modify porjcet confirm button.
+        $('.btn-warning').click(function(){
+            const editInput = $('#project_scheme');
+            if (confirm('Do you sure want to modify {{ project }} scheme?')){ 
+                $.ajax({
+                    url: "{% url 'deeplink:modify_project' %}",
+                    type: "post",
+                    data: {
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                        scheme: editInput.val(),
+                        nid: "{{ project.nid }}",
+                    },
+                    success: function (data){
+                        console.log(data)
+                        if (data.code == 'fail') {
+                            $('.error').text(data.msg).css('color', 'red');
+                            editInput.focus();
+                           
+                        } else {
+                            location.reload();
+                        }
+                    }
+                })
+            }  else {
+                editInput.focus();
+               
+            }
+        })
 
-         $('.glyphicon-minus-sign').click(removeItem)
+        $(hoverItem)
 
-         $('.no-content a').click(addFocus)
+        // bind remove item funtion for all remove deeplink button.
+        $('.glyphicon-minus-sign').on('click', bindRemoveItem)
 
-         $('.remove_project').click(function (){
+        $('.no-content a').click(addFocus)
+
+        $('.remove_project').click(function (){
              if (confirm('Are you sure want to delete {{ project.name }}?')){
                  $.ajax({
-                     url: '{% url 'deeplink:remove_project' %}',
+                     url: "{% url 'deeplink:remove_project' %}",
                      type: 'post',
                      data: {
                          csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
@@ -242,7 +367,7 @@
                      },
                      success: function (data){
                          if (data.code){
-                             location.href = '{% url 'deeplink:index' %}'
+                             location.href = "{% url 'deeplink:index' %}"
                          } else {
                              alert(data.msg)
                          }
@@ -250,6 +375,30 @@
                  })
              }
          })
+
+        // bind edit item function for all eidte deeplink button.
+        $('.glyphicon-edit').on('click', bindEditItem)
+
+        $('.edit-switch').click(function (){
+            const buttonStyle = $(this).attr('class')
+            if (buttonStyle == 'glyphicon glyphicon-cog edit-switch') {
+                const editInput = $('#project_scheme')
+                $(this).attr('class', 'glyphicon glyphicon-pencil edit-switch')
+                $('.add_workspace').toggle()
+                $('.edit-project-workspace').toggle()
+                editInput.focus()
+                const text = editInput.val()
+                editInput.val('')
+                editInput.val(text)
+                
+             } else {
+                $(this).attr('class', 'glyphicon glyphicon-cog edit-switch')
+                $('.add_workspace').toggle()
+                $('.edit-project-workspace').toggle()
+             }
+
+         })
+
     </script>
 </body>
 </html>
