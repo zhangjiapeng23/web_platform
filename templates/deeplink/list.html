@@ -51,6 +51,11 @@
             font-weight: bold;
             font-style: italic;
         }
+        .page-header {
+            font-weight: bold;
+            font-style: italic;
+            text-shadow: 2px 2px 2px lightgray;
+        }
     </style>
     {% load dict_filter %}
 </head>
@@ -69,7 +74,7 @@
                     {% if set_grouping == 'true' %}
                         {% if full_deeplink_group.Default %}
                             <li class="list-group-item disabled" style="background-color: rgb(134, 196, 236)">
-                                <h5 class="group-title">Default</h3>
+                                <h5 class="group-title">DEFAULT</h5>
                             </li>
                             {% for deeplink in full_deeplink_group.Default %}
                                 {% if forloop.counter|divisibleby:2 %}
@@ -86,7 +91,7 @@
                         {% for group, deeplinks in full_deeplink_group|unpack_dict %}
                             {% if group != 'Default' %}
                                 <li class="list-group-item disabled" style="background-color: rgb(134, 196, 236)">
-                                    <h5 class="group-title">{{ group|lower|capfirst }}</h3>
+                                    <h5 class="group-title">{{ group|upper }}</h5>
                                 </li>
                                 {% for deeplink in deeplinks %}
                                     {% if forloop.counter|divisibleby:2 %}

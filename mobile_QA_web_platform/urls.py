@@ -20,6 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(('qa_tools.urls', 'QATools'))),
+    path('', include(('qa_tools.urls', 'qa_tools'))),
     path('deeplink/', include(('deeplink.urls', 'deeplink'))),
 ]
