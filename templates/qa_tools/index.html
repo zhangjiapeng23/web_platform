@@ -1,0 +1,234 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SH Mobile QA Tool</title>
+    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
+    <script src="/static/js/jquery-3.5.1.js"></script>
+    <style>
+        .thumbnail {
+            height:0px;
+            padding-bottom:100%;
+
+        }
+        .caption>h3>a {
+            text-decoration: none;
+        }
+        .footer {
+            margin-right: 30px;
+            margin-left: 30px;
+            margin-top: 30px;
+        }
+        .page-header>h2 {
+            font-weight: bold;
+            font-style: italic;
+            text-shadow: 2px 2px 2px lightgray;
+        }
+
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+        </div>
+        <div class="navbar-collapse collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li class="hidden-sm hidden-md"><a href="https://www.neulion.com">Home</a></li>
+                <li><a href="http://jenkins.neulion.net.cn/">Jenkins Server</a></li>
+                <li><a href="https://pm.neulion.net.cn/">PM</a></li>
+                <li><a href="http://mobile.neulion.net.cn/tools/jsonenc/">Config encrypt tool</a></li>
+                <li><a href="http://mobile.neulion.net.cn/svn/">Config</a></li>
+                <li><a href="http://mobile.neulion.net.cn/book/">Git Book</a></li>
+                <li>
+                    <a href="https://docs.google.com/spreadsheets/d/1SSEna6OzUV2kgMFR6-oc-PWbwga7I3YIJn8ImaXvQpM/edit#gid=0">Feature
+                        list</a></li>
+                <li>
+                    <a href="https://docs.google.com/spreadsheets/d/1J9jiYsxbVMfI2Q8s-L781PLTokfRzmXjpNudO74NZOE/edit#gid=0">Device
+                        Inventory</a></li>
+            </ul>
+            <ul class="nav navbar-nav hidden-sm">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Other links
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="nav-link" href="https://gitlab.neulion.com.cn:645/">GIT Server</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="container" style="margin-top:60px">
+    <div class="projects-header page-header">
+        <h2>Mobile QA Test Tools</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="thumbnail">
+                <a href="http://172.16.1.100:5000/" target="_blank" title="APP Build History">
+                    <img class="lazy" src="{% static '/imgs/qa_tools/infomation.png' %}" width="100"
+                         height="100" alt="Build Info">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="http://172.16.1.100:5000/" target="_blank" title="APP Build History">APP Build
+                            History<br><small>APP Build History</small></a>
+                    </h3>
+                    <p>Gather build info for Android and iOS.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="thumbnail">
+                <a href="{% url 'deeplink:index' %}" target="_self" title="Deep Link">
+                    <img class="lazy" src="{% static '/imgs/qa_tools/link.png' %}" width="100"
+                         height="100" alt="Build Info">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="{% url 'deeplink:index' %}" target="_self" title="Deep Link">Deep Link
+                            Console<br><small>Deep link console</small></a>
+                    </h3>
+                    <p>Provide a list page to test mobile deeplink.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail">
+                <a href="#" target="_blank" title="Device Unlink Tool">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/disconnect.png' %}" width="100"
+                         height="100" alt="Device Unlink Tool">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="Device Unlink Tool">Device Unlink
+                            Tool<br><small>Device Unlink Tool</small></a>
+                    </h3>
+                    <p>Unlink devices Quickly with only one click.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail">
+                <a href="#" target="_blank" title="QoS Validation Tool">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/qos.png'%}" width="100" height="100"
+                         alt="QoS Validation Tool">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="Analyze QoS log">QoS Validation
+                            Tool<br><small>QoS Validation Tool</small></a>
+                    </h3>
+                    <p>Analyze QoS log for Android iOS and Web.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail">
+                <a href="#}" target="_blank" title="SDK Config Parser">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/appkey.png' %}" width="100"
+                         height="100" alt="SDK Config Parser">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="Analyze QoS log">SDK Config
+                            Parser<br><small>SDK Config Parser</small></a>
+                    </h3>
+                    <p>Store known app key and parse app key to get config detail.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail">
+                <a href="#" target="_blank" title="Automation Test Report">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/report.png' %}" width="100"
+                         height="100" alt="SDK Config Parser">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="Automation Test Report">Automation
+                            Test Report<br><small>Automation Test Report</small></a>
+                    </h3>
+                    <p>Automation Test Report for UI and Unit Test.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail" >
+                <a href="#" target="_blank" title="Localization test tool">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/localization.png' %}" width="100"
+                         height="100" alt="Localization Tool">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="Localization test tool">Localization
+                            test tool<br><small>Localization test tool</small></a>
+                    </h3>
+                    <p>Format localization file to do tests.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 ">
+            <div class="thumbnail">
+                <a href="#" target="_blank" title="librarydiffer">
+                    <img class="lazy" src="{% static 'imgs/qa_tools/librarydiffer.png' %}" width="100"
+                         height="100" alt="Library Differ">
+                </a>
+                <div class="caption">
+                    <h3>
+                        <a href="#" target="_blank" title="librarydiffer">Library Differ<br><small>Library
+                            Differ</small></a>
+                    </h3>
+                    <p>Library Differ Check</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <hr>
+            <div class="container text-center">
+                <p>&copy; ENDEAVOR Streaming.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    $(".thumbnail").hover(function (){
+        $(this).css("border", 'solid 1px blue')
+    }, function (){
+        $(this).css("border", 'solid 1px #ddd')
+    })
+</script>
+
+</body>
+</html>
+
+
+

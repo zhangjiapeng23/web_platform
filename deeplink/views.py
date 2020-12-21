@@ -1,3 +1,5 @@
+import re
+
 from collections import defaultdict
 
 from django.http import JsonResponse
@@ -40,7 +42,6 @@ def deeplink_list(request, project):
                 for content in contents:
                     deeplink_path = scheme + '://' + content.body 
                     project_dict[content.classification].append(deeplink_path)
-                print(project_dict)
                 return render(request, 'deeplink/list.html', context={'project': project_obj,
                                                                     'set_grouping': set_grouping,
                                                                     'full_deeplink_group': project_dict,
@@ -67,7 +68,7 @@ def add_deeplink(request, project):
         if not body:
             response['msg']['error'] = 'Deeplink content is required.'
         else:
-            body_alice = body.split('/')
+            body_alice = re.split(r'[/?]', body)
             if (len(body_alice) > 1):
                 classification = body_alice[0]
                 res_obj = models.Contents.objects.create(body=body, classification=classification, project=project_obj)
@@ -146,7 +147,7 @@ def modify_deeplink(request):
             response['msg'] = 'Deeplink content is required.'
         else:
             deeplink_item = models.Contents.objects.filter(nid=deeplink_id).all()
-            body_alice = deeplink_body.split('/')
+            body_alice = re.split(r'[/?]', deeplink_body)
             if (len(body_alice) > 1):
                 res = deeplink_item.update(body=deeplink_body, classification=body_alice[0])
             else:
