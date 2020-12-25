@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ project.name }} Deep Link Page</title>
-    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
-    <script src="/static/js/jquery-3.5.1.js"></script>
+{% extends 'base.html' %}
+{% load dict_filter %}
+
+{% block title %}
+    {{ project.name }} Deep Link Page
+{% endblock %}
+
+{% block head %}
     <style>
-      
+
         .page-header .glyphicon{
             border: none;
             width: 40px;
@@ -57,9 +57,9 @@
             text-shadow: 2px 2px 2px lightgray;
         }
     </style>
-    {% load dict_filter %}
-</head>
-<body>
+{% endblock %}
+
+{% block main %}
     <div class="page-header">
         <h1>{{ project.name }}</h1>
         <button class="glyphicon glyphicon-th-list format"></button>
@@ -103,10 +103,10 @@
                                             <a href={{ deeplink }}>{{ deeplink }}</a>
                                         </li>
                                     {% endif %}
-                                {% endfor %} 
+                                {% endfor %}
                             {% endif %}
                         {% endfor %}
-                        
+
                     {% else %}
                         {% for deeplink in full_deeplink %}
                             {% if forloop.counter|divisibleby:2 %}
@@ -170,10 +170,9 @@
 
             }
          })
-
-
-
-
     </script>
-</body>
-</html>
+{% endblock %}
+
+
+
+

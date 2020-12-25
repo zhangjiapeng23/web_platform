@@ -1,10 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}
+    {{ project_name }} Notification Detail
+{% endblock %}
+
+{% block head %}
+    <style>
+        .page-header {
+            font-weight: bold;
+            font-style: italic;
+            text-shadow: 2px 2px 2px lightgray;
+        }
+        .glyphicon-plus {
+            background-color: transparent;
+            border: none;
+            outline: none;
+        }
+        .main {
+            margin-top: 30px;
+        }
+        .account {
+            margin-top: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="page-header text-center">
+            <h3 class="page-name">{{ project_name }} Notification Console</h3>
+        </div>
+    </div>
+
+    <div class="container account">
+        <div class="row">
+            <div class="col-md-4 col-xs-12 col-md-offset-3">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">Test Account</span>
+                    <input id="project_name" type="text" class="form-control" placeholder="Test Account" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="btn-group">
+                <button class="btn btn-success header-btn">Send Push</button>
+                <button class="btn btn-default header-btn">Select All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-4 col-xs-12 deeplink">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        DEEPLINK
+                    </div>
+                    <div class="panel-body">
+                        {% if response.deeplink %}
+                            {% for item in response.deeplink %}
+                                <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="">
+                                {{ item.content }}
+                            </label>
+                        </div>
+                            {% endfor %}
+                        {% else %}
+                            <h5>No content at this time.</h5>
+                        {% endif %}
+                    </div>
+                    <div class="panel-footer text-center">
+                        <button class="glyphicon glyphicon-plus"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-xs-12 deeplink">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        GENERAL
+                    </div>
+                    <div class="panel-body">
+                        {% if response.general %}
+                            {% for item in response.general %}
+                                <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="">
+                                {{ item.content }}
+                            </label>
+                        </div>
+                            {% endfor %}
+                        {% else %}
+                            <h5>No content at this time.</h5>
+                        {% endif %}
+                    </div>
+                    <div class="panel-footer text-center">
+                        <button class="glyphicon glyphicon-plus"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-xs-12 deeplink">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        PUSH_TYPE
+                    </div>
+                    <div class="panel-body">
+                        {% if response.push_type %}
+                            {% for item in response.push_type %}
+                                <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="">
+                                {{ item.content }}
+                            </label>
+                        </div>
+                            {% endfor %}
+                        {% else %}
+                            <h5>No content at this time.</h5>
+                        {% endif %}
+                    </div>
+                    <div class="panel-footer text-center">
+                        <button class="glyphicon glyphicon-plus"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ project.name }} Deeplink Page</title>
-    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
-    <script src="/static/js/jquery-3.5.1.js"></script>
+{% extends 'base.html' %}
+{% block title %}
+    {{ project.name }} Deeplink Page
+{% endblock %}
+
+{% block head %}
     <style>
         .btn-success {
             width: 70px;
@@ -56,7 +54,7 @@
         .modify-row span{
             border: none;
             background-color: transparent;
-            
+
         }
         .modify-row input{
             background-color: transparent;
@@ -74,9 +72,10 @@
         }
 
     </style>
-</head>
-<body>
-    <div class="page-header">
+{% endblock %}
+
+{% block main %}
+     <div class="page-header">
         <h1>{{ project }}</h1>
         <button class="glyphicon glyphicon-cog edit-switch"></button>
         <button class="glyphicon glyphicon-trash remove_project"></button>
@@ -116,7 +115,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <div class="container">
         <div class="row">
@@ -204,7 +203,7 @@
             })
 
         }
-        
+
         function bindEditItem(){
              const listRow = $(this).parents('.list-row');
              const aDeeplink = listRow.find('.a-deeplink');
@@ -328,7 +327,7 @@
         // bind click event for modify porjcet confirm button.
         $('.btn-warning').click(function(){
             const editInput = $('#project_scheme');
-            if (confirm('Do you sure want to modify {{ project }} scheme?')){ 
+            if (confirm('Do you sure want to modify {{ project }} scheme?')){
                 $.ajax({
                     url: "{% url 'deeplink:modify_project' %}",
                     type: "post",
@@ -342,7 +341,7 @@
                         if (data.code == 'fail') {
                             $('.error').text(data.msg).css('color', 'red');
                             editInput.focus();
-                           
+
                         } else {
                             location.reload();
                         }
@@ -350,7 +349,7 @@
                 })
             }  else {
                 editInput.focus();
-               
+
             }
         })
 
@@ -395,7 +394,7 @@
                 const text = editInput.val()
                 editInput.val('')
                 editInput.val(text)
-                
+
              } else {
                 $(this).attr('class', 'glyphicon glyphicon-cog edit-switch')
                 $('.add_workspace').toggle()
@@ -405,5 +404,4 @@
          })
 
     </script>
-</body>
-</html>
+{% endblock %}

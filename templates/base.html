@@ -1,10 +1,20 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}base title{% endblock %}</title>
+    <link rel="SHORTCUT ICON" href="{% static "imgs/favicon.ico" %}">
+    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
+    <script src="/static/js/jquery-3.5.1.js"></script>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
-$END$
+    {% block main %}
+        <h3>page main content is not implement.</h3>
+    {% endblock%}
+
 </body>
 </html>
