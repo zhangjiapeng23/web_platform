@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 # projects table
 class Project(models.Model):
     nid = models.AutoField(primary_key=True)
