@@ -10,21 +10,52 @@
             font-style: italic;
             text-shadow: 2px 2px 2px lightgray;
         }
-        .glyphicon-plus {
+        button {
             background-color: transparent;
             border: none;
+            outline: none;
+        }
+        .header-btn {
             outline: none;
         }
         .main {
             margin-top: 30px;
         }
         .account {
-            margin-top: 30px;
+            margin-top: 20px;
         }
+        .btn-group {
+            margin-top: 10px;
+        }
+        .input-group {
+            margin-top: 10px;
+        }
+        .error-info {
+            margin-top: 10px;
+        }
+        .add-push-space .glyphicon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        .add-push-space input {
+            border: solid 1px lightgray;
+            margin-left: 0px;
+           
+        }
+        .error-add {
+            display: inline-block;
+            font-size: 3px;
+        }
+        .add-push-space {
+            display: none;
+        }
+
+
     </style>
 {% endblock %}
 
 {% block main %}
+    {% csrf_token %}
     <div class="container">
         <div class="page-header text-center">
             <h3 class="page-name">{{ project_name }} Notification Console</h3>
@@ -36,13 +67,18 @@
             <div class="col-md-4 col-xs-12 col-md-offset-3">
                 <div class="input-group">
                     <span class="input-group-addon" id="basic-addon1">Test Account</span>
-                    <input id="project_name" type="text" class="form-control" placeholder="Test Account" aria-describedby="basic-addon1">
+                    <input id="test-account" type="text" class="form-control" placeholder="Test Account" aria-describedby="basic-addon1">
                 </div>
             </div>
             <div class="col-md-4 col-xs-12">
                 <div class="btn-group">
                 <button class="btn btn-success header-btn">Send Push</button>
-                <button class="btn btn-default header-btn">Select All</button>
+                <button class="btn btn-default header-btn" id="select-switch">Select All</button>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12 col-md-offset-3">
+                <div class="error-info">
+                    <span class="error-msg"></span>
                 </div>
             </div>
         </div>
@@ -60,7 +96,7 @@
                             {% for item in response.deeplink %}
                                 <div class="checkbox">
                             <label>
-                                <input type="checkbox" value="">
+                                <input type="checkbox" value="{{ item.nid }}">
                                 {{ item.content }}
                             </label>
                         </div>
@@ -68,9 +104,16 @@
                         {% else %}
                             <h5>No content at this time.</h5>
                         {% endif %}
+
                     </div>
                     <div class="panel-footer text-center">
-                        <button class="glyphicon glyphicon-plus"></button>
+                        <div class="add-push-space">
+                            <input type="text" class="pull-left">
+                            <span class="error-add"></span>
+                            <button class="glyphicon glyphicon-remove-circle pull-right"></button>
+                            <button class="glyphicon glyphicon-ok-circle pull-right"></button>
+                        </div>
+                        <button class="glyphicon glyphicon-plus" id="deeplink-add"></button>
                     </div>
                 </div>
             </div>
@@ -85,7 +128,7 @@
                             {% for item in response.general %}
                                 <div class="checkbox">
                             <label>
-                                <input type="checkbox" value="">
+                                <input type="checkbox" value="{{ item.nid }}">
                                 {{ item.content }}
                             </label>
                         </div>
@@ -95,7 +138,13 @@
                         {% endif %}
                     </div>
                     <div class="panel-footer text-center">
-                        <button class="glyphicon glyphicon-plus"></button>
+                        <div class="add-push-space">
+                            <input type="text" class="pull-left">
+                            <span class="error-add"></span>
+                            <button class="glyphicon glyphicon-remove-circle pull-right"></button>
+                            <button class="glyphicon glyphicon-ok-circle pull-right"></button>
+                        </div>
+                        <button class="glyphicon glyphicon-plus" id="general-add"></button>
                     </div>
                 </div>
             </div>
@@ -110,7 +159,7 @@
                             {% for item in response.push_type %}
                                 <div class="checkbox">
                             <label>
-                                <input type="checkbox" value="">
+                                <input type="checkbox" value="{{ item.nid }}">
                                 {{ item.content }}
                             </label>
                         </div>
@@ -120,10 +169,140 @@
                         {% endif %}
                     </div>
                     <div class="panel-footer text-center">
-                        <button class="glyphicon glyphicon-plus"></button>
+                        <div class="add-push-space">
+                            <input type="text" class="pull-left">
+                            <span class="error-add"></span>
+                            <button class="glyphicon glyphicon-remove-circle pull-right"></button>
+                            <button class="glyphicon glyphicon-ok-circle pull-right"></button>
+                        </div>
+                        <button class="glyphicon glyphicon-plus" id="push-type-add"></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <script>
+        function restALL() {
+            $("input[type='checkbox']").prop("checked", false)
+        }
+
+        function selectAll() {
+            $("input[type='checkbox']").prop("checked", true)
+        }
+
+        $("#select-switch").click(function(){
+            const button= $("#select-switch");
+            if (button.text() == 'Select All') {
+                selectAll()
+                button.text("Reset All");
+            } else {
+                restALL()
+                button.text("Select All");
+            }
+        })
+
+        $(".btn-success").click(function(){
+            const testAccount = $("#test-account")
+            const errorMsg = $(".error-msg")
+            let selectItem = new Array()
+            let checkBox
+            const checkBoxs = $("input[type='checkBox']")
+            // errorMsg.text("")
+            for (checkBox of checkBoxs){
+                if ($(checkBox).prop("checked") == true){
+                    selectItem.push($(checkBox).attr("Value"))
+                }
+            }
+            $.ajax({
+                url: "{% url 'qa_tools:send_braze_push' %}",
+                type: "post",
+                data: {
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                    test_account: testAccount.val(),
+                    selected_items: selectItem,
+                    project: "{{ project_name }}",
+                },
+                success: function(data){
+
+                    if (data.code == 'fail') {
+                   
+                        errorMsg.text(data.msg).css("color", "red")
+                        
+                    } else {
+
+
+                    }
+                }
+            })
+        })
+        
+        $(".glyphicon-plus").click(function(){
+            const workSpace = $(this).prev()
+            workSpace.css("display", "block")
+            workSpace.children('input').focus()
+            $(this).css("display", "none")
+        })
+
+        $(".glyphicon-remove-circle").click(function(){
+            const workSpace = $(this).parent()
+            workSpace.css("display", "none")
+            workSpace.children("input").val("")
+            workSpace.children("span").text("")
+            workSpace.next().css("display", "inline")
+        })
+
+        $(".glyphicon-ok-circle").click(function(){
+            const workSpace = $(this).parent()
+            const inputContent = workSpace.children("input")
+            const errorText = workSpace.children("span")
+            let push_type = workSpace.next().attr("id")
+            errorText.text("")
+            if (push_type == 'deeplink-add') {
+                push_type = "deeplink"
+            } else if (push_type == "general-add") {
+                push_type = "general"
+            } else if (push_type == "push-type-add") {
+                push_type = "push_type"
+            }
+            $.ajax({
+                url: "{% url 'qa_tools:addPush' %}",
+                type: "post",
+                data: {
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                    push_type: push_type,
+                    push_content: inputContent.val(),
+                    project_name: "{{ project_name }}"
+                    
+                },
+                success: function(data){
+                    console.log(data)
+                    if (data.code == 'fail') {
+                        workSpace.children('span').text(data.msg).css("color", "red")
+                        inputContent.focus()
+                    } else {
+                        const insetCheckBox = `
+                            <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="${ data.id }">
+                                ${ inputContent.val() }
+                            </label>`
+                        const panelBody = workSpace.parent().prev()
+                        const noContent = panelBody.children("h5")
+                        if (noContent.length != 0) {
+                            noContent.css("display", "none")
+                        }
+                        panelBody.prepend(insetCheckBox)
+
+                        workSpace.css("display", "none")
+                        inputContent.val("")
+                        workSpace.next().css("display", "inline")
+
+                    }
+                }
+            })
+
+        })
+    </script>
 {% endblock %}
