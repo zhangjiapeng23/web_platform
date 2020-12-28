@@ -48,7 +48,6 @@ def notification_detail(request, project):
     deeplink_type = models.Notification.objects.filter(project__name=project, type=1).all()
     push_type = models.Notification.objects.filter(project__name=project, type=0).all()
     general_type = models.Notification.objects.filter(project__name=project, type=2).all()
-    print(deeplink_type)
     response['deeplink'] = deeplink_type
     response['push_type'] = push_type
     response['general'] = general_type
