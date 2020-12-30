@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Count
 
 from qa_tools import models
+from qa_tools.tools.braze_notification import BrazePush
 # Create your views here.
 
 def index(request):
@@ -77,16 +78,33 @@ def send_braze_push(request):
             project_info['instance_url'] = projcet_obj.instance_url
             project_info['name'] = project_name
             project_info['scheme'] = projcet_obj.scheme
+            project_info['api_key'] = projcet_obj.api_key
             braze_notification_console(project_info, push_dict)
 
         return JsonResponse(response)
 
 
 def braze_notification_console(project: dict, push: dict):
+    instance_url = project.get('instance_url')
+    deeplink_scheme = project.get('scheme')
+    api_key = project.get('api_key')
+    test_account = project.get('test_account')
+    braze_push = BrazePush(instance_url=instance_url, api_key=api_key, deeplink_scheme=deeplink_scheme, test_account=test_account)
+    general_type = push.get('general',  [])
+    deeplink_type = push.get('deeplink', [])
+    PUSH_TYPE_type = push.get('PUSH_TYPE',  [])
 
+    for item in general_type:
+        params = tuple(item.split(';'))
+        braze_push.push_by_general(param=params)
 
+    for item in deeplink_type:
+        braze_push.push_by_deeplink(param=item)
 
-    print(project, push)
+    for item in PUSH_TYPE_type:
+        params = tuple(item.split(';'))
+        braze_push.push_by_push_type(params)
+
 
 
 def add_push(request):

@@ -1,109 +1,87 @@
-import requests
+
 import time
 
-
-aki_Key = '809ff396-e26b-411b-bd3a-a7ab1e6d4216'
-instance_url = 'https://rest.iad-03.braze.com/messages/send'
-external_user_ids = ["james1230@neuqa.com"]
-platforms = ["android_push", "apple_push"]
-# Style 1
-level1 = ['type', 'section', 'section_id']
-level2 = ['id', 'content_id']
-
-# Predefined first level page name which should be same as web deeplink
-main_pages = ['rapidreplay', 'games', 'videos', 'standings', 'latest', 'NBATVLIVE', 'signin', 'createaccount', 'packages']
-
-# Predefined detail info
-video_seoname = 'channels/highlights/7127b96f-9ec7-4e09-b0de-74a4135bc247.nba'
-news_id = '2353015'
-game_seoname = '20200108/SASBOS'
-
-# Style 3
-details = ['news?newsid=2336760', 'video/channels/highlights/7127b96f-9ec7-4e09-b0de-74a4135bc247.nba', 'game/20180118/PHIBOS?gt=8']
+import requests
 
 
-def send_request(message, args):
-    for platform in platforms:
-        params = {"api_key": aki_Key, "external_user_ids": external_user_ids,
-                  "messages": {platform: {"alert": message, "extra": args}}}
-        res = requests.post(instance_url, json=params)
-        print(res.text)
+class BrazePush:
+    platforms = ["android_push", "apple_push"]
 
+    def __init__(self, instance_url, api_key, deeplink_scheme, test_account):
+        self.__instance_url = instance_url
+        self.__api_key = api_key
+        self.__deeplink_scheme = deeplink_scheme
+        self.test_account = test_account
 
-def send_push_notification(key1, value1, key2=None, value2=None, key3=None, value3=None):
+    def __str__(self):
+        return self.instance_url + ':' + self.api_key
 
-    if key1 and key2 and key3:
-        args = {key1: value1, key2: value2, key3: value3}
-        message = 'Braze-' + key1 + ': ' + value1 + '\n' + key2 + ':' + value2 + ' - ' + key3 + ':' + value3
-        send_request(message, args)
-        print(message + ' will send.')
-    elif key1 and key2 and not key3:
-        args = {key1: value1, key2: value2}
-        message = 'Braze-' + key1 + ': ' + value1 + '\n' + key2 + ':' + value2
-        send_request(message, args)
-        print(message + ' will send.')
-    elif key1 and not key2 and not key3:
-        args = {key1: value1}
-        message = 'Braze-' + key1 + ': ' + value1
-        send_request(message, args)
-        print(message + ' will send.')
-    else:
-        return 'Sending wrong test values'
+    @property
+    def instance_url(self):
+        return self.__instance_url
 
-    time.sleep(1)
+    @property
+    def api_key(self):
+        return self.__api_key
 
+    @property
+    def deeplink_scheme(self):
+        return self.__deeplink_scheme
 
-def push_all_main_pages():
-    for key1 in level1:
-        for key2 in main_pages:
-            send_push_notification(key1, key2)
+    def __send_request(self, message, args):
+        for platform in self.platforms:
+            params = {"api_key": self.__api_key, "external_user_ids": self.test_account,
+                    "messages": {platform: {"alert": message, "extra": args}}}
+            # res = requests.post(self.__instance_url, json=params)
+            print(args)
 
+    def __send_push_notification(self, key1, value1, key2=None, value2=None, key3=None, value3=None):
+        if key1 and key2 and key3:
+            args = {key1: value1, key2: value2, key3: value3}
+            message = 'Braze-' + key1 + ': ' + value1 + '\n' + key2 + ':' + value2 + ' - ' + key3 + ':' + value3
+            self.__send_request(message, args)
+            print(message + ' will send.')
+        elif key1 and key2 and not key3:
+            args = {key1: value1, key2: value2}
+            message = 'Braze-' + key1 + ': ' + value1 + '\n' + key2 + ':' + value2
+            self.__send_request(message, args)
+            print(message + ' will send.')
+        elif key1 and not key2 and not key3:
+            args = {key1: value1}
+            message = 'Braze-' + key1 + ': ' + value1
+            self.__send_request(message, args)
+            print(message + ' will send.')
+        else:
+            return 'Sending wrong test values'
 
-def push_detail_page(detail_name, detail_content):
-    # For news detail, it must user newsid as second level key.
-    if detail_name == 'news':
-        for key1 in level1:
-            send_push_notification(key1, detail_name, 'newsid', detail_content)
-    else:
-        for key1 in level1:
-            for key2 in level2:
-                send_push_notification(key1, detail_name, key2, detail_content)
+        time.sleep(1)
 
+    
+    def push_by_push_type(self, param: tuple):
+        '''
+        EX. (1) 'GAMES', 'GAME_DATE', '04/03/2018', 'GAME_ID', '0021701156'
+            (2) 'NEWS', 'NEWS_ID', news_id
+            (3) 'VIDEOS', 'VIDEO_ID', video_seoname
+            (4) 'PACKAGES'
+        '''
+        self.__send_push_notification('PUSH_TYPE', *param)
 
-def style1():
-    # Send deeplink to all mainpage:
-    push_all_main_pages()
-    # Send deeplink to detail pages(news, game, video):
-    push_detail_page('video', video_seoname)
-    push_detail_page('game', game_seoname)
-    push_detail_page('news', news_id)
+    def push_by_deeplink(self, param: str):
+        deeplink = self.__deeplink_scheme + '://' + param
+        self.__send_push_notification('deeplink', deeplink)
+        
 
+    def push_by_general(self, param: tuple):
+        '''
+            general push:
+            level1 = ['type', 'section', 'section_id']
+            level2 = ['id', 'content_id']
+            detail page inclue: game, news, video
 
-def style2():
-    # Send deeplink using PUSH_TYPE
-    # If using PUSH_TYPE, GAME_ID=id in detail
-    send_push_notification('PUSH_TYPE', 'GAMES', 'GAME_DATE', '04/03/2018', 'GAME_ID', '0021701156')
-    send_push_notification('PUSH_TYPE', 'NEWS', 'NEWS_ID', news_id)
-    send_push_notification('PUSH_TYPE', 'VIDEOS', 'VIDEO_ID', video_seoname)
-    send_push_notification('PUSH_TYPE', 'PACKAGES')
-    send_push_notification('PUSH_TYPE', 'RAPIDREPLAY')
+            EX. main page: type/sectoin/section_id: games/home/account...
+                detail page: type/section/section_id: game/video. id/content_id: game_seoname/video_seoname
+                special: news detail level2 only use news type/secti0n/section_id: news, newsid: news_id
+        '''
 
-
-def style3():
-    # Send deeplink using deeplink
-    # main pages
-    for item in main_pages:
-        send_push_notification('deeplink', 'gametime://' + item)
-    # detail pages
-    for item in details:
-        send_push_notification('deeplink', 'gametime://' + item)
-
-def style4():
-	send_push_notification('deeplink', 'gametime://account')
-
-
-if __name__ == '__main__':
-    print('Braze Push Notification Starting')
-    style4()
-
-
+        self.__send_push_notification(*param)
+        
