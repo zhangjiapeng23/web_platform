@@ -59,17 +59,36 @@
             font-style: italic;
             text-shadow: 2px 2px 2px lightgray;
         }
+        #nba-sync {
+            text-align: right;
+            padding-bottom: 0px;
+        }
+        #nba-sync a{
+            margin-bottom: 0px;
+            
+        }
+   
 
     </style>
 {% endblock %}
 
 {% block main %}
-    <div class="page-header text-center">
-        <h1>Deep Link Console</h1>
-    </div>
+    <div class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 text-center">
+                    <h1>Deep Link Console</h1>
+                </div>
+                <div class="col-md-12 col-xs-12" id="nba-sync">
+                    <a href="{% url 'deeplink:nba_sync_us' %}">NBA(sync from US)</a>
+                </div>
 
+            </div>
+        </div>
+    </div>
     <div class="create_message text-center">
         <h4>Please select or <a class="create"><strong><i>create</i></strong></a> a project</h4>
+        
     </div>
 
     <div class="container create_workspace">

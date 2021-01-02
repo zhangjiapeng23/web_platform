@@ -131,11 +131,13 @@
 
     <script>
         function bindEdit(){
-            location.href = "{% url 'deeplink:deeplink_edit' project %}"
+            location.href = "{% url 'deeplink:deeplink_edit' project %}";
         }
-        $('.edit_project').click(bindEdit)
+        
 
-        $('.no-content a').click(bindEdit)
+        $('.edit_project').click(bindEdit);
+
+        $('.no-content a').click(bindEdit);
 
         $(function (){
             let litItem = $('.deeplink-item');
@@ -150,7 +152,9 @@
                     $(this).css('background-color', 'white')
                 }
             })
-
+            if ('{{ project }}' == 'NBADeeplinkSyncFromUS') {
+                $(".edit_project").css("display", "none");
+            };
         })
 
         $(function (){

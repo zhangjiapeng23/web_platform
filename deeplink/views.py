@@ -1,6 +1,8 @@
 import re
 
 from collections import defaultdict
+import requests
+from lxml import etree
 
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
@@ -68,9 +70,9 @@ def add_deeplink(request, project):
         if not body:
             response['msg']['error'] = 'Deeplink content is required.'
         else:
-            body_alice = re.split(r'[/?]', body)
-            if (len(body_alice) > 1):
-                classification = body_alice[0]
+            body_slice = re.split(r'[/?]', body)
+            if (len(body_slice) > 1):
+                classification = body_slice[0]
                 res_obj = models.Contents.objects.create(body=body, classification=classification, project=project_obj)
             else:
                 res_obj = models.Contents.objects.create(body=body, project=project_obj)
@@ -160,3 +162,47 @@ def modify_deeplink(request):
                 response['msg'] = 'Modify fail. Please try again.'
 
         return JsonResponse(response)
+
+
+def nba_sync_us(request):
+    if request.method == 'GET':
+        project_obj = NBASyncUs()
+        project_obj.name = 'NBA Deeplink Sync From US'
+        set_grouping = request.GET.get('grouping', default='true')
+        resp = requests.get('http://neulion-a.akamaihd.net/nlmobile/nba/deeplinks.htm')
+        doc = etree.HTML(resp.text)
+        deeplinks = doc.xpath('//a/@href')
+        o = re.compile(r'^gametime.*|^https://app.link.nba.com.*')
+        deeplink_list = [item for item in deeplinks if o.search(item)]
+        if set_grouping == 'true':
+            deeplink_dict = defaultdict(list)
+            for deeplink in deeplink_list:
+                if re.search(r'^https://app.link.nba.com.*', deeplink):
+                    deeplink_dict['Branch'].append(deeplink)
+                else:
+                    body = re.match(r'^gametime://(.*)', deeplink)
+                    if body:
+                        body_slice = re.split(r'[/?]', body[1])
+                        if len(body_slice) > 1:
+                            deeplink_dict[body_slice[0]].append(deeplink)
+                        else:
+                            deeplink_dict['Default'].append(deeplink)
+            return render(request, 'deeplink/list.html', context={'project': project_obj,
+                                                                    'set_grouping': set_grouping,
+                                                                    'full_deeplink_group': deeplink_dict,
+                                                                    })
+        else:
+            return render(request, 'deeplink/list.html', context={'project': project_obj,
+                                                                        'set_grouping': set_grouping,
+                                                                        'full_deeplink': deeplink_list,
+                                                                        })
+
+
+class NBASyncUs:
+    """
+    support nba_sync_us to provide a project instance to html model.
+    """
+    name = 'nba_sync_us'
+    
+    def __str__(self):
+        return self.name.replace(' ', '')
