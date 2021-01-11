@@ -11,6 +11,15 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
+
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mobile_QA_web_platform.settings")
 
 application = get_wsgi_application()
+
+crawler_start(0, 3)
+
+
+
+

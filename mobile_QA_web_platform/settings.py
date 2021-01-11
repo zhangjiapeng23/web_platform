@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'deeplink',
     'qa_tools',
+    'google_appstore_reviews',
 ]
 
 MIDDLEWARE = [
