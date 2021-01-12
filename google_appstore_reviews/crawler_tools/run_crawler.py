@@ -4,7 +4,7 @@ import threading
 from typing import List
 from threading import Thread
 import asyncio
-from collections import namedtuple
+from collections import namedtuple, Counter
 
 from google_appstore_reviews.crawler_tools.db_operatoin import CrawlerDb
 from google_appstore_reviews.crawler_tools.crawler import GoogleCrawler, AppStoreCrawler
@@ -47,21 +47,28 @@ class CrawlerPerform:
 
     def get_googleplay(self):
         pools = list()
-        for country in self.countries:
-            pools.append(CrawlerGoogleThread(crawler_obj=GoogleCrawler(country=country, appid=self.appid_android,
-                                                                       max_pre_page=100), country=country))
+        lang_count = Counter(country.lang for country in self.countries)
+        lang_country = {}
+        for item in self.countries:
+            if item.lang not in lang_country.keys():
+                lang_country[item.lang] = item.code
+
+        for lang, count in lang_count.items():
+            pools.append(CrawlerGoogleThread(crawler_obj=GoogleCrawler(country=lang, appid=self.appid_android,
+                                                                       max_page=4+count),
+                                             country=lang_country.get(lang)))
 
         for t in pools:
             t.start()
 
         for t in pools:
-            t.join(timeout=60)
+            t.join()
             self.__resp_android.update(t.get_result())
 
     async def create_appstore(self):
         tasks = list()
         for country in self.countries:
-            tasks.append(AppStoreCrawler(appid=self.appid_ios, country=country))
+            tasks.append(AppStoreCrawler(appid=self.appid_ios, country=country.code))
         to_do = [task.request_data() for task in tasks]
         to_do_iter = asyncio.as_completed(to_do)
         for future in to_do_iter:
@@ -96,8 +103,30 @@ def main(h, m):
 
 
 def run():
-    countries = ['in', 'us', 'au', 'nz', 'ch']
-    countries = ['us']
+    region = namedtuple('country', ['code', 'lang'])
+    # United States
+    us = region('us', 'en')
+    # Australia
+    au = region('au', 'en')
+    # Philippine
+    ph = region('ph', 'en')
+    # France
+    fr = region('fr', 'fr')
+    # China Taiwan
+    china_tw = region('tw', 'zh')
+    # Spain
+    es = region('es', 'es')
+    # Italy
+    it = region('it', 'it')
+    # Canada
+    ca = region('cd', 'en')
+    # Germany
+    ge = region('de', 'de')
+    # Brazil
+    br = region('br', 'pt')
+
+    countries = [us, au, ph, fr, china_tw, es, it, ca, ge, br]
+
     android_id = 'com.nbaimd.gametime.nba2011'
     ios_id = '484672289'
     spider = CrawlerPerform(appid_android=android_id, appid_ios=ios_id, countries=countries)
@@ -105,8 +134,8 @@ def run():
     t_ios = threading.Thread(target=spider.get_googleplay)
     t_android.start()
     t_ios.start()
-    t_ios.join()
-    t_android.join()
+    t_ios.join(timeout=60)
+    t_android.join(timeout=60)
 
     ios_data = FrozenJson(spider.resp_ios)
     android_data = FrozenJson(spider.resp_android)
@@ -116,23 +145,33 @@ def run():
 
     for country in countries:
         try:
+            ios_dict[country.code] = getattr(ios_data, country.code)
+        except AttributeError:
+            country.code += '_'
+            try:
+                ios_dict[country.code] = getattr(ios_data, country.code)
+            except AttributeError:
+                continue
+
+    android_countries = list({'us' if item.lang == 'en' else item.code for item in countries})
+    for country in android_countries:
+        try:
             android_dict[country] = getattr(android_data, country)
-            ios_dict[country] = getattr(ios_data, country)
         except AttributeError:
             country += '_'
-            android_dict[country] = getattr(android_data, country)
-            ios_dict[country] = getattr(ios_data, country)
-
-    # data = android_dict['us']
-    # for item in range(len(data)):
-    #     print(data[item].reviewId)
+            try:
+                android_dict[country] = getattr(android_data, country)
+            except AttributeError:
+                continue
 
     pools = []
     for country, data in android_dict.items():
-        pools.append(threading.Thread(target=write_data, args=('android', country, data)))
+        if data is not None:
+            pools.append(threading.Thread(target=write_data, args=('android', country, data)))
 
     for country, data in ios_dict.items():
-        pools.append(threading.Thread(target=write_data, args=('ios', country, data)))
+        if data is not None:
+            pools.append(threading.Thread(target=write_data, args=('ios', country, data)))
 
     for t in pools:
         t.start()
@@ -162,7 +201,7 @@ def write_data(platform, country, data):
                                    author=content[item].author.name.label,
                                    platform=platform,
                                    country=country,
-                                   title=content[item].title.label,
+                                   title=content[item].title.label[0:128],
                                    content=content[item].content.label,
                                    rating=getattr(content[item], 'im:rating').label,
                                    version=getattr(content[item], 'im:version').label,
@@ -171,11 +210,12 @@ def write_data(platform, country, data):
     elif platform == 'android':
         platform = 0
         for item in range(len(data)):
+            title = ' '.join(data[item].content.split(' ')[0:4]) if data[item].content else None
             wrap_data = review_data(review_id=data[item].reviewId,
                                author=data[item].userName,
                                platform=platform,
                                country=country,
-                               title=' '.join(data[item].content.split(' ')[0:4]),
+                               title=title[0:128] if title else title,
                                content=data[item].content,
                                rating=data[item].score,
                                version=data[item].reviewCreatedVersion,

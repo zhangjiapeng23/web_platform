@@ -21,8 +21,9 @@ class Crawler(metaclass=ABCMeta):
 
 class GoogleCrawler(Crawler):
 
-    def __init__(self, country, appid, max_pre_page, max_page=5):
-        self.country = country
+    def __init__(self, country, appid, max_pre_page=100, max_page=5):
+        # google play by lang to get different region reviews.
+        self.lang = country
         self.appid = appid
         self.max_pre_page = max_pre_page
         self.continuation_token = None
@@ -35,8 +36,8 @@ class GoogleCrawler(Crawler):
             if not self.continuation_token:
                 res, self.continuation_token = reviews(
                     app_id=self.appid,
-                    lang='en',  # defaults to 'en'
-                    country=self.country,  # defaults to 'us'
+                    lang=self.lang,  # defaults to 'en'
+                    country='us',  # defaults to 'us'
                     sort=Sort.MOST_RELEVANT,  # defaults to Sort.MOST_RELEVANT
                     count=self.max_pre_page,  # defaults to 100
                     filter_score_with=None,  # defaults to None(means all score)
@@ -46,7 +47,7 @@ class GoogleCrawler(Crawler):
                     app_id=self.appid,
                     continuation_token=self.continuation_token,
                 )
-            print('Android->page:{}, country:{}'.format(page, self.country))
+            print('Android->page:{}, country:{}'.format(page, self.lang))
             resp.extend(res)
             page += 1
         return resp
@@ -98,20 +99,20 @@ if __name__ == '__main__':
 
     # iOS
 
-    async def main():
-        start = dict()
-        resp = dict()
-        for country in countrys:
-            start[country] = AppStoreCrawler(appid=appid_iOS, max_page=10, country=country)
-        # for country, request in start.items():
-        #    await request.request_data()
-        #    resp[country] = res
-        to_do_country = [country for country in start.keys()]
-        to_do = [start[country].request_data() for country in to_do_country ]
-        to_do_iter = asyncio.as_completed(to_do)
-        for country, future in zip(to_do_country, to_do_iter):
-            res = await future
-            resp[country] = res
+    # async def main():
+    #     start = dict()
+    #     resp = dict()
+    #     for country in countrys:
+    #         start[country] = AppStoreCrawler(appid=appid_iOS, max_page=10, country=country)
+    #     # for country, request in start.items():
+    #     #    await request.request_data()
+    #     #    resp[country] = res
+    #     to_do_country = [country for country in start.keys()]
+    #     to_do = [start[country].request_data() for country in to_do_country ]
+    #     to_do_iter = asyncio.as_completed(to_do)
+    #     for country, future in zip(to_do_country, to_do_iter):
+    #         res = await future
+    #         resp[country] = res
 
         # print(resp)
 

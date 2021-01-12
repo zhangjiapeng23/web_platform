@@ -9,7 +9,7 @@ class ReviewInfo(models.Model):
     )
     nid = models.AutoField(primary_key=True)
     review_id = models.CharField(max_length=128, unique=True)
-    author = models.CharField(max_length=36)
+    author = models.CharField(max_length=256)
     platform = models.IntegerField(choices=PLATFORM_OPTIONS)
     country = models.CharField(max_length=36)
 
@@ -18,10 +18,10 @@ class ReviewInfo(models.Model):
 
 class ReviewDetail(models.Model):
     nid = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=128)
-    content = models.TextField()
-    rating = models.IntegerField()
-    version = models.CharField(max_length=12)
+    title = models.CharField(max_length=128, null=True)
+    content = models.TextField(null=True)
+    rating = models.IntegerField(null=True)
+    version = models.CharField(max_length=12, null=True)
     create_time = models.DateTimeField(auto_created=True)
     review_info = models.OneToOneField(to='ReviewInfo', to_field='nid', on_delete=models.CASCADE)
 
