@@ -20,7 +20,8 @@ class CrawlerDb:
     def insert_data_to_reviewinfo(self, data_info: tuple):
         try:
             self.cursor.execute(self.sql_insert_info, data_info)
-        except pymysql.err.IntegrityError:
+        # except pymysql.err.IntegrityError:
+        except Exception:
             return None
         else:
             self.cursor.execute(self.sql_select, data_info[0])

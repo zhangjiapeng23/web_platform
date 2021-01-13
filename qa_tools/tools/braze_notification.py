@@ -1,6 +1,6 @@
-
 import time
-
+from collections import namedtuple
+import json
 import requests
 
 
@@ -12,6 +12,7 @@ class BrazePush:
         self.__api_key = api_key
         self.__deeplink_scheme = deeplink_scheme
         self.test_account = test_account
+        self.__resp = list()
 
     def __str__(self):
         return self.instance_url + ':' + self.api_key
@@ -28,12 +29,21 @@ class BrazePush:
     def deeplink_scheme(self):
         return self.__deeplink_scheme
 
+    @property
+    def resp(self):
+        return self.__resp
+
     def __send_request(self, message, args):
+        res_ = namedtuple('braze_resp', ['code', 'platform', 'push_message'])
         for platform in self.platforms:
             params = {"api_key": self.__api_key, "external_user_ids": self.test_account,
                     "messages": {platform: {"alert": message, "extra": args}}}
-            # res = requests.post(self.__instance_url, json=params)
-            print(args)
+            res = requests.post(self.__instance_url, json=params)
+            res = json.loads(res.text)
+            code = res['message']
+            system = 'Android' if platform == 'android_push' else 'iOS'
+            self.__resp.append(res_(code, system, args))
+
 
     def __send_push_notification(self, key1, value1, key2=None, value2=None, key3=None, value3=None):
         if key1 and key2 and key3:

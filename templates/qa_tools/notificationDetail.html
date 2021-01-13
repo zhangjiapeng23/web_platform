@@ -209,7 +209,7 @@
             let selectItem = new Array()
             let checkBox
             const checkBoxs = $("input[type='checkBox']")
-            // errorMsg.text("")
+            errorMsg.text("")
             for (checkBox of checkBoxs){
                 if ($(checkBox).prop("checked") == true){
                     selectItem.push($(checkBox).attr("Value"))
@@ -231,8 +231,19 @@
                         errorMsg.text(data.msg).css("color", "red")
                         
                     } else {
-
-
+                        let alterMsg = '';
+                        let code;
+                        let platform;
+                        let deeplinkMsg;
+                        for (const res of data.msg) {
+                            console.log(res)
+                            code = res[0];
+                            platform = res[1];
+                            deeplinkMsg = JSON.stringify(res[2]);
+                            const message = `Status: ${code}, Platform: ${platform}, Type: ${deeplinkMsg} \n`
+                            alterMsg += message
+                        }
+                        alert(alterMsg)
                     }
                 }
             })

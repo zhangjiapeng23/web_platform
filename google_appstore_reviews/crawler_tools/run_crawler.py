@@ -126,6 +126,8 @@ def run():
     br = region('br', 'pt')
 
     countries = [us, au, ph, fr, china_tw, es, it, ca, ge, br]
+    # test
+    # countries = [br]
 
     android_id = 'com.nbaimd.gametime.nba2011'
     ios_id = '484672289'
@@ -147,9 +149,9 @@ def run():
         try:
             ios_dict[country.code] = getattr(ios_data, country.code)
         except AttributeError:
-            country.code += '_'
+            code = country.code + '_'
             try:
-                ios_dict[country.code] = getattr(ios_data, country.code)
+                ios_dict[country.code] = getattr(ios_data, code)
             except AttributeError:
                 continue
 
@@ -243,10 +245,6 @@ def crawler_start(hour=23, minute=0):
 
 if __name__ == '__main__':
     run()
-
-
-
-
 
     # countries = ['us']
     # test = CrawlerPerform(appid_android='com.nbaimd.gametime.nba2011', appid_ios='484672289', countries=countries)

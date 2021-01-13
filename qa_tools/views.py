@@ -70,7 +70,10 @@ def send_braze_push(request):
         test_account = request.POST.get('test_account')
         if not test_account:
             response['msg'] = 'Test account is required.'
+        elif not selected_items:
+            response['msg'] = 'You must select a push item from below.'
         else:
+            test_account = test_account.split(';')
             notifications = models.Notification.objects.filter(pk__in=selected_items).all()
             for notification in notifications:
                 push_dict[notification.get_push_type_display()].append(notification.content)
@@ -79,7 +82,11 @@ def send_braze_push(request):
             project_info['name'] = project_name
             project_info['scheme'] = projcet_obj.scheme
             project_info['api_key'] = projcet_obj.api_key
-            braze_notification_console(project_info, push_dict)
+            project_info['test_account'] = test_account
+            res = braze_notification_console(project_info, push_dict)
+            response['code'] = 'success'
+            response['msg'] = res
+
 
         return JsonResponse(response)
 
@@ -89,7 +96,8 @@ def braze_notification_console(project: dict, push: dict):
     deeplink_scheme = project.get('scheme')
     api_key = project.get('api_key')
     test_account = project.get('test_account')
-    braze_push = BrazePush(instance_url=instance_url, api_key=api_key, deeplink_scheme=deeplink_scheme, test_account=test_account)
+    braze_push = BrazePush(instance_url=instance_url, api_key=api_key, deeplink_scheme=deeplink_scheme,
+                           test_account=test_account)
     general_type = push.get('general',  [])
     deeplink_type = push.get('deeplink', [])
     PUSH_TYPE_type = push.get('PUSH_TYPE',  [])
@@ -103,7 +111,10 @@ def braze_notification_console(project: dict, push: dict):
 
     for item in PUSH_TYPE_type:
         params = tuple(item.split(';'))
+        params = (item.upper() for item in params)
         braze_push.push_by_push_type(params)
+
+    return braze_push.resp
 
 
 
