@@ -151,13 +151,18 @@ def modify_deeplink(request):
             deeplink_item = models.Contents.objects.filter(nid=deeplink_id).all()
             body_alice = re.split(r'[/?]', deeplink_body)
             if (len(body_alice) > 1):
-                res = deeplink_item.update(body=deeplink_body, classification=body_alice[0])
+                if body_alice[0] == 'https:':
+                    res = deeplink_item.update(body=deeplink_body, classification='Brunch')
+                    scheme = ''
+                else:
+                    res = deeplink_item.update(body=deeplink_body, classification=body_alice[0])
+                    scheme = deeplink_item[0].project.scheme + '://'
             else:
                 res = deeplink_item.update(body=deeplink_body, classification='Default')
-            scheme = deeplink_item[0].project.scheme
+                scheme = deeplink_item[0].project.scheme + '://'
             if res:
                 response['code'] = 'success'
-                response['msg'] = scheme + '://' + deeplink_body
+                response['msg'] = scheme + deeplink_body
             else:
                 response['msg'] = 'Modify fail. Please try again.'
 
