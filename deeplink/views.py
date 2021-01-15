@@ -37,12 +37,16 @@ def deeplink_list(request, project):
         project_obj = models.Project.objects.filter(name=project).first()
         if project_obj:
             contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
-            scheme = project_obj.scheme
+            scheme = project_obj.scheme + '://'
             # grounping
             if set_grouping == 'true':
                 project_dict = defaultdict(list)
                 for content in contents:
-                    deeplink_path = scheme + '://' + content.body 
+                    classification = content.classification
+                    if classification == 'Branch':
+                        deeplink_path = content.body
+                    else:
+                        deeplink_path = scheme + content.body
                     project_dict[content.classification].append(deeplink_path)
                 return render(request, 'deeplink/list.html', context={'project': project_obj,
                                                                     'set_grouping': set_grouping,
@@ -52,7 +56,10 @@ def deeplink_list(request, project):
                 # not grouping
                 full_deeplink = []
                 for content in contents:
-                    full_deeplink.append(scheme + '://' + content.body)
+                    if content.classification == 'Branch':
+                        full_deeplink.append(content.body)
+                    else:
+                        full_deeplink.append(scheme + content.body)
                 return render(request, 'deeplink/list.html', context={'project': project_obj,
                                                                         'set_grouping': set_grouping,
                                                                         'full_deeplink': full_deeplink,
@@ -62,7 +69,7 @@ def deeplink_list(request, project):
 
 def add_deeplink(request, project):
     project_obj = models.Project.objects.filter(name=project).first()
-    scheme = project_obj.scheme
+    scheme = project_obj.scheme + '://'
 
     if request.is_ajax():
         response = {'code': 'fail', 'msg': {}}
@@ -73,22 +80,26 @@ def add_deeplink(request, project):
             body_slice = re.split(r'[/?]', body)
             if (len(body_slice) > 1):
                 classification = body_slice[0]
+                if classification == 'https:':
+                    classification = 'Branch'
+                    scheme = ''
                 res_obj = models.Contents.objects.create(body=body, classification=classification, project=project_obj)
             else:
                 res_obj = models.Contents.objects.create(body=body, project=project_obj)
             response['code'] = 'success'
-            response['msg']['deeplink'] = scheme + '://' + body
+            response['msg']['deeplink'] = scheme + body
             response['msg']['nid'] = res_obj.nid
         return JsonResponse(response)
 
     contents = models.Contents.objects.filter(project=project_obj).all().order_by('-create_time')
     full_deeplink = []
     for content in contents:
+        classification =  content.classification
         _deeplink = {}
-        _deeplink['deeplink'] = scheme + '://' + content.body
+        _deeplink['deeplink'] = content.body if classification == 'Branch' else scheme + content.body
         _deeplink['body'] = content.body
         _deeplink['nid'] = content.nid
-        _deeplink['classification'] = content.classification
+        _deeplink['classification'] = classification
         full_deeplink.append(_deeplink)
 
     return render(request, 'deeplink/edit.html', context={'project': project_obj,
@@ -152,7 +163,7 @@ def modify_deeplink(request):
             body_alice = re.split(r'[/?]', deeplink_body)
             if (len(body_alice) > 1):
                 if body_alice[0] == 'https:':
-                    res = deeplink_item.update(body=deeplink_body, classification='Brunch')
+                    res = deeplink_item.update(body=deeplink_body, classification='Branch')
                     scheme = ''
                 else:
                     res = deeplink_item.update(body=deeplink_body, classification=body_alice[0])
