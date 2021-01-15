@@ -7,7 +7,6 @@
 
 {% block head %}
     <style>
-
         .page-header .glyphicon{
             border: none;
             width: 40px;
@@ -28,13 +27,11 @@
             height: 50px;
         }
         .list-group-item {
-            height: 50px;
             border-left: white;
             border-right: white;
 
         }
-        .list-group-item a {
-            line-height: 30px;
+        .list-group-item div{
             margin-left: 30px;
         }
         .no-content {
@@ -55,6 +52,10 @@
             font-weight: bold;
             font-style: italic;
             text-shadow: 2px 2px 2px lightgray;
+        }
+        li {
+            word-break: break-all;
+            overflow: hidden;
         }
     </style>
 {% endblock %}
@@ -79,11 +80,15 @@
                             {% for deeplink in full_deeplink_group.Default %}
                                 {% if forloop.counter|divisibleby:2 %}
                                     <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
-                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        <div>
+                                           <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        </div>
                                     </li>
                                 {% else %}
                                     <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
-                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        <div>
+                                           <a href={{ deeplink }}>{{ deeplink }}</a>
+                                        </div>
                                     </li>
                                 {% endif %}
                             {% endfor %}
@@ -96,11 +101,15 @@
                                 {% for deeplink in deeplinks %}
                                     {% if forloop.counter|divisibleby:2 %}
                                         <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
-                                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                                            <div>
+                                                <a href={{ deeplink }}>{{ deeplink }}</a>
+                                            </div>
                                         </li>
                                     {% else %}
                                         <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
-                                            <a href={{ deeplink }}>{{ deeplink }}</a>
+                                            <div>
+                                                <a href={{ deeplink }}>{{ deeplink }}</a>
+                                            </div>
                                         </li>
                                     {% endif %}
                                 {% endfor %}
@@ -111,11 +120,15 @@
                         {% for deeplink in full_deeplink %}
                             {% if forloop.counter|divisibleby:2 %}
                                 <li class="list-group-item deeplink-item" has-color="true" style="background-color: #eeeeee">
-                                    <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    <div>
+                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    </div>
                                 </li>
                             {% else %}
                                 <li class="list-group-item deeplink-item" has-color="false" style="background-color: white">
-                                    <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    <div>
+                                        <a href={{ deeplink }}>{{ deeplink }}</a>
+                                    </div>
                                 </li>
                             {% endif %}
                         {% endfor %}
