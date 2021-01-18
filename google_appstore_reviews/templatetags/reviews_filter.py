@@ -38,3 +38,12 @@ def select_transform_filter(select: str):
     if select == '*':
         return 'All'
     return select
+
+
+@register.filter
+def mul_version(version: str):
+    try:
+        float(version)
+        return str(int(float(version) * 10000))
+    except ValueError:
+        return version

@@ -24,7 +24,8 @@
                         <p>Reviews data is crawled from google play. The main regions included:
                                 US, Canda, Spain, etc. Click ORIGIN button to visit source url.</p>
                         <P class="text-center">
-                            <a href="#" class="btn btn-success" role="button">ENTER</a>
+                            <a href="{% url 'nba_review:detail' %}?platform=android&page=1&pageSize=10"
+                               class="btn btn-success" role="button">ENTER</a>
                             <a href="https://play.google.com/store/apps/details?id=com.nbaimd.gametime.nba2011&hl=en&gl=US&showAllReviews=true" target="_blank" class="btn btn-default" role="button">ORIGIN</a>
                         </P>
                     </div>
@@ -39,7 +40,8 @@
                         <p>Reviews data is crawled from App Sotre. The main regions included:
                                 US, Canda, Spain, etc. Click ORIGIN button to visit source url.</p>
                         <p class="text-center">
-                            <a href="#" class="btn btn-success" role="button">ENTER</a>
+                            <a href="{% url 'nba_review:detail' %}?platform=ios&page=1&pageSize=10"
+                               class="btn btn-success" role="button">ENTER</a>
                             <a href="https://itunes.apple.com/rss/customerreviews/page=1/id=484672289/sortby=mostrecent/json?l=en&cc=us" target="_blank" class="btn btn-default" role="button">ORIGIN</a>
                         </p>
 

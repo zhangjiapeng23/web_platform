@@ -102,8 +102,13 @@
         .filter-group {
             clear: both;
         }
-        .btn-group .btn{
+
+        .btn-group .btn {
             border: none;
+        }
+        .no-content {
+            margin-top: 200px;
+            margin-bottom: 240px;
         }
     </style>
 
@@ -200,20 +205,20 @@
                 <div class="filter-group">
                     <p class="filter-title">Rating Filter:&nbsp;&nbsp;</p>
                     <div class="btn-group btn-group-xs">
-                        <button type="button" class="btn btn-default">{{ filter_select_list.0|select_transform_filter }}</button>
+                        <button type="button"
+                                class="btn btn-default">{{ filter_select_list.0|select_transform_filter }}</button>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
+                                aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu">
-                        <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter=*+{{ filter_select_list.1 }}+
+                            <li id="filter-rating-All"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter=*+{{ filter_select_list.1 }}+
 {{ filter_select_list.2 }}">All</a></li>
                             {% for rating in filter_list.rating %}
-                                <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter={{ rating }}+{{ filter_select_list.1 }}+
+                                <li id="filter-rating-{{ rating }}"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter={{ rating }}+{{ filter_select_list.1 }}+
 {{ filter_select_list.2 }}">{{ rating|select_transform_filter }}</a></li>
                             {% endfor %}
 
@@ -225,7 +230,8 @@
                 <div class="filter-group">
                     <p class="filter-title">Region Filter:&nbsp;&nbsp;</p>
                     <div class="btn-group btn-group-xs">
-                        <button type="button" class="btn btn-default">{{ filter_select_list.1|select_transform_filter }}</button>
+                        <button type="button"
+                                class="btn btn-default">{{ filter_select_list.1|select_transform_filter }}</button>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true"
                                 aria-expanded="false">
@@ -233,12 +239,12 @@
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+*+
+                            <li id="filter-region-All"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+*+
 {{ filter_select_list.2 }}">All</a></li>
                             {% for region in filter_list.region %}
-                                <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+{{ region }}+
+                                <li id="filter-region-{{ region }}"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+{{ region }}+
 {{ filter_select_list.2 }}">{{ region }}</a></li>
                             {% endfor %}
 
@@ -259,12 +265,12 @@
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
+                            <li id="filter-version-All"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
 {{ filter_select_list.1 }}+*">All</a></li>
                             {% for version in filter_list.version %}
-                                <li><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
-&page={{ request.GET.page }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
+                                <li id="filter-version-{{ version|mul_version }}"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
 {{ filter_select_list.1 }}+{{ version }}">{{ version }}</a></li>
                             {% endfor %}
                         </ul>
@@ -279,41 +285,47 @@
     <div class="container review-list">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
-                <lu class="list-group">
-                    {% for review in reviews %}
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="review-item">
-                                    <div class="col-md-1 col-md-offset-2 col-xs-2">
-                                        <div class="thumbnail">
-                                            {% if request.GET.platform|lower == 'ios' %}
-                                                <img id="accountThumbnail"
-                                                     src="{% static 'imgs/google_appstore_reviews/app-store.png' %}">
-                                            {% else %}
-                                                <img id="accountThumbnail"
-                                                     src="{% static 'imgs/google_appstore_reviews/google-symbol.png' %}">
-                                            {% endif %}
+                {% if reviews %}
+                    <lu class="list-group">
+                        {% for review in reviews %}
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="review-item">
+                                        <div class="col-md-1 col-md-offset-2 col-xs-2">
+                                            <div class="thumbnail">
+                                                {% if request.GET.platform|lower == 'ios' %}
+                                                    <img id="accountThumbnail"
+                                                         src="{% static 'imgs/google_appstore_reviews/app-store.png' %}">
+                                                {% else %}
+                                                    <img id="accountThumbnail"
+                                                         src="{% static 'imgs/google_appstore_reviews/google-symbol.png' %}">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 col-xs-10 review-info">
+                                            <h5 class="author">{{ review.review_info.author }}</h5>
+                                            <span class="review-info">
+                                                <i>
+                                                    Rating: {{ review.rating }}&nbsp;&nbsp;&nbsp;
+                                                    Region: {{ review.review_info.country|country_filter }}&nbsp;&nbsp;&nbsp;
+                                                    Version: {{ review.version }}&nbsp;&nbsp;&nbsp;
+                                                    Comment Date: {{ review.create_time|date:"Y-m-d H:m:s" }}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div class="col-md-8 col-md-offset-3 col-xs-10 col-xs-offset-2 review-detail">
+                                            <p class="review-content">{{ review.content }}</p>
                                         </div>
                                     </div>
-                                    <div class="col-md-8 col-xs-10 review-info">
-                                        <h5 class="author">{{ review.review_info.author }}</h5>
-                                        <span class="review-info">
-                                            <i>
-                                                Rating: {{ review.rating }}&nbsp;&nbsp;&nbsp;
-                                                Region: {{ review.review_info.country|country_filter }}&nbsp;&nbsp;&nbsp;
-                                                Version: {{ review.version }}&nbsp;&nbsp;&nbsp;
-                                                Comment Date: {{ review.create_time|date:"Y-m-d H:m:s" }}
-                                            </i>
-                                        </span>
-                                    </div>
-                                    <div class="col-md-8 col-md-offset-3 col-xs-10 col-xs-offset-2 review-detail">
-                                        <p class="review-content">{{ review.content }}</p>
-                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </lu>
+                            </li>
+                        {% endfor %}
+                    </lu>
+                {% else %}
+                    <div class="no-content text-center">
+                        <h3>No content at this time.</h3>
+                    </div>
+                {% endif %}
 
             </div>
         </div>
@@ -332,17 +344,18 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li id="page-size-10"><a
-                                href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page=1&pageSize=10">10</a>
+                        <li id="page-size-10"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize=10&filter={{ filter_select_list.0 }}+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}">10</a>
                         </li>
-                        <li id="page-size-25"><a
-                                href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page=1&pageSize=25">25</a>
+                        <li id="page-size-25"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize=25&filter={{ filter_select_list.0 }}+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}">25</a>
                         </li>
-                        <li id="page-size-50"><a
-                                href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page=1&pageSize=50">50</a>
+                        <li id="page-size-50"><a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize=50&filter={{ filter_select_list.0 }}+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}">50</a>
                         </li>
                         <li id="page-size-100"><a
-                                href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page=1&pageSize=100">100</a>
+                                href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page=1&pageSize=100&filter={{ filter_select_list.0 }}+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}">100</a>
                         </li>
                     </ul>
                 </div>
@@ -351,20 +364,23 @@
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
                         <li id="page-previous">
-                            <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page={{ request.GET.page|add:-1 }}&pageSize={{ request.GET.pageSize }}"
-                               aria-label="Previous">
+                            <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page={{ request.GET.page|add:-1 }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                         {% for page in page_index %}
                             <li id="page-{{ page }}">
-                                <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page={{ page }}&pageSize={{ request.GET.pageSize }}">
-                                    {{ page }}</a>
+                                <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page={{ page }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}">{{ page }}</a>
                             </li>
                         {% endfor %}
                         <li id="page-next">
-                            <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}&page={{ request.GET.page|add:1 }}&pageSize={{ request.GET.pageSize }}"
-                               aria-label="Next">
+                            <a href="{% url 'nba_review:detail' %}?platform={{ request.GET.platform }}
+&page={{ request.GET.page|add:1 }}&pageSize={{ request.GET.pageSize }}&filter={{ filter_select_list.0 }}+
+{{ filter_select_list.1 }}+{{ filter_select_list.2 }}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
@@ -411,10 +427,23 @@
             pageSize.children("a").attr("href", "#")
         }
 
+        function disableFilterSelected() {
+            const ratingFilter = $("#filter-rating-{{ filter_select_list.0|select_transform_filter }}")
+            const regionFilter = $("#filter-region-{{ filter_select_list.1|select_transform_filter }}")
+            const versionFilter = $("#filter-version-{{ filter_select_list.2|select_transform_filter|mul_version }}")
+            ratingFilter.attr("class", "disabled")
+            ratingFilter.children("a").attr("href", "#")
+            regionFilter.attr("class", "disabled")
+            regionFilter.children("a").attr("href", "#")
+            versionFilter.attr("class", "disabled")
+            versionFilter.children("a").attr("href", "#")
+        }
 
         $(disablePageIndex)
 
         $(disablePageSize)
+
+        $(disableFilterSelected)
 
     </script>
 
