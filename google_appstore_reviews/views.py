@@ -16,7 +16,7 @@ def nba_reviews_detail(request):
     platform = 0 if platform.lower() == 'android' else 1
     page = int(request.GET.get('page', 1))
     page_size = int(request.GET.get('pageSize', 10))
-    filter_select_list = request.GET.get('filter', '*;*;*').split()
+    filter_select_list = request.GET.get('filter', '* * *').split()
 
     # get this request basic data obj
     basic_data_obj = models.ReviewDetail.objects.filter(review_info__platform=platform)

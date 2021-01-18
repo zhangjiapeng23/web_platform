@@ -5,6 +5,7 @@ from typing import List
 from threading import Thread
 import asyncio
 from collections import namedtuple, Counter
+from collections import abc
 
 from google_appstore_reviews.crawler_tools.db_operatoin import CrawlerDb
 from google_appstore_reviews.crawler_tools.crawler import GoogleCrawler, AppStoreCrawler
@@ -198,17 +199,26 @@ def write_data(platform, country, data):
 
             except AttributeError:
                 break
+            # some data is not sequence object.
+            if not isinstance(content, abc.MutableSequence):
+                content_temp = content
+                content = list()
+                content.append(content_temp)
+
             for item in range(len(content)):
                 wrap_data = review_data(review_id=content[item].id.label,
-                                   author=content[item].author.name.label,
-                                   platform=platform,
-                                   country=country,
-                                   title=content[item].title.label[0:128],
-                                   content=content[item].content.label,
-                                   rating=getattr(content[item], 'im:rating').label,
-                                   version=getattr(content[item], 'im:version').label,
-                                   time=date_time)
+                                       author=content[item].author.name.label,
+                                       platform=platform,
+                                       country=country,
+                                       title=content[item].title.label[0:128],
+                                       content=content[item].content.label,
+                                       rating=getattr(content[item], 'im:rating').label,
+                                       version=getattr(content[item], 'im:version').label,
+                                       time=date_time)
                 data_list.append(wrap_data)
+
+
+
     elif platform == 'android':
         platform = 0
         for item in range(len(data)):

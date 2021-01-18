@@ -38,7 +38,7 @@ class GoogleCrawler(Crawler):
                     app_id=self.appid,
                     lang=self.lang,  # defaults to 'en'
                     country='us',  # defaults to 'us'
-                    sort=Sort.MOST_RELEVANT,  # defaults to Sort.MOST_RELEVANT
+                    sort=Sort.NEWEST,  # defaults to Sort.MOST_RELEVANT
                     count=self.max_pre_page,  # defaults to 100
                     filter_score_with=None,  # defaults to None(means all score)
                 )
