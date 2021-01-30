@@ -7,11 +7,15 @@ from google_appstore_reviews import models
 # Create your views here.
 
 
-def nba_reviews_index(request):
-    return render(request, 'google_appstore_reviews/nba_reviews_index.html')
+def reviews_project_index(request, project):
+    return render(request, 'google_appstore_reviews/reviews_project_index.html', context={'project': project})
 
 
-def nba_reviews_detail(request):
+def reviews_projects_list(request):
+    return render(request, 'google_appstore_reviews/reviews_projects_list.html')
+
+
+def reviews_project_detail(request, project):
     platform = request.GET.get('platform', 'android')
     platform = 0 if platform.lower() == 'android' else 1
     page = int(request.GET.get('page', 1))
@@ -19,7 +23,8 @@ def nba_reviews_detail(request):
     filter_select_list = request.GET.get('filter', '* * *').split()
 
     # get this request basic data obj
-    basic_data_obj = models.ReviewDetail.objects.filter(review_info__platform=platform)
+    basic_data_obj = models.ReviewDetail.objects.filter(review_info__project_name=project,
+                                                        review_info__platform=platform)
 
     # get version list
     version_filter = basic_data_obj.all().values_list('version').distinct()
@@ -31,13 +36,20 @@ def nba_reviews_detail(request):
     rating_filter.sort(reverse=True)
 
     # get region list
-    domestic_count = basic_data_obj.all().filter(review_info__country='us').count()
-    international_count = basic_data_obj.all().exclude(review_info__country='us').count()
+
+    # NBA special logic: two version
     region_filter = list()
-    if domestic_count:
-        region_filter.append('Domestic')
-    if international_count:
-        region_filter.append('International')
+    if project == 'NBA':
+        domestic_count = basic_data_obj.all().filter(review_info__country='us').count()
+        international_count = basic_data_obj.all().exclude(review_info__country='us').count()
+
+        if domestic_count:
+            region_filter.append('Domestic')
+        if international_count:
+            region_filter.append('International')
+    else:
+        country = basic_data_obj.values_list("review_info__country").first()[0]
+        region_filter.append(country)
 
     filter_list = dict()
     filter_list['rating'] = rating_filter
@@ -47,11 +59,15 @@ def nba_reviews_detail(request):
     # get this request basic data obj by filter
     if filter_select_list[0] != '*':
         basic_data_obj = basic_data_obj.filter(rating=filter_select_list[0])
+
     if filter_select_list[1] != '*':
         if filter_select_list[1] == 'Domestic':
             basic_data_obj = basic_data_obj.filter(review_info__country='us')
-        else:
+        elif filter_select_list[1] == 'International':
             basic_data_obj = basic_data_obj.exclude(review_info__country='us')
+        else:
+            basic_data_obj = basic_data_obj.filter(review_info__country=filter_select_list[1])
+
     if filter_select_list[2] != '*':
         basic_data_obj = basic_data_obj.filter(version=filter_select_list[2])
 
@@ -77,11 +93,12 @@ def nba_reviews_detail(request):
         review_summary['rating_king_percent'] = []
         review_summary['rating_total'] = 0
 
-    return render(request, 'google_appstore_reviews/nba_reviews_detail.html', context={'reviews': list(review_obj),
+    return render(request, 'google_appstore_reviews/reviews_project_detail.html', context={'project': project,
+                                                                                       'reviews': list(review_obj),
                                                                                        'filter_select_list':
                                                                                            filter_select_list,
                                                                                        'filter_list': filter_list,
                                                                                        'page_index': page_index,
                                                                                        'total_pages': total_pages,
                                                                                        'review_summary': review_summary,
-                                                                                       })
+                                                                                           })

@@ -3,7 +3,8 @@ from django.urls import path, re_path
 from google_appstore_reviews import views
 
 urlpatterns = [
-    path('', views.nba_reviews_index, name='index'),
-    re_path(r'detail/$', views.nba_reviews_detail, name='detail'),
+    path('', views.reviews_projects_list, name='index'),
+    re_path(r'(?P<project>\w+)/detail/$', views.reviews_project_detail, name='detail'),
+    re_path(r'(?P<project>\w+)/$', views.reviews_project_index, name='project_index'),
 
 ]
