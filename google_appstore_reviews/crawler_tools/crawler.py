@@ -47,7 +47,7 @@ class GoogleCrawler(Crawler):
                     app_id=self.appid,
                     continuation_token=self.continuation_token,
                 )
-            print('Android->page:{}, country:{}'.format(page, self.lang))
+            print('Android->page:{}, country: {} app_id: {}'.format(page, self.lang, self.appid))
             resp.extend(res)
             page += 1
         return resp
@@ -72,7 +72,7 @@ class AppStoreCrawler(Crawler):
                     if resp.status == 200:
                         data = await resp.json(content_type=None)
                         resp_dict[self.country].append(data)
-                        print('iOS->page: {}, country:{}'.format(page, self.country))
+                        print('iOS->page: {}, country: {}, app_id: {}'.format(page, self.country, self.appid))
                     page += 1
 
             return resp_dict

@@ -2,8 +2,8 @@ import pymysql
 import threading
 
 class CrawlerDb:
-    sql_insert_info = "insert into google_appstore_reviews_reviewinfo(review_id, author, platform, country)" \
-                      " values (%s,%s,%s,%s)"
+    sql_insert_info = "insert into google_appstore_reviews_reviewinfo(project_name, review_id, author, platform, country)" \
+                      " values (%s,%s,%s,%s,%s)"
     sql_insert_detail = "insert into google_appstore_reviews_reviewdetail(review_info_id, title, content, rating," \
                         " version, create_time) values (%s,%s,%s,%s,%s,%s)"
     sql_select = "select nid from google_appstore_reviews_reviewinfo where review_id=%s"
@@ -24,7 +24,7 @@ class CrawlerDb:
         except Exception:
             return None
         else:
-            self.cursor.execute(self.sql_select, data_info[0])
+            self.cursor.execute(self.sql_select, data_info[1])
             nid = self.cursor.fetchone()[0]
             return nid
 
