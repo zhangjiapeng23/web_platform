@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    Projects
+{% endblock %}
+
+{% block head %}
+    <style>
+        .page-header {
+            font-style: italic;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 2px lightgray;
+            font-weight: bold;
+        }
+        .thumbnail {
+            background-color: snow;
+            border: #ddd solid 1px;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+    </style>
+
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="page-header text-center">
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <h1>Projects</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-md-offset-3 col-xs-12">
+                <div class="thumbnail">
+                    <a href="{% url 'app_review:project_index' 'NBA' %}">
+                        <img src="{% static 'imgs/google_appstore_reviews/nba_logo.webp' %}" alt="nba" width="230px">
+                    </a>
+                    <div class="caption text-center">
+                        <a href="{% url 'app_review:project_index' 'NBA' %}">
+                            <h3>NBA</h3>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3 col-xs-12">
+                <div class="thumbnail">
+                    <a href="{% url 'app_review:project_index' 'Fan_Pass' %}">
+                        <img src="{% static 'imgs/google_appstore_reviews/fanpass_logo.webp' %}" alt="sky"
+                             width="230px">
+                    </a>
+                    <div class="caption text-center">
+                        <a href="{% url 'app_review:project_index' 'Fan_Pass' %}">
+                            <h3>Fan Pass</h3>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        $(".thumbnail").hover(function () {
+            $(this).css("border", 'solid 1px blue')
+        }, function () {
+            $(this).css("border", 'solid 1px #ddd')
+        })
+
+    </script>
+
+
+{% endblock %}
