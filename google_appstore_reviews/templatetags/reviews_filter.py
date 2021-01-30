@@ -12,6 +12,7 @@ def platform_filter(platform: str):
     else:
         return platform.title()
 
+
 @register.filter
 def country_filter(country: str):
     country_mapping = {
@@ -25,6 +26,7 @@ def country_filter(country: str):
         'cd': 'Canada',
         'de': 'Germany',
         'br': 'Brazil',
+        'nz': 'New Zealand'
     }
     country_fullname = country_mapping.get(country, None)
     if country_fullname is None:
@@ -47,3 +49,8 @@ def mul_version(version: str):
         return str(int(float(version) * 10000))
     except ValueError:
         return version
+
+
+@register.filter
+def project_name_format(project: str):
+    return project.replace('_', ' ')
