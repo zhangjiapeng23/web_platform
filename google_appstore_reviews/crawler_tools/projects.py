@@ -5,8 +5,7 @@
 
 from collections import namedtuple
 
-from google_appstore_reviews.crawler_tools.run_crawler import ProjectCrawler
-from google_appstore_reviews.crawler_tools.register_crawler import register_crawler
+from google_appstore_reviews.crawler_tools.register_crawler import register_crawler, ProjectCrawler
 
 
 region = namedtuple('country', ['code', 'lang'])
