@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class Project(models.Model):
     nid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=40, verbose_name='Project Name')
@@ -11,6 +12,7 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Notification(models.Model):
     TYPE_OPTIONS = (
@@ -29,6 +31,20 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ['-nid']
+
+
+class SdkConifg(models.Model):
+    nid = models.AutoField(primary_key=True)
+    project_name = models.CharField(max_length=128)
+    config_type = models.CharField(max_length=32)
+    app_key = models.CharField(max_length=218, unique=True)
+
+    def __str__(self):
+        return '<{}:{} {}>'.format(self.project_name, self.config_type, self.app_key)
+
+    class Meta:
+        ordering = ['-nid']
+
 
 
 

@@ -6,7 +6,9 @@ from django.db.models import Count
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
+from qa_tools.tools.sdk_parse import SdkConfigParse
 # Create your views here.
+
 
 def index(request):
 
@@ -117,7 +119,6 @@ def braze_notification_console(project: dict, push: dict):
     return braze_push.resp
 
 
-
 def add_push(request):
     if request.is_ajax():
         response = {'code': 'fail', 'msg': None, 'id': None}
@@ -142,4 +143,60 @@ def add_push(request):
                 response['msg'] = 'Add push failed, please try again.'
 
         return JsonResponse(response)
-            
+
+
+def sdk_config(request):
+    if request.method == 'GET':
+        sdk_configs = models.SdkConifg.objects.all()
+
+        return render(request, template_name='qa_tools/sdk_config_list.html', context={'app_keys': sdk_configs})
+
+
+def sdk_config_detail(request, appkey):
+    if request.method == 'GET':
+        sdk_config = SdkConfigParse()
+        try:
+            sdk_config.parse(appkey)
+        except Exception as erro_msg:
+            return render(request, template_name='qa_tools/sdk_config_error.html',
+                          context={'error_msg': erro_msg})
+
+        else:
+            return render(request, template_name='qa_tools/sdk_config_detail.html',
+                          context={'configurl': sdk_config.configurl,
+                                   'configjson': sdk_config.text_decrypted_trim,
+                                   'support': sdk_config.issupported,
+                                   'comments': sdk_config.comments})
+
+    elif request.method == 'POST':
+        response = {'code': 'success', 'msg': None}
+        project_name = request.POST.get("project_name")
+        environment = request.POST.get("environment")
+        is_exist = models.SdkConifg.objects.filter(app_key=appkey).first()
+        if not is_exist:
+            res = models.SdkConifg.objects.create(project_name=project_name, config_type=environment, app_key=appkey)
+            if res:
+                response['msg'] = 'App key add success.'
+            else:
+                response['code'] = 'fail'
+                response['msg'] = 'App key add failed.'
+        else:
+            response['code'] = 'fail'
+            response['msg'] = 'This app key already exists.'
+        return JsonResponse(response)
+
+    elif request.method == 'DELETE':
+        response = {'code': 'success', 'msg': None}
+        res = models.SdkConifg.objects.filter(app_key=appkey).delete()
+        if res:
+            response['msg'] = 'Delete success.'
+        else:
+            response['code'] = 'fail'
+            response['msg'] = 'Delete failed.'
+        return JsonResponse(response)
+
+    elif request.method == 'PUT':
+        pass
+    else:
+        print("not support this method.")
+
