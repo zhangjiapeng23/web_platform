@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('qa_tools.urls', 'qa_tools'))),
     path('deeplink/', include(('deeplink.urls', 'deeplink'))),
-    path('nbaReviews/', include(('google_appstore_reviews.urls', 'app_review'))),
+    path('appReviews/', include(('google_appstore_reviews.urls', 'app_review'))),
 ]
