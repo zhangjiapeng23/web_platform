@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    SDK Config
+{% endblock %}
+
+{% block head %}
+    <style>
+        .search-app-key {
+            margin-bottom: 40px;
+        }
+        .one-row {
+            margin-bottom: 10px;
+        }
+        .table {
+            margin-top: 30px;
+        }
+        .search-error {
+            color: red;
+        }
+        .create-error {
+            color: red;
+        }
+        .page-header {
+            margin-top: 80px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container projects-header page-header text-center">
+        <h1>SDK Demo Appkey Parse</h1>
+    </div>
+    {% csrf_token %}
+    <div class="container">
+        <div class="row search-app-key">
+            <div class="col-md-4 col-md-offset-3">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </span>
+                    <input id="app_key_search" type="text" class="form-control" placeholder="Please input your app key"
+                           aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-success search">Search</button>
+            </div>
+            <div class="col-md-6 col-md-offset-3">
+                <span class="search-error">
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-md-offset-3">
+                <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon2">
+                            Project
+                        </span>
+                    <input id="project_name" type="text" class="form-control" placeholder=""
+                           aria-describedby="basic-addon2">
+                </div>
+            </div>
+
+            <div class="col-md-3 one-row">
+                <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon3">
+                            Environment
+                        </span>
+                    <input id="environment" type="text" class="form-control" placeholder=""
+                           aria-describedby="basic-addon3">
+                </div>
+            </div>
+
+            <div class="col-md-5 col-md-offset-3">
+                <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon4">
+                            AppKey
+                        </span>
+                    <input id="app_key" type="text" class="form-control" placeholder=""
+                           aria-describedby="basic-addon4">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-info add-appkey">&nbsp;Add&nbsp;</button>
+            </div>
+            <div class="col-md-6 col-md-offset-3">
+                <span class="create-error">
+                </span>
+            </div>
+        </div>
+
+        {% if app_keys %}
+            <div class="container text-center">
+                <table class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">ProjectName</th>
+                        <th class="text-center">ConfigType</th>
+                        <th class="text-center">AppKey</th>
+                        <th class="text-center">Edit</th>
+                    </tr>
+                    </thead>
+                    {% for item in app_keys %}
+                        <tbody>
+                        <tr>
+                            <td>{{ item.project_name }}</td>
+                            <td>{{ item.config_type }}</td>
+                            <td style="word-break:break-all"><a class="action" href="
+                                {% url 'qa_tools:sdk_config_detail' item.app_key %}">{{ item.app_key }}</a></td>
+                            <td><button class='btn-danger delete-item' id="{{ item.app_key }}">Delete</button></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+
+        $('.search').click(function () {
+            const appKey = $('#app_key_search').val()
+            console.log(appKey)
+            if (appKey) {
+                $(".search-error").text("")
+                const url = "/sdkconfig/" + appKey
+                open(url, name="_self")
+            } else {
+                $(".search-error").text("App key is required.")
+            }
+        })
+
+        $('.add-appkey').click(function (){
+            const projectName = $("#project_name")
+            const environment = $("#environment")
+            const appKey = $("#app_key")
+            const createError = $(".create-error")
+            if (!projectName.val()) {
+                console.log(projectName.val())
+                createError.text("Project Name is required.")
+            } else if (!environment.val()) {
+                createError.text("Environment is required.")
+            } else if (!appKey.val()) {
+                createError.text("App Key is required.")
+            } else {
+                createError.text("")
+                const sdk_config_url = "/sdkconfig/" + appKey.val()
+                $.ajax({
+                    url: sdk_config_url,
+                    type: "post",
+                    data: {
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                        project_name: projectName.val(),
+                        environment: environment.val(),
+                    },
+                    success: function (data){
+                        if (data.code == 'fail') {
+                            createError.text(data.msg)
+                        } else {
+                            open({% url 'qa_tools:sdk_config' %})
+                        }
+
+                    }
+
+                })
+
+
+            }
+        })
+
+        $('.delete-item').click(function (){
+            const appKey = $(this).attr("id")
+            const url = "/sdkconfig/" + appKey
+            $.ajax({
+                url: url,
+                headers: {
+                    "X-CSRFToken": $("[name='csrfmiddlewaretoken']").val(),
+                },
+                type: "delete",
+                data: {
+                },
+                success: function (data) {
+                    if (data.code == 'success') {
+                        open({% url 'qa_tools:sdk_config' %})
+                    } else {
+                        alert(data.msg)
+                    }
+                }
+            })
+
+
+        })
+
+    </script>
+
+{% endblock %}

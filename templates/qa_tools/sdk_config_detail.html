@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% endblock %}
+
+{% block head %}
+    <style>
+        .page-header {
+            margin-top: 80px;
+        }
+
+        .content {
+            margin-top: 30px;
+        }
+        pre {
+            overflow:auto;
+            width:1150px;
+            height:800px;
+            margin-top:30px
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:sdk_config' %}">List</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container text-center page-header">
+        <h3>SDK Config URL: {{ configurl }}</h3>
+    </div>
+    <div class="container text-left content">
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Function</th>
+                <th scope="col">isSupported</th>
+                <th scope="col">Comments</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>App</td>
+                <td>{{ support.0 }}</td>
+                <td>{{ comments.0 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>API</td>
+                <td>{{ support.0 }}</td>
+                <td>{{ comments.1 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>PCM</td>
+                <td>{{ support.2 }}</td>
+                <td>{{ comments.2 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td>Personalization</td>
+                <td>{{ support.3 }}</td>
+                <td>{{ comments.3 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">5</th>
+                <td>Chromecast</td>
+                <td>{{ support.4 }}</td>
+                <td>{{ comments.4 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">6</th>
+                <td>QoS</td>
+                <td>{{ support.5 }}</td>
+                <td>{{ comments.5 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">7</th>
+                <td>OA</td>
+                <td>{{ support.6 }}</td>
+                <td>{{ comments.6 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">8</th>
+                <td>GA</td>
+                <td>{{ support.7 }}</td>
+                <td>{{ comments.7 }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="show_p" d="{{ configjson }}" class="hidden"></div>
+    <pre class="container text-left" id="out_pre"></pre>
+
+
+    <script type="text/javascript">
+        var text = document.getElementById('show_p').getAttribute('d'); //get json content
+        var result = JSON.stringify(JSON.parse(text), null, 2);//transit sting object to json object
+        document.getElementById('out_pre').innerText = result;
+    </script>
+
+{% endblock %}
