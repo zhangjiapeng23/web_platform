@@ -45,7 +45,7 @@ def braze_notification(request):
 
     project_list = list(models.Project.objects.all())
 
-    return render(request, 'qa_tools/brazeNotification.html', context={'projects': project_list})
+    return render(request, 'qa_tools/braze_notification/brazeNotification.html', context={'projects': project_list})
 
 
 def notification_detail(request, project):
@@ -57,9 +57,9 @@ def notification_detail(request, project):
     response['push_type'] = push_type
     response['general'] = general_type
 
-    return render(request, 'qa_tools/notificationDetail.html', context={"project_name": project,
+    return render(request, 'qa_tools/braze_notification/notificationDetail.html', context={"project_name": project,
                                                                         "response": response,
-                                                                        })
+                                                                                           })
 
 
 def send_braze_push(request):
@@ -149,7 +149,7 @@ def sdk_config(request):
     if request.method == 'GET':
         sdk_configs = models.SdkConifg.objects.all()
 
-        return render(request, template_name='qa_tools/sdk_config_list.html', context={'app_keys': sdk_configs})
+        return render(request, template_name='qa_tools/sdk_parse/sdk_config_list.html', context={'app_keys': sdk_configs})
 
 
 def sdk_config_detail(request, appkey):
@@ -158,11 +158,11 @@ def sdk_config_detail(request, appkey):
         try:
             sdk_config.parse(appkey)
         except Exception as erro_msg:
-            return render(request, template_name='qa_tools/sdk_config_error.html',
+            return render(request, template_name='qa_tools/sdk_parse/sdk_config_error.html',
                           context={'error_msg': erro_msg})
 
         else:
-            return render(request, template_name='qa_tools/sdk_config_detail.html',
+            return render(request, template_name='qa_tools/sdk_parse/sdk_config_detail.html',
                           context={'configurl': sdk_config.configurl,
                                    'configjson': sdk_config.text_decrypted_trim,
                                    'support': sdk_config.issupported,

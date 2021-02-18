@@ -182,7 +182,7 @@
                         if (data.code == 'fail') {
                             createError.text(data.msg)
                         } else {
-                            open({% url 'qa_tools:sdk_config' %})
+                            location.reload()
                         }
 
                     }
@@ -206,7 +206,7 @@
                 },
                 success: function (data) {
                     if (data.code == 'success') {
-                        open({% url 'qa_tools:sdk_config' %})
+                        location.reload()
                     } else {
                         alert(data.msg)
                     }
