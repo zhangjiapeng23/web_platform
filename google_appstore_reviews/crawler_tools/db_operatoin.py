@@ -1,6 +1,8 @@
 import pymysql
 import threading
 
+from mobile_QA_web_platform.settings import DATABASES
+
 class CrawlerDb:
     sql_insert_info = "insert into google_appstore_reviews_reviewinfo(project_name, review_id, author, platform, country)" \
                       " values (%s,%s,%s,%s,%s)"
@@ -10,8 +12,14 @@ class CrawlerDb:
 
 
     def __init__(self):
-        self.conn = pymysql.connect(host='localhost', port=3306, user='root', password='lb15116188571j',
-                                    db='web_platform', charset='utf8mb4')
+        self.__db = DATABASES.get('default')
+        self.__host = self.__db.get('HOST')
+        self.__port = self.__db.get('PORT')
+        self.__user = self.__db.get('USER')
+        self.__password = self.__db.get('PASSWORD')
+        self.__db_name = self.__db.get('NAME')
+        self.conn = pymysql.connect(host=self.__host, port=self.__port, user=self.__user, password=self.__password,
+                                    db=self.__db_name, charset='utf8mb4')
         self.cursor = self.conn.cursor()
 
     def __str__(self):
