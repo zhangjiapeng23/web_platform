@@ -9,7 +9,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ['nid', 'project', 'get_push_type_display']
+    list_display = ['nid', 'project', 'get_push_type_display', 'content']
 
 
 
