@@ -4,6 +4,7 @@ from collections import defaultdict
 from google_play_scraper import reviews, Sort
 import aiohttp
 import asyncio
+import time
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -47,7 +48,7 @@ class GoogleCrawler(Crawler):
                     app_id=self.appid,
                     continuation_token=self.continuation_token,
                 )
-            print('Android->page:{}, country: {} app_id: {}'.format(page, self.lang, self.appid))
+            print('[{}] Android->page:{}, country: {} app_id: {}'.format(time.asctime(), page, self.lang, self.appid))
             resp.extend(res)
             page += 1
         return resp
@@ -72,7 +73,8 @@ class AppStoreCrawler(Crawler):
                     if resp.status == 200:
                         data = await resp.json(content_type=None)
                         resp_dict[self.country].append(data)
-                        print('iOS->page: {}, country: {}, app_id: {}'.format(page, self.country, self.appid))
+                        print('[{}] iOS->page: {}, country: {}, app_id: {}'.format(time.asctime(), page, self.country,
+                                                                                   self.appid))
                     page += 1
 
             return resp_dict

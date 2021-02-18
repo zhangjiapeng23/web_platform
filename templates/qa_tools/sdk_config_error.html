@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    SDK Config
+{% endblock %}
+
+{% block head %}
+    <style>
+        .page-header {
+            margin-top: 80px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:sdk_config' %}">List</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container projects-header page-header text-center">
+        <h1>App key parse error</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 text-center">
+                <h4>{{ error_msg }}</h4>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}
     {{ project.name }} Deeplink Page
 {% endblock %}
@@ -7,9 +8,6 @@
     <style>
         .btn-success {
             width: 70px;
-        }
-        .container-fluid {
-            margin-top: 20px;
         }
         .page-header .glyphicon{
             border: none;
@@ -69,6 +67,7 @@
             font-weight: bold;
             font-style: italic;
             text-shadow: 2px 2px 2px lightgray;
+            margin-top: 80px;
         }
         li {
             word-break: break-all;
@@ -79,6 +78,28 @@
 {% endblock %}
 
 {% block main %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'deeplink:index' %}">Projects</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'deeplink:deeplink_list' project %}">List</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
      <div class="page-header">
         <h1>{{ project }}</h1>
         <button class="glyphicon glyphicon-cog edit-switch"></button>
