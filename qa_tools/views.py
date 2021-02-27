@@ -17,14 +17,14 @@ def index(request):
 
 def braze_notification(request):
     if request.is_ajax():
-        response = {'code': 'fail','msg': None}
+        response = {'code': 'fail', 'msg': None}
         project_name = request.POST.get('project_name')
         project_scheme = request.POST.get('project_scheme')
         api_key = request.POST.get('project_api_key')
         instance_url = request.POST.get('project_instance_url')
         res = models.Project.objects.filter(name=project_name)
         if not project_name:
-            response['msg'] = 'Porject name is required.'
+            response['msg'] = 'Project name is required.'
         elif not project_scheme:
             response['msg'] = 'Project scheme is required.'
         elif not api_key:
