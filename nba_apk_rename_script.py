@@ -39,7 +39,9 @@ def rename(apk_dir, origin_name):
         dst = os.path.join(apk_dir, amazon_apk)
     else:
         dst = src
-    os.rename(src, dst)
+
+    if dst != src:
+        os.rename(src, dst)
 
 
 if __name__ == '__main__':
