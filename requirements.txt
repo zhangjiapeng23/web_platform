@@ -1,10 +1,13 @@
 aiohttp==3.7.3
+asgiref==3.3.1
 async-timeout==3.0.1
+atomicwrites==1.4.0
 attrs==20.3.0
 autopep8==1.5.4
 certifi==2020.12.5
 chardet==3.0.4
-Django==2.0.1
+colorama==0.4.4
+Django==3.1.7
 flake8==3.8.4
 google-play-scraper==0.1.2
 idna==2.10
@@ -17,7 +20,9 @@ pluggy==0.13.1
 py==1.10.0
 pycodestyle==2.6.0
 pycryptodome==3.10.1
+pydocstyle==5.1.1
 pyflakes==2.2.0
+pylama==7.7.1
 PyMySQL==0.10.1
 pyparsing==2.4.7
 pytest==6.2.2
@@ -25,6 +30,8 @@ pytest-ordering==0.6
 pytz==2020.4
 requests==2.25.1
 rope==0.18.0
+snowballstemmer==2.0.0
+sqlparse==0.4.1
 toml==0.10.2
 typing-extensions==3.7.4.3
 urllib3==1.26.2

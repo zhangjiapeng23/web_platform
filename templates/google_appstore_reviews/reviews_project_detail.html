@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static %}
 {% load reviews_filter %}
 {% block title %}
     {{ project | project_name_format }}&nbsp;{{ request.GET.platform|platform_filter }} Reviews Detail
