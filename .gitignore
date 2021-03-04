@@ -1,5 +1,6 @@
 *.pyc
 .idea/*
 .vscode
-*/migrations
+*/migrations/*
+!*/migrations/__init__.py
 venv/*
