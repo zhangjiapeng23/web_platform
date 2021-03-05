@@ -3,8 +3,8 @@
     "package": "com.nbaimd.gametime.nba2011",
     "productFlavorName": "amazonSibDebug",
     "packageVersionCode": "315",
-    "packageVersionName": "11.0301",
-    "packageTargetSdk": "29",
+    "packageVersionName": "11.0302",
+    "packageTargetSdk": "30",
     "packageMiniSdk": "19",
     "deepLinkScheme": "gametime",
     "gitSHACode": "ab2d002a9",
@@ -1196,7 +1196,7 @@
     {
         "group": "com.neulion.android.media",
         "name": "com.neulion.android.media:nlplayer:6.8.3-SNAPSHOT",
-        "currentVersion": "6.8.3-SNAPSHOT",
+        "currentVersion": "6.8.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -1322,7 +1322,7 @@
     {
         "group": "com.neulion.android.tracking",
         "name": "com.neulion.android.tracking:nlplayer-compat:4.10.3-SNAPSHOT",
-        "currentVersion": "4.10.3-SNAPSHOT",
+        "currentVersion": "4.10.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -1352,7 +1352,7 @@
     {
         "group": "com.neulion.android.media",
         "name": "com.neulion.android.media:nlplayer-theme-controller-center:6.8.3-SNAPSHOT",
-        "currentVersion": "6.8.3-SNAPSHOT",
+        "currentVersion": "6.8.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -2770,7 +2770,7 @@
     {
         "group": "com.neulion.android.media",
         "name": "com.neulion.android.media:nlplayer:6.8.3-SNAPSHOT",
-        "currentVersion": "6.8.3-SNAPSHOT",
+        "currentVersion": "6.8.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -2896,7 +2896,7 @@
     {
         "group": "com.neulion.android.tracking",
         "name": "com.neulion.android.tracking:nlplayer-compat:4.10.3-SNAPSHOT",
-        "currentVersion": "4.10.3-SNAPSHOT",
+        "currentVersion": "4.10.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -2926,7 +2926,7 @@
     {
         "group": "com.neulion.android.media",
         "name": "com.neulion.android.media:nlplayer-theme-controller-center:6.8.3-SNAPSHOT",
-        "currentVersion": "6.8.3-SNAPSHOT",
+        "currentVersion": "6.8.3",
         "latestVersion": "unresolved/not exists"
     },
     {
@@ -4344,7 +4344,7 @@
     {
         "group": "com.neulion.android.media",
         "name": "com.neulion.android.media:nlplayer:6.8.3-SNAPSHOT",
-        "currentVersion": "6.8.3-SNAPSHOT",
+        "currentVersion": "6.8.3",
         "latestVersion": "unresolved/not exists"
     },
     {
