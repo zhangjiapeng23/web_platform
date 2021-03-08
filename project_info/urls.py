@@ -14,6 +14,5 @@ urlpatterns = [
     path("iOSProjectList/<str:project>", views.ios_project_detail, name='ios_project_detail'),
     path("AndroidLibraryDetail/", views.android_library_detail, name='android_library_detail'),
     path("iOSLibraryDetail/", views.ios_library_detail, name='ios_library_detail'),
-    path("NLAndroid/", views.android_upload_api, name='android_upload_api'),
-    path("NLiOS/", views.ios_upload_api, name='ios_upload_api'),
+
 ]

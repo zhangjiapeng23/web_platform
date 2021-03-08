@@ -11,5 +11,7 @@ urlpatterns = [
     path('addPush/', views.add_push, name='addPush'),
     path('sdkconfig/', views.sdk_config, name='sdk_config'),
     path('sdkconfig/<path:appkey>', views.sdk_config_detail, name='sdk_config_detail'),
+    path('NLiOS/', views.ios_upload_api, name='ios_upload_api'),
+    path('NLAndroid/', views.android_upload_api, name='android_upload_api'),
 
 ]
