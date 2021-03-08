@@ -1,10 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Build History Platform
+{% endblock %}
+
+{% block head %}
+    .page-header {
+            font-style: italic;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 2px lightgray;
+            font-weight: bold;
+            margin-top: 80px;
+        }
+        .thumbnail {
+            background-color: snow;
+            border: #ddd solid 1px;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+{% endblock %}
+
+{% block main %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 text-center">
+                    <h3>Neulion Application Statistics</h3>
+                </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-xs-12 col-lg-offset-2">
+                <div class="thumbnail">
+                    <img src="{% static 'imgs/project_info/Android_icon.png' %}" width="200px" height="200px">
+                    <div class="caption">
+                        <h3 class="text-center">Android Application</h3>
+                        <p class="text-center">Android Application Statistics.</p>
+                        <P class="text-center">
+                            <a href="#"
+                               class="btn btn-success" role="button">OPEN</a>
+                            <a href="http://172.16.0.200/development-guideline/android/android_gradle_plugin.html"
+                               target="_blank" class="btn btn-default" role="button">INTEGRATE</a>
+                        </P>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="thumbnail">
+                    <img src="{% static 'imgs/project_info/iOS_icon.png' %}" width="200px" height="200px">
+                    <div class="caption">
+                        <h3 class="text-center">iOS Application</h3>
+                        <p class="text-center">IOS Application Statistics.</p>
+                        <p class="text-center">
+                            <a href="#"
+                               class="btn btn-success" role="button">OPEN</a>
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(".thumbnail").hover(function () {
+                $(this).css("border", 'solid 1px blue')
+            }, function () {
+                $(this).css("border", 'solid 1px #ddd')
+            })
+    </script>
+{% endblock %}
