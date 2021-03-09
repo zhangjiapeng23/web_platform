@@ -246,6 +246,7 @@ def android_upload_api(request):
                 project_info_models.AndroidBuild.objects.create(project=project,
                                                      package_name=data_dict['package'],
                                                      package_version_name=data_dict['packageVersionName'],
+                                                     package_version_code=data_dict['packageVersionCode'],
                                                      module_name=data_dict['moduleName'],
                                                      product_flavor_name=data_dict['productFlavorName'],
                                                      packaget_target_sdk=int(data_dict['packageTargetSdk']),
@@ -261,6 +262,7 @@ def android_upload_api(request):
                 build_record.project=project
                 build_record.package_name=data_dict['package']
                 build_record.package_version_name=data_dict['packageVersionName']
+                build_record.package_version_code=data_dict['packageVersionCode']
                 build_record.module_name=data_dict['moduleName']
                 build_record.product_flavor_name=data_dict['productFlavorName']
                 build_record.packaget_target_sdk=int(data_dict['packageTargetSdk'])
