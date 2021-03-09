@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {{ project }} build record
+{% endblock %}
+
+{% block head %}
+    <style>
+        body {
+            margin: 10px;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+            background: #eaeaef;
+        }
+        table {
+            width: 100%;
+        }
+        table td {
+            padding: 8px;
+            line-height: 18px;
+            height: 18px;
+            box-sizing: border-box;
+            word-break: break-all;
+
+        }
+
+        table th {
+            padding: 8px;
+            line-height: 20px;
+            height: 20px;
+            background: #4682B4;
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center">{{ project|upper }} Project INFO </h1>
+    <table cellpadding="10">
+        <tr>
+            <thread>
+                <th>Module</th>
+                <th>Flavor</th>
+                <th>Package</th>
+                <th>Version Code</th>
+                <th>Version Name</th>
+                <th>Target Sdk</th>
+                <th>Mini Sdk</th>
+                <th>Mapping Url</th>
+                <th>DeepLink Scheme</th>
+                <th>Git SHACode</th>
+                <th>Branch</th>
+                <th>Build Time</th>
+                <th>Snapshot</th>
+                <th>Detail</th>
+            </thread>
+        </tr>
+
+        {% for record in build_record %}
+            <tr>
+                <td align="center">{{ record.module_name }}</td>
+                <td>{{ record.product_flavor_name }}</td>
+                <td>{{ record.package_name }}</td>
+                <td align="center">{{ record.package_version_code }}</td>
+                <td>{{ record.package_version_name }}</td>
+                <td align="center">{{ record.packaget_target_sdk }}</td>
+                <td align="center">{{ record.packaget_mini_sdk }}</td>
+                <td><a class="action" href="{{ record.package_mapping_url }}">Mapping</a></td>
+                <td>{{ record.deeplink_scheme }}</td>
+                <td>{{ record.git_sha_code }}</td>
+                <td>{{ record.git_branch_name }}</td>
+                <td>{{ record.date|date:"Y-m-d H:m:s" }}</td>
+                {% if record.snapshot %}
+                    <td align="center" style="color: rgb(189, 20, 20)">Yes</td>
+                {% else %}
+                    <td align="center">NO</td>
+                {% endif %}
+                <td><a class="action"
+                       href="{% url 'project_info:android_library_detail' %}?id={{ record.nid }}">Detail</a>
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}

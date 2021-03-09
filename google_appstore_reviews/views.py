@@ -74,7 +74,7 @@ def reviews_project_detail(request, project):
     # get page index information
     total = basic_data_obj.count()
     review_obj = basic_data_obj.order_by('-create_time').all()[(page - 1) * page_size:page * page_size]
-    total_pages = total // page_size + 1 if total % 10 else total // page_size
+    total_pages = total // page_size + 1 if total % page_size else total // page_size
     start_page = page - 2 if page - 2 > 1 else 1
     end_page = start_page + 4 if start_page + 4 < total_pages else total_pages
     page_index = [index for index in range(start_page, end_page + 1)]
