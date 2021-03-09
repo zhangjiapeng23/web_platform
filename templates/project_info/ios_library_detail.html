@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load project_info_filter %}
+
+{% block title %}
+    {{ record.project|upper }} {{ record.project_version }} Detial Info
+{% endblock %}
+
+{% block head %}
+     <style>
+        body {
+            margin: 10px;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+            background: #eaeaef;
+        }
+        table {
+            width: 100%;
+        }
+        table td {
+            padding: 8px;
+            line-height: 18px;
+            height: 18px;
+            box-sizing: border-box;
+            word-break: break-all;
+
+        }
+
+        table th {
+            padding: 8px;
+            line-height: 20px;
+            height: 20px;
+            background: #4682B4;
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center">{{ record.project|upper }} {{ record.project_version }} Detail Info</h1>
+  <table cellpadding="10">
+      <tr>
+      <thread>
+          <th>frameworkName</th>
+          <th>frameworkVersion</th>
+    </thread>
+      </tr>
+
+    {%for library in library_list%}
+      {% if library.frameworkVersion|ios_x_framework_check %}
+      <tr style="background-color:#EE5C42; color: white" title="App should not use beta version Library when near submit">
+          <td id="libraryName">{{ library.frameworkName }}</td>
+          <td id="libraryVersion">{{ library.frameworkVersion }}</td>
+      </tr>
+      {% elif library.frameworkName|is_library_need_upgrade:library.frameworkVersion %}
+      <tr style="background-color:#EE5C42; color: white" title="Tracking lib version need >= 4.4.8 or 5.0.4">
+          <td id="libraryName">{{ library.frameworkName }}</td>
+          <td id="libraryVersion">{{ library.frameworkVersion }}</td>
+      </tr>
+      {% else %}
+      <tr>
+          <td id="libraryName">{{ library.frameworkName }}</td>
+          <td id="libraryVersion">{{ library.frameworkVersion }}</td>
+      </tr>
+      {% endif %}
+    {%endfor%}
+</table>
+{% endblock %}

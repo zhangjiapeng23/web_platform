@@ -1,10 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ platform }} projects list
+{% endblock %}
+
+{% block head %}
+    <style>
+        body {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+            background: #eaeaef;
+        }
+        .card-img {
+            width: 120px;
+            height: 120px;
+            text-align: center;
+            margin: 0 auto;
+            display: block;
+        }
+        .card h5 {
+            text-wrap: none;
+            text-align: center;
+            width: 200px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            margin: 10px auto;
+        }
+        .card a {
+            text-align: center;
+            margin: 10px auto;
+            display: block;
+            width: 150px;
+        }
+    </style>
+
+{% endblock %}
+
+{% block main %}
+    <div class="container text-center" style="margin:40px auto">
+        <h1>{{ platform }} Projects List</h1>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+            {% for project in projects_list %}
+                <div class="col-xs-6 col-md-3" style="margin-top:60px">
+                    <div class="card">
+                        <img class="rounded mx-auto d-block text-center card-img img-circle"
+                             src='{% static project.project_logo %}' alt="appicon"/>
+                        {% if platform == 'Android' %}
+                            <a href="{% url 'project_info:android_project_detail' project.project_name %}"
+                               class="btn btn-primary text-center text-uppercase">{{ project.project_name }}</a>
+                        {% else %}
+                             <a href="{% url 'project_info:ios_project_detail' project.project_name %}"
+                           class="btn btn-primary text-center text-uppercase">{{ project.project_name }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
+    </div>
+
+{% endblock %}

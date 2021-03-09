@@ -1,10 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load project_info_filter %}
+{% block title %}
+    {{ record.project|upper }} {{ record.product_flavor_name }} {{ record.package_version_name }} Detail Info
+{% endblock %}
+
+{% block head %}
+    <style>
+        body {
+            margin: 10px;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+            background: #eaeaef;
+        }
+        table {
+            width: 100%;
+        }
+        table td {
+            padding: 8px;
+            line-height: 18px;
+            height: 18px;
+            box-sizing: border-box;
+            word-break: break-all;
+
+        }
+
+        table th {
+            padding: 8px;
+            line-height: 20px;
+            height: 20px;
+            background: #4682B4;
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+<h1 class="text-center">{{ record.project|upper }} {{ record.product_flavor_name }} {{ record.package_version_name }} Detail Info</h1>
+  <table cellpadding="10">
+      <tr>
+      <thread>
+          <th>libraryGroup</th>
+          <th>libraryName</th>
+          <th>libraryVersion</th>
+    </thread>
+      </tr>
+
+    {% for library in library_list %}
+      {% if '-SNAPSHOT' in library.currentVersion %}
+      <tr style="background-color:#EE5C42; color: white" title="App should not use snapshot version when near submit">
+          <td id="libraryGroup" class="table-success">{{ library.group }}</td>
+          <td id="libraryName">{{ library.name|library_name_format }}</td>
+          <td id="libraryVersion">{{ library.currentVersion }}</td>
+      </tr>
+      {% else %}
+      <tr>
+          <td id="libraryGroup">{{ library.group }}</td>
+          <td id="libraryName">{{ library.name|library_name_format }}</td>
+          <td id="libraryVersion">{{ library.currentVersion }}</td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+</table>
+{% endblock %}
+

@@ -1,10 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ project }} build record
+{% endblock %}
+
+{% block head %}
+    <style>
+        body {
+            margin: 10px;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #212529;
+            background: #eaeaef;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table td {
+            padding: 8px;
+            line-height: 18px;
+            height: 18px;
+            box-sizing: border-box;
+            word-break: break-all;
+        }
+        table th {
+            padding: 8px;
+            line-height: 20px;
+            height: 20px;
+            background: #4682B4;
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center">{{ project|upper }} Project INFO </h1>
+
+    <div class="container-fluid">
+        <table cellpadding="10">
+            <tr>
+                <thread>
+                    <th>Project Name</th>
+                    <th>Project Version</th>
+                    <th>Build Time</th>
+                    <th>X FrameWork</th>
+                    <th>Detail</th>
+                </thread>
+            </tr>
+
+            {% for record in build_record %}
+                <tr>
+                    <td>{{ record.project }}</td>
+                    <td>{{ record.project_version }}</td>
+                    <td>{{ record.date|date:'Y-m-d H:m:s' }}</td>
+                    {% if record.x_framework %}
+                        <td style="color: rgb(189, 20, 20)">Yes</td>
+                    {% else %}
+                        <td>NO</td>
+                    {% endif %}
+                    <td align="left"><a class="action"
+                                        href="{% url 'project_info:ios_library_detail' %}?id={{ record.nid }}">Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+
+{% endblock %}
