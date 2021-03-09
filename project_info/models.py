@@ -5,7 +5,7 @@ from django.db import models
 class AndroidProject(models.Model):
     nid = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=128, unique=True)
-    project_logo = models.CharField(max_length=128, default='imgs/project_info/google-symbol.png')
+    project_logo = models.CharField(max_length=128, default='imgs/project_info/NeuLion.png')
 
     def __str__(self):
         return self.project_name
@@ -14,7 +14,7 @@ class AndroidProject(models.Model):
 class IosProject(models.Model):
     nid = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=128, unique=True)
-    project_logo = models.CharField(max_length=128, default='imgs/project_info/app-store.png')
+    project_logo = models.CharField(max_length=128, default='imgs/project_info/Neulion.png')
 
     def __str__(self):
         return self.project_name
@@ -26,6 +26,7 @@ class AndroidBuild(models.Model):
                                 on_delete=models.CASCADE)
     package_name = models.CharField(max_length=128)
     package_version_name = models.CharField(max_length=128)
+    package_version_code = models.IntegerField()
     module_name = models.CharField(max_length=128)
     product_flavor_name = models.CharField(max_length=128)
     packaget_target_sdk = models.IntegerField()
@@ -34,7 +35,7 @@ class AndroidBuild(models.Model):
     deeplink_scheme = models.CharField(max_length=128)
     git_sha_code = models.CharField(max_length=128)
     git_branch_name = models.CharField(max_length=128)
-    date= models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)
     snapshot = models.BooleanField()
     library_coordinate_list = models.TextField()
 
