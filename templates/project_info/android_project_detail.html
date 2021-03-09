@@ -6,16 +6,22 @@
 
 {% block head %}
     <style>
-        body {
-            margin: 10px;
+    .page-header {
+            font-style: italic;
+            margin-bottom: 0px;
+            text-shadow: 2px 2px 2px lightgray;
+            font-weight: bold;
+            margin-top: 60px;
+        }
+        body table {
+            margin: 0px;
             font-size: 2rem;
             line-height: 1.5;
-            color: #212529;
             text-align: left;
-            background: #eaeaef;
+            background-color: snow;
         }
-        table {
-            width: 100%;
+        body {
+             color: #212529;
         }
         table td {
             padding: 8px;
@@ -33,12 +39,53 @@
             background: #4682B4;
             color: #FFFFFF;
         }
+        .dropdown {
+            margin-top: 20px;
+        }
+        .disabled a {
+            background-color: deepskyblue;
+            color: rebeccapurple;
+
+        }
     </style>
 {% endblock %}
 
 {% block main %}
-    <h1 class="text-center">{{ project|upper }} Project INFO </h1>
-    <table cellpadding="10">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'project_info:index' %}">Platform</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'project_info:android_project_list' %}">Project</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 text-center">
+                    <h1 class="text-center">{{ project|upper }} Build Records </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <table cellpadding="10">
         <tr>
             <thread>
                 <th>Module</th>
@@ -65,8 +112,8 @@
                 <td>{{ record.package_name }}</td>
                 <td align="center">{{ record.package_version_code }}</td>
                 <td>{{ record.package_version_name }}</td>
-                <td align="center">{{ record.packaget_target_sdk }}</td>
-                <td align="center">{{ record.packaget_mini_sdk }}</td>
+                <td align="center">{{ record.package_target_sdk }}</td>
+                <td align="center">{{ record.package_mini_sdk }}</td>
                 <td><a class="action" href="{{ record.package_mapping_url }}">Mapping</a></td>
                 <td>{{ record.deeplink_scheme }}</td>
                 <td>{{ record.git_sha_code }}</td>
@@ -84,5 +131,90 @@
         {% endfor %}
 
     </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2 col-md-offset-3 col-xs-5 col-xs-offset-1 ">
+                <div class="dropdown pull-right">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {{ request.GET.pageSize }}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li id="page-size-10"><a
+                                href="{% url 'project_info:android_project_detail' project  %}?page=1&pageSize=10">10</a>
+                        </li>
+                        <li id="page-size-25"><a
+                                href="{% url 'project_info:android_project_detail' project %}?page=1&pageSize=25">25</a>
+                        </li>
+                        <li id="page-size-50"><a
+                                href="{% url 'project_info:android_project_detail' project %}?page=1&pageSize=50">50</a>
+                        </li>
+                        <li id="page-size-100"><a
+                                href="{% url 'project_info:android_project_detail' project %}?page=1&pageSize=100">100</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-5 col-xs-10 text-left">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li id="page-previous">
+                            <a href="{% url 'project_info:android_project_detail' project %}
+?page={{ request.GET.page|add:-1 }}&pageSize={{ request.GET.pageSize }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% for page in page_index %}
+                            <li id="page-{{ page }}">
+                                <a href="{% url 'project_info:android_project_detail' project %}
+?page={{ page }}&pageSize={{ request.GET.pageSize }}">{{ page }}</a>
+                            </li>
+                        {% endfor %}
+                        <li id="page-next">
+                            <a href="{% url 'project_info:android_project_detail' project %}
+?page={{ request.GET.page|add:1 }}&pageSize={{ request.GET.pageSize }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#page-{{ request.GET.page }}").attr("class", "active")
+
+
+        function disablePageIndex() {
+            const currentPage =
+            {{ request.GET.page }}
+            if (currentPage == '1') {
+                $("#page-previous").attr("class", "disabled")
+                $("[aria-label='Previous']").attr("href", "javascript:;")
+
+            }
+            if (currentPage == {{ total_pages }}) {
+                $("#page-next").attr("class", "disabled")
+                $("[aria-label='Next']").attr("href", "javascript:;")
+            }
+        }
+
+        function disablePageSize() {
+            const pageSize = $("#page-size-{{ request.GET.pageSize }}")
+            pageSize.attr("class", "disabled")
+            pageSize.children("a").attr("href", "javascript:;")
+        }
+
+        $(disablePageIndex)
+
+        $(disablePageSize)
+
+    </script>
 
 {% endblock %}

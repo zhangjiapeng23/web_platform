@@ -19,8 +19,8 @@ def android_project_list(request):
 
 
 def android_project_detail(request, project):
-    page_size = request.GET.get('pageSize', 10)
-    page = request.GET.get('page', 1)
+    page_size = int(request.GET.get('pageSize', 15))
+    page = int(request.GET.get('page', 1))
 
     project_all = models.AndroidBuild.objects.filter(project=project)
     record_total = project_all.count()
@@ -65,8 +65,8 @@ def ios_project_list(request):
 
 
 def ios_project_detail(request, project):
-    page_size = request.GET.get('pageSize', 10)
-    page = request.GET.get('page', 1)
+    page_size = int(request.GET.get('pageSize', 15))
+    page = int(request.GET.get('page', 1))
 
     project_all = models.IosBuild.objects.filter(project=project)
     record_total = project_all.count()

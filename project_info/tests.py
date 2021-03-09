@@ -13,7 +13,7 @@ def test_android_upload_api():
 
     # print(type(data))
     headers = {'Content-Type': 'application/json'}
-    res = requests.post("http://127.0.0.1:50001/projectInfo/NLAndroid/",
+    res = requests.post("http://127.0.0.1:50001/NLAndroid/",
                         headers=headers, data=data)
     print(res.status_code)
 
@@ -23,9 +23,11 @@ def test_ios_upload_api():
         data = fp.read()
 
     headers = {'Content-Type': 'application/json'}
-    res = requests.post("http://127.0.0.1:50001/projectInfo/NLiOS/",
+    res = requests.post("http://127.0.0.1:50001/NLiOS/",
                         headers=headers, data=data)
     print(res.status_code)
+
+
 
 
 

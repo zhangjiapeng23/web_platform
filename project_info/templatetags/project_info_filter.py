@@ -11,7 +11,11 @@ register = template.Library()
 
 @register.filter
 def library_name_format(library_name: str):
-    return library_name.split(':')[1]
+    library_name = library_name.split(':')
+    if len(library_name) > 1:
+        return library_name[1]
+    else:
+        return library_name[0]
 
 
 @register.filter

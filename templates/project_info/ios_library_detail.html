@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load project_info_filter %}
 
 {% block title %}
@@ -7,15 +8,19 @@
 
 {% block head %}
      <style>
-        body {
-            margin: 10px;
+       .page-header {
+            font-style: italic;
+            margin-bottom: 0px;
+            text-shadow: 2px 2px 2px lightgray;
+            font-weight: bold;
+            margin-top: 60px;
+        }
+        body table {
+            margin: 0px;
             font-size: 2rem;
             line-height: 1.5;
-            color: #212529;
             text-align: left;
-            background: #eaeaef;
-        }
-        table {
+            background-color: snow;
             width: 100%;
         }
         table td {
@@ -38,8 +43,41 @@
 {% endblock %}
 
 {% block main %}
-    <h1 class="text-center">{{ record.project|upper }} {{ record.project_version }} Detail Info</h1>
-  <table cellpadding="10">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'project_info:index' %}">Platform</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'project_info:ios_project_list' %}">Project</a></li>
+                    <li class="hidden-sm hidden-md"><a href="{% url 'project_info:ios_project_detail' record.project %}">Record</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 text-center">
+                    <h1 class="text-center">{{ record.project|upper }} {{ record.project_version }} Frameworks</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <table cellpadding="10">
       <tr>
       <thread>
           <th>frameworkName</th>
@@ -66,4 +104,8 @@
       {% endif %}
     {%endfor%}
 </table>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

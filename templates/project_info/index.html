@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block title %}
-Build History Platform
+    Build History Platform
 {% endblock %}
 
 {% block head %}
-    .page-header {
+    <style>
+        .page-header {
             font-style: italic;
-            margin-bottom: 30px;
+            margin-bottom: 60px;
             text-shadow: 2px 2px 2px lightgray;
             font-weight: bold;
             margin-top: 80px;
@@ -17,9 +18,11 @@ Build History Platform
             background-color: snow;
             border: #ddd solid 1px;
         }
+
         a:hover {
             text-decoration: none;
         }
+    </style>
 {% endblock %}
 
 {% block main %}
@@ -47,10 +50,10 @@ Build History Platform
         <div class="page-header">
             <div class="row">
                 <div class="col-md-12 col-xs-12 text-center">
-                    <h3>Neulion Application Statistics</h3>
+                    <h1>Neulion Application Statistics</h1>
                 </div>
+            </div>
         </div>
-    </div>
     </div>
 
     <div class="container">
@@ -63,7 +66,7 @@ Build History Platform
                         <p class="text-center">Android Application Statistics.</p>
                         <P class="text-center">
                             <a href="{% url 'project_info:android_project_list' %}"
-                               class="btn btn-success" role="button">OPEN</a>
+                               class="btn btn-success" role="button">&nbsp;&nbsp;OPEN&nbsp;&nbsp;</a>
                             <a href="http://172.16.0.200/development-guideline/android/android_gradle_plugin.html"
                                target="_blank" class="btn btn-default" role="button">INTEGRATE</a>
                         </P>
@@ -79,7 +82,7 @@ Build History Platform
                         <p class="text-center">IOS Application Statistics.</p>
                         <p class="text-center">
                             <a href="{% url 'project_info:ios_project_list' %}"
-                               class="btn btn-success" role="button">OPEN</a>
+                               class="btn btn-success" role="button">&nbsp;&nbsp;OPEN&nbsp;&nbsp;</a>
                         </p>
 
                     </div>
@@ -91,9 +94,9 @@ Build History Platform
 
     <script>
         $(".thumbnail").hover(function () {
-                $(this).css("border", 'solid 1px blue')
-            }, function () {
-                $(this).css("border", 'solid 1px #ddd')
-            })
+            $(this).css("border", 'solid 1px blue')
+        }, function () {
+            $(this).css("border", 'solid 1px #ddd')
+        })
     </script>
 {% endblock %}
