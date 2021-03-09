@@ -45,7 +45,7 @@ class CrawlerDb:
     def cursor_close(self):
         self.cursor.close()
 
-    def conn_colse(self):
+    def conn_close(self):
         self.conn.close()
 
 

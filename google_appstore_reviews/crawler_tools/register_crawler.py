@@ -224,5 +224,5 @@ class ProjectCrawler:
 
         db.commit()
         db.cursor_close()
-        db.conn_colse()
+        db.conn_close()
 
