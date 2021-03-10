@@ -248,11 +248,11 @@ def android_upload_api(request):
             package_mapping_url = '/media/android_mapping/'
             if data_dict['moduleName']:
                 package_mapping_url = package_mapping_url + data_dict['moduleName'] + \
-                                      '_' + data_dict['package'] + '_' + data_dict['packageVersionCode'] + \
+                                      '_' + data_dict['package'] + '_' + data_dict['packageVersionName'] + \
                                       '_mapping.text'
             else:
                 package_mapping_url = package_mapping_url + data_dict['package'] + '_' + \
-                                      data_dict['packageVersionCode'] + '_mapping.text'
+                                      data_dict['packageVersionName'] + '_mapping.text'
             if not build_record:
                 project_info_models.AndroidBuild.objects.create(project=project,
                                                      package_name=data_dict['package'],
