@@ -27,6 +27,14 @@ def test_ios_upload_api():
                         headers=headers, data=data)
     print(res.status_code)
 
+def test_android_mapping_upload_api():
+    mapping_file = os.path.join(os.path.dirname(__file__), 'testdata', 'mapping.txt')
+    files = {'file': ('mapping.txt', open(mapping_file, 'rb'))}
+    data = {'filename': 'app_com.nbaimd.gametime.nba2011_11.0310_mapping.text'}
+    res = requests.post("http://127.0.0.1:50001/NLAndroid/upload/",
+                  data=data, files=files)
+
+    print(res.status_code)
 
 
 

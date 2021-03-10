@@ -4,3 +4,4 @@
 */migrations/*
 !*/migrations/__init__.py
 venv/*
+media/android_mapping/*
