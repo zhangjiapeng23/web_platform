@@ -245,6 +245,14 @@ def android_upload_api(request):
             # serialize library_coordinate_list to string to save database.
             library_coordinate_string = json.dumps(library_coordinate_list)
             # check this build record is whether exist, if not exist create,
+            package_mapping_url = '/media/android_mapping/'
+            if data_dict['moduleName']:
+                package_mapping_url = package_mapping_url + data_dict['moduleName'] + \
+                                      '_' + data_dict['package'] + '_' + data_dict['packageVersionCode'] + \
+                                      '_mapping.text'
+            else:
+                package_mapping_url = package_mapping_url + data_dict['package'] + '_' + \
+                                      data_dict['packageVersionCode'] + '_mapping.text'
             if not build_record:
                 project_info_models.AndroidBuild.objects.create(project=project,
                                                      package_name=data_dict['package'],
@@ -254,7 +262,7 @@ def android_upload_api(request):
                                                      product_flavor_name=data_dict['productFlavorName'],
                                                      package_target_sdk=int(data_dict['packageTargetSdk']),
                                                      package_mini_sdk=int(data_dict['packageMiniSdk']),
-                                                     package_mapping_url=data_dict['packageMappingUrl'],
+                                                     package_mapping_url=package_mapping_url,
                                                      deeplink_scheme=data_dict['deepLinkScheme'],
                                                      git_sha_code=data_dict['gitSHACode'],
                                                      git_branch_name=data_dict['gitBranchName'],
@@ -270,7 +278,7 @@ def android_upload_api(request):
                 build_record.product_flavor_name=data_dict['productFlavorName']
                 build_record.package_target_sdk=int(data_dict['packageTargetSdk'])
                 build_record.package_mini_sdk=int(data_dict['packageMiniSdk'])
-                build_record.package_mapping_url=data_dict['packageMappingUrl']
+                build_record.package_mapping_url=package_mapping_url
                 build_record.deeplink_scheme=data_dict['deepLinkScheme']
                 build_record.git_sha_code=data_dict['gitSHACode']
                 build_record.git_branch_name=data_dict['gitBranchName']
