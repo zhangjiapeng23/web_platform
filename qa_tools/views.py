@@ -252,8 +252,8 @@ def android_upload_api(request):
                                                      package_version_code=data_dict['packageVersionCode'],
                                                      module_name=data_dict['moduleName'],
                                                      product_flavor_name=data_dict['productFlavorName'],
-                                                     packaget_target_sdk=int(data_dict['packageTargetSdk']),
-                                                     packaget_mini_sdk=int(data_dict['packageMiniSdk']),
+                                                     package_target_sdk=int(data_dict['packageTargetSdk']),
+                                                     package_mini_sdk=int(data_dict['packageMiniSdk']),
                                                      package_mapping_url=data_dict['packageMappingUrl'],
                                                      deeplink_scheme=data_dict['deepLinkScheme'],
                                                      git_sha_code=data_dict['gitSHACode'],
@@ -268,8 +268,8 @@ def android_upload_api(request):
                 build_record.package_version_code=data_dict['packageVersionCode']
                 build_record.module_name=data_dict['moduleName']
                 build_record.product_flavor_name=data_dict['productFlavorName']
-                build_record.packaget_target_sdk=int(data_dict['packageTargetSdk'])
-                build_record.packaget_mini_sdk=int(data_dict['packageMiniSdk'])
+                build_record.package_target_sdk=int(data_dict['packageTargetSdk'])
+                build_record.package_mini_sdk=int(data_dict['packageMiniSdk'])
                 build_record.package_mapping_url=data_dict['packageMappingUrl']
                 build_record.deeplink_scheme=data_dict['deepLinkScheme']
                 build_record.git_sha_code=data_dict['gitSHACode']
