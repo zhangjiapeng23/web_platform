@@ -77,7 +77,11 @@ class BrazePush:
         self.__send_push_notification('PUSH_TYPE', *param)
 
     def push_by_deeplink(self, param: str):
-        deeplink = self.__deeplink_scheme + '://' + param
+        # special logic for branch
+        if param.startswith('https://'):
+            deeplink = param
+        else:
+            deeplink = self.__deeplink_scheme + '://' + param
         self.__send_push_notification('deeplink', deeplink)
         
 
