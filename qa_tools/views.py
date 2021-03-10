@@ -333,11 +333,10 @@ def android_mapping_upload_api(request):
         return HttpResponse('No such file')
     else:
         file = request.FILES.get('file')
-        filename = request.POST.get('filename')
         upload_dir = os.path.join(MEDIA_ROOT, 'android_mapping')
         if not os.path.exists(upload_dir):
             os.mkdir(upload_dir)
-        upload_path = os.path.join(upload_dir, secure_filename(filename))
+        upload_path = os.path.join(upload_dir, secure_filename(file.name))
         with open(upload_path, 'wb') as f:
             for line in file:
                 f.write(line)
