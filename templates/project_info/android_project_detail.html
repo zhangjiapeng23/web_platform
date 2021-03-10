@@ -114,11 +114,11 @@
                 <td>{{ record.package_version_name }}</td>
                 <td align="center">{{ record.package_target_sdk }}</td>
                 <td align="center">{{ record.package_mini_sdk }}</td>
-                <td><a class="action" href="{{ record.package_mapping_url }}">Mapping</a></td>
+                <td><a class="action" href="{{ record.package_mapping_url }}" target="_blank">Mapping</a></td>
                 <td>{{ record.deeplink_scheme }}</td>
                 <td>{{ record.git_sha_code }}</td>
                 <td>{{ record.git_branch_name }}</td>
-                <td>{{ record.date|date:"Y-m-d H:m:s" }}</td>
+                <td>{{ record.date|date:"Y-m-d H:i:s" }}</td>
                 {% if record.snapshot %}
                     <td align="center" style="color: rgb(189, 20, 20)">Yes</td>
                 {% else %}
