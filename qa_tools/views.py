@@ -1,5 +1,6 @@
 import collections
 import json
+import os
 import re
 
 from django.shortcuts import render, HttpResponseRedirect
@@ -8,11 +9,13 @@ from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from werkzeug.utils import secure_filename
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
 from project_info import models as project_info_models
+from mobile_QA_web_platform.settings import MEDIA_ROOT
 # Create your views here.
 
 
@@ -322,6 +325,26 @@ def ios_upload_api(request):
                 build_record.save()
 
         return HttpResponse('Project info stored')
+
+@require_POST
+@method_decorator(csrf_exempt, name='dispatch')
+def android_mapping_upload_api(request):
+    if 'file' not in request.FILES:
+        return HttpResponse('No such file')
+    else:
+        file = request.FILES.get('file')
+        filename = request.POST.get('filename')
+        upload_dir = os.path.join(MEDIA_ROOT, 'android_mapping')
+        if not os.path.exists(upload_dir):
+            os.mkdir(upload_dir)
+        upload_path = os.path.join(upload_dir, secure_filename(filename))
+        with open(upload_path, 'wb') as f:
+            for line in file:
+                f.write(line)
+        return HttpResponse('Upload file success')
+
+
+
 
 
 

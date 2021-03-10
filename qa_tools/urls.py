@@ -13,5 +13,6 @@ urlpatterns = [
     path('sdkconfig/<path:appkey>', views.sdk_config_detail, name='sdk_config_detail'),
     path('NLiOS/', views.ios_upload_api, name='ios_upload_api'),
     path('NLAndroid/', views.android_upload_api, name='android_upload_api'),
+    path('NLAndroid/upload/', views.android_mapping_upload_api, name='android_mapping_upload_api'),
 
 ]
