@@ -2,13 +2,24 @@ from django.shortcuts import render
 from django.db.models import Avg, Sum, Count
 
 from google_appstore_reviews import models
+from google_appstore_reviews.crawler_tools.register_crawler import registered
 
 
 # Create your views here.
 
 
 def reviews_project_index(request, project):
-    return render(request, 'google_appstore_reviews/reviews_project_index.html', context={'project': project})
+    for project_registed in registered:
+         if project_registed.project_name == project:
+             app_id = project_registed.ios_id
+             android_id = project_registed.android_id
+             country = project_registed.countries[0].code
+             break
+
+    return render(request, 'google_appstore_reviews/reviews_project_index.html', context={'project': project,
+                                                                                          'app_id': app_id,
+                                                                                          'android_id': android_id,
+                                                                                          'country': country})
 
 
 def reviews_projects_list(request):
