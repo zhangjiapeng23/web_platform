@@ -35,11 +35,13 @@ def reviews_project_detail(request, project):
 
     # get this request basic data obj
     basic_data_obj = models.ReviewDetail.objects.filter(review_info__project_name=project,
-                                                        review_info__platform=platform)
+                                                        review_info__platform=platform).\
+                                                        exclude(version__regex=r"^[0-9]{1}\.[0-9]{1}$").\
+                                                        exclude(version__regex=r"[0-9]*\.[0-9]*\.[0-9]*")
 
     # get version list
     version_filter = basic_data_obj.all().values_list('version').distinct()
-    version_filter = [i[0] for i in version_filter if i[0] is not None and 1 < len(i[0].split('.')) < 3]
+    version_filter = [i[0] for i in version_filter if i[0] is not None and len(i[0].split('.')) == 2]
     version_filter.sort(key=lambda x: float(x), reverse=True)
 
     # get rating list
