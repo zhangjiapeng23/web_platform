@@ -6,6 +6,7 @@ class AndroidProject(models.Model):
     nid = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=128, unique=True)
     project_logo = models.CharField(max_length=128, default='imgs/project_info/NeuLion.png')
+    update_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.project_name
@@ -15,6 +16,7 @@ class IosProject(models.Model):
     nid = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=128, unique=True)
     project_logo = models.CharField(max_length=128, default='imgs/project_info/Neulion.png')
+    update_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.project_name

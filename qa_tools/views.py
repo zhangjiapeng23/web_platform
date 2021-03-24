@@ -225,6 +225,9 @@ def android_upload_api(request):
             # check project table is whether create this project.
             if not project:
                 project = project_info_models.AndroidProject.objects.create(project_name=project_name)
+            else:
+                # refresh this project update date.
+                project.save()
 
             # check current build info is whether exists.
             # rules: package_name, package_version_name,
@@ -302,6 +305,9 @@ def ios_upload_api(request):
             # check project table is whether create this project.
             if not project:
                 project = project_info_models.IosProject.objects.create(project_name=project_name)
+            else:
+                # refresh project update date.
+                project.save()
 
             # check current build info is whether exists.
             # rules: project and project_version combination only have one record.

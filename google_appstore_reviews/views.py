@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Avg, Sum, Count
+from django.db.models import Avg
 
 from google_appstore_reviews import models
 from google_appstore_reviews.crawler_tools.register_crawler import registered

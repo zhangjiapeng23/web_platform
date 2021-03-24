@@ -13,7 +13,7 @@ def index(request):
 
 
 def android_project_list(request):
-    android_projects = models.AndroidProject.objects.all()
+    android_projects = models.AndroidProject.objects.all().order_by('-update_date')
     return render(request, 'project_info/projects_list.html', context={'projects_list': android_projects,
                                                                        'platform': 'Android'})
 
@@ -59,7 +59,7 @@ def android_library_detail(request):
 
 
 def ios_project_list(request):
-    ios_projects = models.IosProject.objects.all()
+    ios_projects = models.IosProject.objects.all().order_by('update_date')
     return render(request, 'project_info/projects_list.html', context={'projects_list': ios_projects,
                                                                        'platform': 'iOS'})
 
