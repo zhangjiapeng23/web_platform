@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}base title{% endblock %}</title>
     <link rel="SHORTCUT ICON" href="{% static "imgs/favicon.ico" %}">
-    <link rel="stylesheet" href="/static/bs/dist/css/bootstrap.css">
-    <script src="/static/js/jquery-3.5.1.js"></script>
-    <script src="/static/bs/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'bs/dist/css/bootstrap.min.css' %}">
+    <script src="{% static '/js/jquery-3.5.1.js' %}"></script>
+    <script src="{% static '/bs/dist/js/bootstrap.min.js' %}"></script>
     {% block head %}
     {% endblock %}
 </head>
@@ -17,6 +17,8 @@
     {% block main %}
         <h3>page main content is not implement.</h3>
     {% endblock%}
+
+
 
 </body>
 </html>

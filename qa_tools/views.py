@@ -3,7 +3,7 @@ import json
 import os
 import re
 
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
 from django.utils.decorators import method_decorator
@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
+from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
 from mobile_QA_web_platform.settings import MEDIA_ROOT
 # Create your views here.
@@ -340,6 +341,7 @@ def ios_upload_api(request):
 
         return HttpResponse('Project info stored')
 
+
 @require_POST
 @method_decorator(csrf_exempt, name='dispatch')
 def android_mapping_upload_api(request):
@@ -355,6 +357,52 @@ def android_mapping_upload_api(request):
             for line in file:
                 f.write(line)
         return HttpResponse('Upload file success')
+
+
+def localization_tool(request):
+
+    return render(request, 'qa_tools/localization_tool/localization_tool.html')
+
+
+def localization_upload(request):
+    response = {'code': 'success', 'msg': '', 'filename': ''}
+    file = request.FILES.get('file')
+    if file is None:
+        response['code'] = 'fail'
+        response['msg'] = 'Please select a localization file.'
+    else:
+        file_name = file.name
+        if not file_name.endswith('.string'):
+            response['code'] = 'fail'
+            response['msg'] = 'File format is incorrect, Please upload .string file.'
+        else:
+            upload_dir = os.path.join(MEDIA_ROOT, 'localization_file')
+            if not os.path.exists(upload_dir):
+                os.mkdir(upload_dir)
+            else:
+                file_list = os.listdir(upload_dir)
+                for item in file_list:
+                    os.remove(os.path.join(upload_dir, item))
+            file_path = os.path.join(upload_dir, file_name)
+            with open(file_path, 'wb') as f:
+                for line in file:
+                    f.write(line)
+            file_modify_name = file_name.split('.')[0] + '_modify.string'
+            file_modify_path = os.path.join(upload_dir, file_modify_name)
+            try:
+                localization_value2number(file_path, file_modify_path)
+            except Exception:
+                response['code'] = 'fail'
+                response['msg'] = 'Format file error, please reupload.'
+            else:
+                response['msg'] = 'Upload success, please download.'
+                response['filename'] = file_modify_name
+    return JsonResponse(response)
+
+
+
+
+
 
 
 

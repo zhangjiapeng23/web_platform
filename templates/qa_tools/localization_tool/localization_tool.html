@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Localization Format Tool
+{% endblock %}
+
+{% block head %}
+    <style>
+        .page-header {
+            margin-top: 80px;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        .download {
+            margin-right: 5px;
+            width: 100px;
+            display: none;
+        }
+        .upload {
+            width: 100px;
+        }
+        .error-msg {
+            font-size: 15px;
+        }
+        .main {
+            margin-top: 80px;
+        }
+        a {
+            text-decoration-line: none;
+        }
+        a:hover {
+            text-decoration-line: none;
+        }
+        .glyphicon {
+            font-size: 29px;
+        }
+        .popup-icon {
+            line-height: 56px;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img style="max-width:120px" class="logo" src="{% static 'imgs/qa_tools/homelogo.png' %}">
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class="hidden-sm hidden-md"><a href="{% url 'qa_tools:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container projects-header page-header text-center">
+        <h1>Localization Format Tool</h1>
+    </div>
+
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-4 text-right popup-icon">
+                <a tabindex="0" class="glyphicon glyphicon-question-sign" role="button"
+                   data-toggle="popover" data-trigger="focus" data-placement="left"
+                   title="What this tool can do?"
+                   data-content="Upload localization string file then it can format all values as nature number.">
+                </a>
+            </div>
+            <div class="col-md-5">
+                {% csrf_token %}
+                <form method="post" enctype="multipart/form-data">
+                    <input type="file" class="form-control" id="localization_file">
+                    <div class="button-group">
+                        <span class="error-msg"></span>
+                        <input type="button" value="Upload" class="btn btn-info pull-right upload">
+                        <a type="button" href="" class="btn btn-success pull-right download">Download</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+            })
+
+        $('.upload').click(function (){
+            const downloadButton = $('.download')
+            const errorMsg = $('.error-msg')
+
+            errorMsg.text("");
+            downloadButton.css("display", "none")
+            var data = new FormData();
+            data.append('file', $('#localization_file')[0].files[0]);
+            data.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val())
+            $.ajax({
+            url: "{% url 'qa_tools:localization_upload' %}",
+            type: "post",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (data){
+                if (data.code == 'success') {
+                    const fileName = '{% url 'media' 'localization_file/' %}' + data.filename;
+                    errorMsg.text(data.msg).css('color', 'orange');
+                    downloadButton.css("display", "inline");
+                    downloadButton.attr("href", fileName);
+                } else {
+                    errorMsg.text(data.msg).css('color', 'red');
+                }
+            }
+        })
+        })
+
+
+    </script>
+
+
+{% endblock %}

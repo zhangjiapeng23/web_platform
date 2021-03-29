@@ -14,5 +14,6 @@ urlpatterns = [
     path('NLiOS/', views.ios_upload_api, name='ios_upload_api'),
     path('NLAndroid/', views.android_upload_api, name='android_upload_api'),
     path('NLAndroid/upload/', views.android_mapping_upload_api, name='android_mapping_upload_api'),
-
+    re_path('^localizationtool/$', views.localization_tool, name='localization_tool'),
+    re_path('^localizationUpload/$', views.localization_upload, name='localization_upload'),
 ]
