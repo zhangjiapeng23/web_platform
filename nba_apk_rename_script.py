@@ -21,7 +21,7 @@ def main():
 def rename(apk_dir, origin_name):
     prod_re = re.compile(r".*-prod-sib-release.*")
     dev_re = re.compile(r".*-dev-sib-release.*")
-    protest_re = re.compile(r".*-protest-sib-release.*")
+    protest_re = re.compile(r".*-prodtest-sib-release.*")
     amazon_re = re.compile(r".*-amazon-sib-release.*")
     prod_apk = 'nba_domestic.apk'
     dev_apk = 'nba_domestic_qa.apk'
