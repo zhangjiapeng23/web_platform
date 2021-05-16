@@ -8,6 +8,7 @@ certifi==2020.12.5
 chardet==3.0.4
 colorama==0.4.4
 Django==3.1.7
+django-cors-headers==3.7.0
 flake8==3.8.4
 google-play-scraper==0.1.2
 idna==2.10

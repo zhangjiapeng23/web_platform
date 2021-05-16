@@ -1,7 +1,9 @@
 import json
 import re
 
+
 from django.shortcuts import render, HttpResponse
+from django.http.response import JsonResponse
 
 from . import models
 
@@ -14,6 +16,13 @@ def index(request):
 
 def android_project_list(request):
     android_projects = models.AndroidProject.objects.all().order_by('-update_date')
+    data_format = request.GET.get('format')
+    if data_format and data_format == "json":
+        android_projects = list(android_projects.values())
+        for item in android_projects:
+            item['project_logo'] = "http://127.0.0.1:5000/static/" + item['project_logo']
+
+        return JsonResponse(android_projects, safe=False)
     return render(request, 'project_info/projects_list.html', context={'projects_list': android_projects,
                                                                        'platform': 'Android'})
 
@@ -32,7 +41,14 @@ def android_project_detail(request, project):
     end_page = start_page + 4 if start_page + 4 < total_pages else total_pages
     page_index = [index for index in range(start_page, end_page + 1)]
 
-
+    # check include format param
+    data_format = request.GET.get("format")
+    if data_format and data_format == 'json':
+        resp = {"data": list(build_record_obj.values()),
+                "page": page,
+                "totalPage": total_pages,
+                "pageSize": page_size}
+        return JsonResponse(resp, safe=False)
 
     return render(request, 'project_info/android_project_detail.html', context={'build_record': build_record_obj,
                                                                         'total_pages': total_pages,
@@ -44,7 +60,7 @@ def android_library_detail(request):
     nid = request.GET.get('id')
     if nid:
         record_obj = models.AndroidBuild.objects.filter(nid=nid)
-        library_list= record_obj.values_list('library_coordinate_list').first()[0]
+        library_list = record_obj.values_list('library_coordinate_list').first()[0]
         # serialize json obj to list obj
         library_list = json.loads(library_list)
         # sort snapshot library move to header
@@ -60,6 +76,13 @@ def android_library_detail(request):
 
 def ios_project_list(request):
     ios_projects = models.IosProject.objects.all().order_by('-update_date')
+    data_format = request.GET.get("format")
+    if data_format and data_format == 'json':
+        ios_projects = list(ios_projects.values())
+        for item in ios_projects:
+            item['project_logo'] = 'http://127.0.0.1:5000/static/' + item['project_logo']
+
+        return JsonResponse(ios_projects, safe=False)
     return render(request, 'project_info/projects_list.html', context={'projects_list': ios_projects,
                                                                        'platform': 'iOS'})
 
@@ -77,6 +100,15 @@ def ios_project_detail(request, project):
     start_page = page - 2 if page - 2 > 1 else 1
     end_page = start_page + 4 if start_page + 4 < total_pages else total_pages
     page_index = [index for index in range(start_page, end_page + 1)]
+
+    # check include format param
+    data_format = request.GET.get("format")
+    if data_format and data_format == 'json':
+        resp = {"data": list(build_record_obj.values()),
+                "page": page,
+                "totalPage": total_pages,
+                "pageSize": page_size}
+        return JsonResponse(resp, safe=False)
 
     return render(request, 'project_info/ios_project_detail.html', context={'build_record': build_record_obj,
                                                                                 'total_pages': total_pages,
