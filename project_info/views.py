@@ -44,7 +44,11 @@ def android_project_detail(request, project):
     # check include format param
     data_format = request.GET.get("format")
     if data_format and data_format == 'json':
-        resp = {"data": list(build_record_obj.values()),
+        record_data = list(build_record_obj.values())
+        for item in record_data:
+            item['package_mapping_url'] = "http//:127.0.0.1:5000" + item['package_mapping_url']
+
+        resp = {"data": record_data,
                 "page": page,
                 "totalPage": total_pages,
                 "pageSize": page_size}
@@ -104,7 +108,9 @@ def ios_project_detail(request, project):
     # check include format param
     data_format = request.GET.get("format")
     if data_format and data_format == 'json':
-        resp = {"data": list(build_record_obj.values()),
+        record_data = list(build_record_obj.values())
+
+        resp = {"data": record_data,
                 "page": page,
                 "totalPage": total_pages,
                 "pageSize": page_size}
