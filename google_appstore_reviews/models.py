@@ -3,6 +3,18 @@ from django.db import models
 # Create your models here.
 
 
+class Project(models.Model):
+    nid = models.AutoField(primary_key=True)
+    project_name = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
+    android_id = models.CharField(max_length=128)
+    ios_id = models.CharField(max_length=128)
+    support_country = models.IntegerField()
+
+    def __str__(self):
+        return self.project_name
+
+
 class ReviewInfo(models.Model):
     PLATFORM_OPTIONS = (
         (0, 'Android'),

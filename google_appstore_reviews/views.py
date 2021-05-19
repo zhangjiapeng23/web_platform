@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Avg
+from django.http.response import JsonResponse
 
 from google_appstore_reviews import models
 from google_appstore_reviews.crawler_tools.register_crawler import registered
@@ -23,6 +24,20 @@ def reviews_project_index(request, project):
 
 
 def reviews_projects_list(request):
+    # method post to create a project
+    if request.method == 'POST':
+        response = {
+            'code': 'failed',
+            'message': ''
+        }
+        project_name = request.POST.get('project_name')
+        android_id = request.POST.get('android_id')
+        ios_id = request.POST.get('ios_id')
+        support_country = request.POST.get('support_country')
+        project_logo = request.FILES.get('project_logo')
+
+        return JsonResponse(response, safe=False)
+
     return render(request, 'google_appstore_reviews/reviews_projects_list.html')
 
 
