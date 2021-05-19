@@ -74,6 +74,17 @@ def android_library_detail(request):
                 library_list[change_index], library_list[index] = library_list[index], library_list[change_index]
                 change_index += 1
 
+        data_format = request.GET.get('format')
+        if data_format == 'json':
+            project_name = record_obj.values('project').first()['project']
+            project_version = record_obj.values('package_version_name').first()['package_version_name']
+            response = {
+                'project_name': project_name,
+                'project_version': project_version,
+                'data': library_list
+            }
+            return JsonResponse(response, safe=False)
+
         return render(request, 'project_info/android_library_detail.html', context={'record': record_obj.first(),
                                                                                 'library_list': library_list})
 
@@ -136,6 +147,17 @@ def ios_library_detail(request):
                     or 'x' in str(library['frameworkVersion']):
                 library_list[change_index], library_list[index] = library_list[index], library_list[change_index]
                 change_index += 1
+
+        data_format = request.GET.get('format')
+        if data_format == 'json':
+            project_name = record_obj.values('project').first()['project']
+            project_version = record_obj.values('project_version').first()['project_version']
+            response = {
+                'project_name': project_name,
+                'project_version': project_version,
+                'data': library_list
+            }
+            return JsonResponse(response, safe=False)
 
         return render(request, 'project_info/ios_library_detail.html', context={'record': record_obj.first(),
                                                                                     'library_list': library_list})
