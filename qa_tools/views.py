@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from werkzeug.utils import secure_filename
+from django.middleware.csrf import get_token
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -398,6 +399,9 @@ def localization_upload(request):
                 response['msg'] = 'Upload success, please download.'
                 response['filename'] = file_modify_name
     return JsonResponse(response)
+
+def get_csrf_token(request):
+    return get_token(request)
 
 
 

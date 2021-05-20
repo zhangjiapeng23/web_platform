@@ -5,11 +5,13 @@ from django.db import models
 
 class Project(models.Model):
     nid = models.AutoField(primary_key=True)
-    project_name = models.CharField(max_length=64)
+    project_name = models.CharField(max_length=64, unique=True)
     is_active = models.BooleanField(default=True)
     android_id = models.CharField(max_length=128)
     ios_id = models.CharField(max_length=128)
-    support_country = models.IntegerField()
+    support_region = models.IntegerField()
+    project_logo = models.FileField(upload_to='imgs/app_review_project',
+                                    default='imgs/app_review_project_Neulion.png')
 
     def __str__(self):
         return self.project_name

@@ -1,3 +1,5 @@
+from functools import reduce
+
 from django.shortcuts import render
 from django.db.models import Avg
 from django.http.response import JsonResponse
@@ -28,15 +30,55 @@ def reviews_projects_list(request):
     if request.method == 'POST':
         response = {
             'code': 'failed',
-            'message': ''
+            'message': "Project create failed.",
+            'data': {
+                'project_name': '',
+                'android_id': '',
+                'ios_id': '',
+                'support_region': ''
+            }
         }
         project_name = request.POST.get('project_name')
         android_id = request.POST.get('android_id')
         ios_id = request.POST.get('ios_id')
-        support_country = request.POST.get('support_country')
+        support_region = request.POST.get('support_region')
         project_logo = request.FILES.get('project_logo')
-
+        if not project_name:
+            response['data']['project_name'] = 'Project name is required.'
+        if not android_id:
+            response['data']['android_id'] = 'Android id is required.'
+        if not ios_id:
+            response['data']['ios_id'] = 'iOS id is required.'
+        if not support_region:
+            response['data']['support_region'] = 'Support region is required.'
+        else:
+            # check project name is whether unique
+            project_res = models.Project.objects.filter(project_name=project_name).first()
+            if project_res:
+                response['data']['project_name'] = f'Project name: {project_name} is used.'
+            else:
+                support_region = reduce(lambda x,y: int(x)+int(y), support_region.split(','))
+                if project_logo:
+                    models.Project.objects.create(project_name=project_name,
+                                                  android_id=android_id,
+                                                  ios_id=ios_id,
+                                                  support_region=support_region,
+                                                  project_logo=project_logo)
+                else:
+                    models.Project.objects.create(project_name=project_name,
+                                                  android_id=android_id,
+                                                  ios_id=ios_id,
+                                                  support_region=support_region)
+                response['code'] = 'success'
+                response['message'] = f'Project {project_name} create success.'
         return JsonResponse(response, safe=False)
+
+    # method get to get project list
+    if request.method == 'GET':
+        data_format = request.GET.get('format')
+        if data_format == 'json':
+            projects_obj = models.Project.objects.all().values()
+            return JsonResponse(list(projects_obj), safe=False)
 
     return render(request, 'google_appstore_reviews/reviews_projects_list.html')
 
