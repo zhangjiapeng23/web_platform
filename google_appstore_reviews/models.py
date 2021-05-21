@@ -11,7 +11,9 @@ class Project(models.Model):
     ios_id = models.CharField(max_length=128)
     support_region = models.IntegerField()
     project_logo = models.FileField(upload_to='imgs/app_review_project',
-                                    default='imgs/app_review_project_Neulion.png')
+                                    default='imgs/app_review_project/Neulion.png')
+    android_origin = models.CharField(max_length=256)
+    ios_origin = models.CharField(max_length=256)
 
     def __str__(self):
         return self.project_name

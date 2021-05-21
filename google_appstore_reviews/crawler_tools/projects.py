@@ -30,6 +30,7 @@ ca = region('cd', 'en')
 ge = region('de', 'de')
 # Brazil
 br = region('br', 'pt')
+# New Zealand
 nz = region('nz', 'en')
 
 

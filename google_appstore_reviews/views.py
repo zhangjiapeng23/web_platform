@@ -6,7 +6,7 @@ from django.http.response import JsonResponse
 
 from google_appstore_reviews import models
 from google_appstore_reviews.crawler_tools.register_crawler import registered
-
+from mobile_QA_web_platform import settings
 
 # Create your views here.
 
@@ -58,17 +58,24 @@ def reviews_projects_list(request):
                 response['data']['project_name'] = f'Project name: {project_name} is used.'
             else:
                 support_region = reduce(lambda x,y: int(x)+int(y), support_region.split(','))
+                android_origin = f'https://play.google.com/store/apps/details?id={android_id}&showAllReviews=true'
+                ios_origin = f'https://itunes.apple.com/rss/customerreviews/page=1/id={ios_id}/sortby=mostrecent/json'
                 if project_logo:
                     models.Project.objects.create(project_name=project_name,
                                                   android_id=android_id,
                                                   ios_id=ios_id,
                                                   support_region=support_region,
-                                                  project_logo=project_logo)
+                                                  project_logo=project_logo,
+                                                  android_origin=android_origin,
+                                                  ios_origin=ios_origin)
                 else:
                     models.Project.objects.create(project_name=project_name,
                                                   android_id=android_id,
                                                   ios_id=ios_id,
-                                                  support_region=support_region)
+                                                  support_region=support_region,
+                                                  android_origin=android_origin,
+                                                  ios_origin=ios_origin)
+
                 response['code'] = 'success'
                 response['message'] = f'Project {project_name} create success.'
         return JsonResponse(response, safe=False)
@@ -77,10 +84,109 @@ def reviews_projects_list(request):
     if request.method == 'GET':
         data_format = request.GET.get('format')
         if data_format == 'json':
+            host = settings.LOCAL_HOST
+            port = settings.LOCAL_PORT
+            media_path = settings.MEDIA_URL
             projects_obj = models.Project.objects.all().values()
-            return JsonResponse(list(projects_obj), safe=False)
+            projects_list = list(projects_obj)
+            for item in projects_list:
+                item['project_logo'] = f'{host}:{port}{media_path}{item["project_logo"]}'
+            return JsonResponse(projects_list, safe=False)
 
     return render(request, 'google_appstore_reviews/reviews_projects_list.html')
+
+
+def reviews_project_detail_api(request, project, platform):
+    if request.method == 'GET':
+        data_format = request.GET.get('format')
+        if data_format == 'json':
+            platform = 0 if platform.lower() == 'android' else 1
+            page = int(request.GET.get('page', 1))
+            page_size = int(request.GET.get('pageSize', 10))
+            rating_filter = request.GET.get('rating')
+            region_filter = request.GET.get('region')
+            version_filter = request.GET.get('version')
+
+            # get request basic data obj
+            basic_data_obj = models.ReviewDetail.objects.filter(review_info__project_name=project,
+                                                                review_info__platform=platform).\
+                                                                exclude(version__regex=r"^[0-9]{1}\.[0-9]{1}$").\
+                                                                exclude(version__regex=r"[0-9]*\.[0-9]*\.[0-9]*")
+
+            # get version list
+            version_filter_list = basic_data_obj.all().values_list('version').distinct()
+            version_filter_list = [i[0] for i in version_filter_list if i[0] is not None and len(i[0].split('.')) == 2]
+            version_filter_list.sort(key=lambda x: float(x), reverse=True)
+
+            # get rating list
+            rating_filter_list = [i[0] for i in basic_data_obj.all().values_list('rating').distinct()]
+            rating_filter_list.sort(reverse=True)
+
+            # get region list
+
+            # NBA special logic: two version
+            region_filter_list = list()
+            if project == 'NBA':
+                domestic_count = basic_data_obj.all().filter(review_info__country='us').count()
+                international_count = basic_data_obj.all().exclude(review_info__country='us').count()
+
+                if domestic_count:
+                    region_filter_list.append('Domestic')
+                if international_count:
+                    region_filter_list.append('International')
+            else:
+                country = basic_data_obj.values_list("review_info__country").first()[0]
+                region_filter_list.append(country)
+
+            filter_list = dict()
+            filter_list['rating'] = rating_filter_list
+            filter_list['region'] = region_filter_list
+            filter_list['version'] = version_filter_list
+
+            # get this request basic data obj by filter
+            if rating_filter:
+                basic_data_obj = basic_data_obj.filter(rating=rating_filter)
+
+            if region_filter:
+                if region_filter == 'Domestic':
+                    basic_data_obj = basic_data_obj.filter(review_info__country='us')
+                elif region_filter == 'International':
+                    basic_data_obj = basic_data_obj.exclude(review_info__country='us')
+                else:
+                    basic_data_obj = basic_data_obj.filter(review_info__country=region_filter)
+
+            if version_filter:
+                basic_data_obj = basic_data_obj.filter(version=version_filter)
+
+            # paging data
+            total = basic_data_obj.count()
+            paging_data_obj = basic_data_obj.order_by('-create_time').all()[(page - 1) * page_size:page * page_size]
+            total_pages = total // page_size + 1 if total % page_size else total // page_size
+
+            # get review summary info dict
+            review_summary = dict()
+            if total:
+                rating_avg = basic_data_obj.all().aggregate(Avg('rating'))
+                rating_kind_num = [basic_data_obj.filter(rating=i).count() / total for i in range(1, 6)]
+                rating_kind_percent = ['%.2f%%' % (num * 100) for num in rating_kind_num]
+                review_summary['rating_avg'] = '%.1f' % rating_avg['rating__avg']
+                review_summary['rating_king_percent'] = rating_kind_percent
+                review_summary['rating_total'] = total
+            else:
+                review_summary['rating_avg'] = '0.0'
+                review_summary['rating_king_percent'] = []
+                review_summary['rating_total'] = 0
+
+            data_list = list(paging_data_obj.values())
+            response = {
+                'page': page,
+                'pageSize': page_size,
+                'totalPages': total_pages,
+                'filterList': filter_list,
+                'reviewSummary': review_summary,
+                'data': data_list
+            }
+            return JsonResponse(response, safe=False)
 
 
 def reviews_project_detail(request, project):
