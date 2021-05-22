@@ -27,6 +27,10 @@ def index(request):
         return JsonResponse(response)
 
     projects = models.Project.objects.all()
+    data_format = request.GET.get('format')
+    if data_format == 'json':
+        projects = list(projects.values())
+        return JsonResponse(projects, safe=False)
 
     return render(request, 'deeplink/index.html', context={'projects': projects, })
 
@@ -38,6 +42,7 @@ def deeplink_list(request, project):
         if project_obj:
             contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
             scheme = project_obj.scheme + '://'
+
             # grounping
             if set_grouping == 'true':
                 project_dict = defaultdict(list)
@@ -48,6 +53,15 @@ def deeplink_list(request, project):
                     else:
                         deeplink_path = scheme + content.body
                     project_dict[content.classification].append(deeplink_path)
+
+                data_format = request.GET.get('format')
+                if data_format == 'json':
+                    response = {
+                        'project': project,
+                        'data': project_dict
+                    }
+                    return JsonResponse(response, safe=False)
+
                 return render(request, 'deeplink/list.html', context={'project': project_obj,
                                                                     'set_grouping': set_grouping,
                                                                     'full_deeplink_group': project_dict,
