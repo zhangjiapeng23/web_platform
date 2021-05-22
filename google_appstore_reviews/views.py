@@ -174,7 +174,7 @@ def reviews_project_detail_api(request, project, platform):
                 review_summary['rating_total'] = total
             else:
                 review_summary['rating_avg'] = '0.0'
-                review_summary['rating_king_percent'] = []
+                review_summary['rating_king_percent'] = ["0.00%", "0.00%", "0.00%", "0.00%", "0.00%"]
                 review_summary['rating_total'] = 0
 
             data_list = list(paging_data_obj.values())
