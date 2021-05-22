@@ -1,7 +1,7 @@
 from functools import reduce
 
 from django.shortcuts import render
-from django.db.models import Avg
+from django.db.models import Avg, F
 from django.http.response import JsonResponse
 
 from google_appstore_reviews import models
@@ -170,14 +170,20 @@ def reviews_project_detail_api(request, project, platform):
                 rating_kind_num = [basic_data_obj.filter(rating=i).count() / total for i in range(1, 6)]
                 rating_kind_percent = ['%.2f%%' % (num * 100) for num in rating_kind_num]
                 review_summary['rating_avg'] = '%.1f' % rating_avg['rating__avg']
-                review_summary['rating_king_percent'] = rating_kind_percent
+                review_summary['rating_kind_percent'] = rating_kind_percent
                 review_summary['rating_total'] = total
             else:
                 review_summary['rating_avg'] = '0.0'
-                review_summary['rating_king_percent'] = ["0.00%", "0.00%", "0.00%", "0.00%", "0.00%"]
+                review_summary['rating_kind_percent'] = ["0.00%", "0.00%", "0.00%", "0.00%", "0.00%"]
                 review_summary['rating_total'] = 0
 
-            data_list = list(paging_data_obj.values())
+            data_list = list(paging_data_obj.values("nid",
+                                                    "title",
+                                                    "content",
+                                                    "rating",
+                                                    "version",
+                                                    "create_time",
+                                                    author=F("review_info__author")))
             response = {
                 'page': page,
                 'pageSize': page_size,
