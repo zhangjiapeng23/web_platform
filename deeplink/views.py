@@ -58,6 +58,7 @@ def deeplink_list(request, project):
                 if data_format == 'json':
                     response = {
                         'project': project,
+                        'scheme': scheme,
                         'data': project_dict
                     }
                     return JsonResponse(response, safe=False)
