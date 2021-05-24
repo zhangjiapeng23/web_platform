@@ -11,7 +11,7 @@ from deeplink import models
 
 
 def index(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         project_name = request.POST.get('project_name')
         project_scheme = request.POST.get('project_scheme')
         response = {'code': 'fail', 'msg': None}
