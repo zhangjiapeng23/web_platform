@@ -21,9 +21,14 @@ def index(request):
         elif models.Project.objects.filter(name=project_name):
             response['msg'] = "Current project name is created, please change a name."
         else:
-            models.Project.objects.create(name=project_name, scheme=project_scheme)
+            project_obj = models.Project.objects.create(name=project_name, scheme=project_scheme)
             response['code'] = 'success'
-            response['msg'] = 'Project %s create successful.'
+            response['msg'] = 'Project %s create successful.' % project_name
+            response['data'] = {
+                'nid': project_obj.nid,
+                'name': project_obj.name,
+                'scheme': project_obj.scheme
+            }
         return JsonResponse(response)
 
     projects = models.Project.objects.all()
@@ -129,21 +134,21 @@ def add_deeplink(request, project):
 
 
 def remove_project(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
-        prject_name = request.POST.get('project')
-        res = models.Project.objects.filter(name=prject_name).delete()
+        project_name = request.POST.get('project')
+        res = models.Project.objects.filter(name=project_name).delete()
         if res:
             response['code'] = 'success'
-            response['msg'] = '%s project delete successful.' % prject_name
+            response['msg'] = '%s project delete successful.' % project_name
             return JsonResponse(response)
         else:
-            response['msg'] = '%s project delete failed.' % prject_name
+            response['msg'] = '%s project delete failed.' % project_name
             return JsonResponse(response)
 
 
 def modify_project(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
         scheme = request.POST.get('scheme')
         nid = request.POST.get('nid')
@@ -155,7 +160,7 @@ def modify_project(request):
                 response['code'] = 'success'
                 response['msg'] = 'Project scheme modify successful.'
 
-    return JsonResponse(response)
+        return JsonResponse(response)
 
 
 def remove_deeplink(request):
