@@ -42,6 +42,7 @@ def deeplink_list(request, project):
         if project_obj:
             contents = models.Contents.objects.filter(project__name=project).all().order_by('-create_time')
             scheme = project_obj.scheme + '://'
+            project_id = project_obj.nid
 
             # grounping
             if set_grouping == 'true':
@@ -52,12 +53,16 @@ def deeplink_list(request, project):
                         deeplink_path = content.body
                     else:
                         deeplink_path = scheme + content.body
-                    project_dict[content.classification].append(deeplink_path)
+                    deeplink_dict = {'id': content.nid,
+                                     'content': deeplink_path,
+                                     'body': content.body}
+                    project_dict[content.classification].append(deeplink_dict)
 
                 data_format = request.GET.get('format')
                 if data_format == 'json':
                     response = {
                         'project': project,
+                        'id':project_id,
                         'scheme': scheme,
                         'data': project_dict
                     }
@@ -86,7 +91,7 @@ def add_deeplink(request, project):
     project_obj = models.Project.objects.filter(name=project).first()
     scheme = project_obj.scheme + '://'
 
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': {}}
         body = request.POST.get('body')
         if not body:
@@ -104,6 +109,7 @@ def add_deeplink(request, project):
             response['code'] = 'success'
             response['msg']['deeplink'] = scheme + body
             response['msg']['nid'] = res_obj.nid
+            response['msg']['body'] = body
         return JsonResponse(response)
 
     contents = models.Contents.objects.filter(project=project_obj).all().order_by('-create_time')
@@ -153,7 +159,7 @@ def modify_project(request):
 
 
 def remove_deeplink(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
         deeplink_id = request.POST.get('nid')
         res = models.Contents.objects.filter(nid=deeplink_id).delete()
@@ -167,7 +173,7 @@ def remove_deeplink(request):
 
 
 def modify_deeplink(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
         deeplink_id = request.POST.get('deeplink_id')
         deeplink_body = request.POST.get('deeplink_body')
