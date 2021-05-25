@@ -5,6 +5,8 @@ import re
 from django.shortcuts import render, HttpResponse
 from django.http.response import JsonResponse
 
+from mobile_QA_web_platform.settings import LOCAL_HOST as host
+from mobile_QA_web_platform.settings import LOCAL_PORT as port
 from . import models
 
 # Create your views here.
@@ -20,7 +22,7 @@ def android_project_list(request):
     if data_format and data_format == "json":
         android_projects = list(android_projects.values())
         for item in android_projects:
-            item['project_logo'] = "http://127.0.0.1:5000/static/" + item['project_logo']
+            item['project_logo'] = host+ ':' + port + '/static/' + item['project_logo']
 
         return JsonResponse(android_projects, safe=False)
     return render(request, 'project_info/projects_list.html', context={'projects_list': android_projects,
@@ -46,7 +48,7 @@ def android_project_detail(request, project):
     if data_format and data_format == 'json':
         record_data = list(build_record_obj.values())
         for item in record_data:
-            item['package_mapping_url'] = "http//:127.0.0.1:5000" + item['package_mapping_url']
+            item['package_mapping_url'] = host+ ':' + port + item['package_mapping_url']
 
         resp = {"data": record_data,
                 "page": page,
@@ -95,7 +97,7 @@ def ios_project_list(request):
     if data_format and data_format == 'json':
         ios_projects = list(ios_projects.values())
         for item in ios_projects:
-            item['project_logo'] = 'http://127.0.0.1:5000/static/' + item['project_logo']
+            item['project_logo'] = host + ':' + port+'/static/' + item['project_logo']
 
         return JsonResponse(ios_projects, safe=False)
     return render(request, 'project_info/projects_list.html', context={'projects_list': ios_projects,

@@ -27,7 +27,7 @@ def index(request):
 
 
 def braze_notification(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
         project_name = request.POST.get('project_name')
         project_scheme = request.POST.get('project_scheme')
@@ -47,16 +47,46 @@ def braze_notification(request):
                 response['msg'] = '%s project name is used, Please input again.' % project_name
             else:
                 res = models.Project.objects.create(name=project_name, scheme=project_scheme, api_key=api_key, instance_url=instance_url)
+                print(type(res))
+                print(res)
                 if res:
                     response['code'] = 'success'
-                    response['msg'] = 'Create %s project successful.'
+                    response['msg'] = 'Create %s project successful.' % project_name
+                    response['data'] = {'nid': res.nid,
+                                        'name':res.name,
+                                        'scheme': res.scheme,
+                                        'api_key': res.api_key,
+                                        'instance_url': res.instance_url}
                 else:
                     response['msg'] = 'Create %s project failed, please try again.'
         return JsonResponse(response)
 
-    project_list = list(models.Project.objects.all())
+    project_list = models.Project.objects.all()
+    data_format = request.GET.get("format")
+    if data_format == 'json':
+        project_list = list(project_list.values())
+        return JsonResponse(project_list, safe=False)
 
+    project_list = list(project_list)
     return render(request, 'qa_tools/braze_notification/brazeNotification.html', context={'projects': project_list})
+
+
+def braze_notification_delete(request):
+    if request.method == 'POST':
+        response = {'code': 'failed', 'msg': ''}
+        nid = request.POST.get('nid')
+        if not nid:
+            response['msg'] = 'Project id is required.'
+        else:
+            res = models.Project.objects.filter(nid=nid).first()
+            if not res:
+                response['msg'] = 'Not find this project, please check again.'
+            else:
+                res.delete()
+                response['code'] = 'success'
+                response['msg'] = 'Project %s delete success.' % res.name
+
+        return JsonResponse(response, safe=False)
 
 
 def notification_detail(request, project):
@@ -64,10 +94,19 @@ def notification_detail(request, project):
     deeplink_type = models.Notification.objects.filter(project__name=project, push_type=1).all()
     push_type = models.Notification.objects.filter(project__name=project, push_type=0).all()
     general_type = models.Notification.objects.filter(project__name=project, push_type=2).all()
+
+
+    data_format = request.GET.get('format')
+    if data_format == 'json':
+        response['deeplink'] = list(deeplink_type.values())
+        response['push_type'] = list(push_type.values())
+        response['general'] = list(general_type.values())
+        return JsonResponse(response, safe=False)
+
+
     response['deeplink'] = deeplink_type
     response['push_type'] = push_type
     response['general'] = general_type
-
     return render(request, 'qa_tools/braze_notification/notificationDetail.html', context={"project_name": project,
                                                                         "response": response,
                                                                                            })
