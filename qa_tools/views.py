@@ -113,7 +113,7 @@ def notification_detail(request, project):
 
 
 def send_braze_push(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None}
         push_dict = collections.defaultdict(list)
         project_info = dict()
@@ -138,8 +138,6 @@ def send_braze_push(request):
             res = braze_notification_console(project_info, push_dict)
             response['code'] = 'success'
             response['msg'] = res
-
-
         return JsonResponse(response)
 
 
@@ -170,7 +168,7 @@ def braze_notification_console(project: dict, push: dict):
 
 
 def add_push(request):
-    if request.is_ajax():
+    if request.method == 'POST':
         response = {'code': 'fail', 'msg': None, 'id': None}
         push_type_dict = {
             "deeplink": 1,
@@ -189,6 +187,12 @@ def add_push(request):
                 response['code'] = 'success'
                 response['msg'] = '%s add successful.' % res
                 response['id'] = res.nid
+                response['data'] = {
+                    'nid': res.nid,
+                    'project_id': res.project_id,
+                    'push_type': res.push_type,
+                    'content': res.content
+                }
             else:
                 response['msg'] = 'Add push failed, please try again.'
 
@@ -198,6 +202,11 @@ def add_push(request):
 def sdk_config(request):
     if request.method == 'GET':
         sdk_configs = models.SdkConifg.objects.all()
+
+        data_format = request.GET.get('format')
+        if data_format == 'json':
+            sdk_configs = list(sdk_configs.values())
+            return JsonResponse(sdk_configs, safe=False)
 
         return render(request, template_name='qa_tools/sdk_parse/sdk_config_list.html', context={'app_keys': sdk_configs})
 
