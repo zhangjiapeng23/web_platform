@@ -213,14 +213,34 @@ def sdk_config(request):
 
 def sdk_config_detail(request, appkey):
     if request.method == 'GET':
+        data_format = request.GET.get('format')
+
         sdk_config = SdkConfigParse()
         try:
             sdk_config.parse(appkey)
         except Exception as erro_msg:
+            if data_format == 'json':
+                response = {
+                    'code': 'failed',
+                    'msg': str(erro_msg)
+                }
+                return JsonResponse(response, safe=False)
+
             return render(request, template_name='qa_tools/sdk_parse/sdk_config_error.html',
                           context={'error_msg': erro_msg})
 
         else:
+            if data_format == 'json':
+                data = {'configurl': sdk_config.configurl,
+                        'configjson': sdk_config.text_decrypted_trim,
+                        'support': sdk_config.issupported,
+                       'comments': sdk_config.comments}
+                response = {
+                    'code': 'success',
+                    'msg': data
+                }
+                return JsonResponse(response, safe=False)
+
             return render(request, template_name='qa_tools/sdk_parse/sdk_config_detail.html',
                           context={'configurl': sdk_config.configurl,
                                    'configjson': sdk_config.text_decrypted_trim,
@@ -236,6 +256,12 @@ def sdk_config_detail(request, appkey):
             res = models.SdkConifg.objects.create(project_name=project_name, config_type=environment, app_key=appkey)
             if res:
                 response['msg'] = 'App key add success.'
+                response['data'] = {
+                    'nid': res.nid,
+                    'project_name': res.project_name,
+                    'config_type': res.config_type,
+                    'app_key': res.app_key
+                }
             else:
                 response['code'] = 'fail'
                 response['msg'] = 'App key add failed.'
