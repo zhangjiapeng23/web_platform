@@ -3,7 +3,6 @@ import time
 import threading
 
 from google_appstore_reviews.crawler_tools.register_crawler import registered_project
-from google_appstore_reviews.crawler_tools.projects import *
 
 def main(hour, minute, model):
     '''

@@ -1,7 +1,7 @@
 import pymysql
-import threading
 
 from mobile_QA_web_platform.settings import DATABASES
+
 
 class CrawlerDb:
     sql_insert_info = "insert into google_appstore_reviews_reviewinfo(project_name, review_id, author, platform, country)" \

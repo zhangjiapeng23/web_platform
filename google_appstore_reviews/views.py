@@ -1,3 +1,4 @@
+import time
 from functools import reduce
 
 from django.shortcuts import render
@@ -5,8 +6,8 @@ from django.db.models import Avg, F
 from django.http.response import JsonResponse
 
 from google_appstore_reviews import models
-from google_appstore_reviews.crawler_tools.register_crawler import registered
 from mobile_QA_web_platform import settings
+from google_appstore_reviews.crawler_tools.register_crawler import registered
 from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 
 # Create your views here.
@@ -54,9 +55,11 @@ def reviews_projects_list(request):
             response['data']['support_region'] = 'Support region is required.'
         else:
             # check project name is whether unique
+            origin_name = project_name
+            project_name = origin_name.replace(' ', '_')
             project_res = models.Project.objects.filter(project_name=project_name).first()
             if project_res:
-                response['data']['project_name'] = f'Project name: {project_name} is used.'
+                response['data']['project_name'] = f'Project name: {origin_name} is used.'
             else:
                 support_region = reduce(lambda x,y: int(x)+int(y), support_region.split(','))
                 android_origin = f'https://play.google.com/store/apps/details?id={android_id}&showAllReviews=true'
