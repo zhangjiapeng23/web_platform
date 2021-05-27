@@ -18,9 +18,10 @@ from google_appstore_reviews.crawler_tools.db_operatoin import CrawlerDb
 registered = list()
 
 
-def register_crawler(func):
-    registered.append(func())
-    return func
+def register_crawler(register_projects):
+    global registered
+    registered = register_projects()
+    return register_projects
 
 
 def registered_project():

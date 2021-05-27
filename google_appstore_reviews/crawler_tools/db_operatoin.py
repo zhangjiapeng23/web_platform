@@ -10,6 +10,7 @@ class CrawlerDb:
                         " version, create_time) values (%s,%s,%s,%s,%s,%s)"
     sql_select = "select nid from google_appstore_reviews_reviewinfo where review_id=%s"
 
+    sql_select_project = "select * from google_appstore_reviews_project"
 
     def __init__(self):
         self.__db = DATABASES.get('default')
@@ -20,7 +21,7 @@ class CrawlerDb:
         self.__db_name = self.__db.get('NAME')
         self.conn = pymysql.connect(host=self.__host, port=self.__port, user=self.__user, password=self.__password,
                                     db=self.__db_name, charset='utf8mb4')
-        self.cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
 
     def __str__(self):
         return 'db: web_platform'
@@ -33,11 +34,16 @@ class CrawlerDb:
             return None
         else:
             self.cursor.execute(self.sql_select, data_info[1])
-            nid = self.cursor.fetchone()[0]
+            nid = self.cursor.fetchone()['nid']
             return nid
 
     def insert_data_to_reviewdetail(self, data_detail: tuple):
         self.cursor.execute(self.sql_insert_detail, data_detail)
+
+    def get_project_list(self):
+        self.cursor.execute(self.sql_select_project)
+        project_list = self.cursor.fetchall()
+        return project_list
 
     def commit(self):
         self.conn.commit()
@@ -51,23 +57,6 @@ class CrawlerDb:
 
 
 if __name__ == '__main__':
-
-    data_info1 = ('31111', 'james', 0, 'us')
-    data_info2 = ('4111', 'test', 1, 'au')
-    data_info3 = ('31111', 'james2', 4, 'ch')
-    data_total = [data_info1, data_info2, data_info3]
-
-    t1 = threading.Thread(target=test, args=(data_total,))
-    t2 = threading.Thread(target=test, args=(data_total,))
-
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
-
-
-
-
-
-
-
+    db = CrawlerDb()
+    res = db.get_project_list()
+    print(res)

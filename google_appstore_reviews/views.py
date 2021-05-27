@@ -7,6 +7,7 @@ from django.http.response import JsonResponse
 from google_appstore_reviews import models
 from google_appstore_reviews.crawler_tools.register_crawler import registered
 from mobile_QA_web_platform import settings
+from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 
 # Create your views here.
 
@@ -78,6 +79,9 @@ def reviews_projects_list(request):
 
                 response['code'] = 'success'
                 response['message'] = f'Project {project_name} create success.'
+                # run crawler to get review data for new project
+                crawler_start(model='once')
+
         return JsonResponse(response, safe=False)
 
     # method get to get project list
@@ -183,7 +187,8 @@ def reviews_project_detail_api(request, project, platform):
                                                     "rating",
                                                     "version",
                                                     "create_time",
-                                                    author=F("review_info__author")))
+                                                    author=F("review_info__author"),
+                                                    region=F("review_info__country")))
             response = {
                 'page': page,
                 'pageSize': page_size,
