@@ -229,6 +229,11 @@ def nba_sync_us(request):
                             deeplink_dict[body_slice[0]].append(deeplink)
                         else:
                             deeplink_dict['Default'].append(deeplink)
+
+            data_format = request.GET.get('format')
+            if data_format == 'json':
+                return JsonResponse(deeplink_dict, safe=False)
+
             return render(request, 'deeplink/list.html', context={'project': project_obj,
                                                                     'set_grouping': set_grouping,
                                                                     'full_deeplink_group': deeplink_dict,
