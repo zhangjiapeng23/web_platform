@@ -1,3 +1,4 @@
+import time
 from functools import reduce
 
 from django.shortcuts import render
@@ -5,8 +6,9 @@ from django.db.models import Avg, F
 from django.http.response import JsonResponse
 
 from google_appstore_reviews import models
-from google_appstore_reviews.crawler_tools.register_crawler import registered
 from mobile_QA_web_platform import settings
+from google_appstore_reviews.crawler_tools.register_crawler import registered
+from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 
 # Create your views here.
 
@@ -53,9 +55,11 @@ def reviews_projects_list(request):
             response['data']['support_region'] = 'Support region is required.'
         else:
             # check project name is whether unique
+            origin_name = project_name
+            project_name = origin_name.replace(' ', '_')
             project_res = models.Project.objects.filter(project_name=project_name).first()
             if project_res:
-                response['data']['project_name'] = f'Project name: {project_name} is used.'
+                response['data']['project_name'] = f'Project name: {origin_name} is used.'
             else:
                 support_region = reduce(lambda x,y: int(x)+int(y), support_region.split(','))
                 android_origin = f'https://play.google.com/store/apps/details?id={android_id}&showAllReviews=true'
@@ -78,6 +82,9 @@ def reviews_projects_list(request):
 
                 response['code'] = 'success'
                 response['message'] = f'Project {project_name} create success.'
+                # run crawler to get review data for new project
+                crawler_start(model='once')
+
         return JsonResponse(response, safe=False)
 
     # method get to get project list
@@ -183,7 +190,8 @@ def reviews_project_detail_api(request, project, platform):
                                                     "rating",
                                                     "version",
                                                     "create_time",
-                                                    author=F("review_info__author")))
+                                                    author=F("review_info__author"),
+                                                    region=F("review_info__country")))
             response = {
                 'page': page,
                 'pageSize': page_size,

@@ -14,16 +14,62 @@ from google_appstore_reviews.crawler_tools.crawler import AppStoreCrawler, Googl
 from google_appstore_reviews.crawler_tools.frozen_json import FrozenJson
 from google_appstore_reviews.crawler_tools.db_operatoin import CrawlerDb
 
-
+region = namedtuple('country', ['code', 'lang'])
+# United States
+us = region('us', 'en')
+# Australia
+au = region('au', 'en')
+# Philippine
+ph = region('ph', 'en')
+# France
+fr = region('fr', 'fr')
+# China Taiwan
+china_tw = region('tw', 'zh')
+# Spain
+es = region('es', 'es')
+# Italy
+it = region('it', 'it')
+# Canada
+ca = region('cd', 'en')
+# Germany
+ge = region('de', 'de')
+# Brazil
+br = region('br', 'pt')
+# New Zealand
+nz = region('nz', 'en')
 registered = list()
 
 
-def register_crawler(func):
-    registered.append(func())
-    return func
+def get_register_project():
+    db = CrawlerDb()
+    project_list = db.get_project_list()
+    db.cursor_close()
+    db.conn_close()
+    register_projects = []
+
+    def parse_region(region_code):
+        position = 0
+        register_region = []
+        region_list = [us, au, ph, fr, china_tw, es, it, ca, ge, br, nz]
+        while region_code > 0:
+            if region_code & 1 == 1:
+                register_region.append(region_list[position])
+            region_code >>= 1
+            position += 1
+        return register_region
+
+    for project in project_list:
+        if project.get('is_active'):
+            register_projects.append(ProjectCrawler(project_name=project.get('project_name'),
+                                                    android_id=project.get('android_id'),
+                                                    ios_id=project.get('ios_id'),
+                                                    countries=parse_region(project.get('support_region'))))
+    return register_projects
 
 
 def registered_project():
+    global registered
+    registered = get_register_project()
     return (pro for pro in registered)
 
 

@@ -3,34 +3,41 @@ import time
 import threading
 
 from google_appstore_reviews.crawler_tools.register_crawler import registered_project
-from google_appstore_reviews.crawler_tools.projects import *
 
-
-def main(h, m):
+def main(hour, minute, model):
+    '''
+    :param hour: each day run hour
+    :param minute: each day run minute
+    :param model: support two modal, 'forever' and 'once'
+    :return:
+    '''
     for pro in registered_project():
         pro.run()
 
-    while True:
+    if model == 'forever':
         while True:
-            now = datetime.datetime.now()
+            while True:
+                now = datetime.datetime.now()
 
-            if now.hour == h and now.minute == m:
-                break
-            else:
-                time.sleep(60)
+                if now.hour == hour and now.minute == minute:
+                    break
+                else:
+                    time.sleep(60)
 
-        for pro in registered_project():
-            pro.run()
-        time.sleep(60)
+            for pro in registered_project():
+                pro.run()
+            time.sleep(60)
 
 
-def crawler_start(hour=23, minute=0):
-    t = threading.Thread(target=main, args=(hour, minute))
+def crawler_start(hour=0, minute=0, model='once'):
+    t = threading.Thread(target=main, kwargs={'hour': hour,
+                                              'minute': minute,
+                                              'model': model})
     t.start()
 
 
 if __name__ == '__main__':
-    crawler_start(0, 0)
+    crawler_start(hour=18, minute=24, model='once')
     # region = namedtuple('country', ['code', 'lang'])
     # nz = region('nz', 'en')
     # countries = [nz]

@@ -18,8 +18,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mobile_QA_web_platform.settings
 
 application = get_wsgi_application()
 
+
 # crawler startup entry
-# crawler_start(0, 0)
+# crawler_start(hour=0, minute=0, model='forever')
+
 
 
 

@@ -5,7 +5,6 @@ import re
 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -18,6 +17,8 @@ from qa_tools.tools.sdk_parse import SdkConfigParse
 from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
 from mobile_QA_web_platform.settings import MEDIA_ROOT
+from mobile_QA_web_platform.settings import LOCAL_HOST as host
+from mobile_QA_web_platform.settings import LOCAL_PORT as port
 # Create your views here.
 
 
@@ -466,12 +467,13 @@ def localization_upload(request):
             file_modify_path = os.path.join(upload_dir, file_modify_name)
             try:
                 localization_value2number(file_path, file_modify_path)
-            except Exception:
+            except Exception as error:
                 response['code'] = 'fail'
-                response['msg'] = 'Format file error, please reupload.'
+                response['msg'] = 'Format file error, ' + error
             else:
                 response['msg'] = 'Upload success, please download.'
                 response['filename'] = file_modify_name
+                response['downloadUrl'] = host + ":" + port + '/media/localization_file/' + file_modify_name
     return JsonResponse(response)
 
 def get_csrf_token(request):
