@@ -47,10 +47,10 @@ def reviews_projects_list(request):
         project_logo = request.FILES.get('project_logo')
         if not project_name:
             response['data']['project_name'] = 'Project name is required.'
-        if not android_id:
-            response['data']['android_id'] = 'Android id is required.'
-        if not ios_id:
-            response['data']['ios_id'] = 'iOS id is required.'
+        # if not android_id:
+        #     response['data']['android_id'] = 'Android id is required.'
+        # if not ios_id:
+        #     response['data']['ios_id'] = 'iOS id is required.'
         if not support_region:
             response['data']['support_region'] = 'Support region is required.'
         else:
