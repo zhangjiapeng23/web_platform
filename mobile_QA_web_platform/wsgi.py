@@ -20,7 +20,7 @@ application = get_wsgi_application()
 
 
 # crawler startup entry
-# crawler_start(hour=0, minute=0, model='forever')
+crawler_start(hour=0, minute=0, model='forever')
 
 
 

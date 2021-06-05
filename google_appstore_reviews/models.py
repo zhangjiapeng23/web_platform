@@ -7,8 +7,8 @@ class Project(models.Model):
     nid = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=64, unique=True)
     is_active = models.BooleanField(default=True)
-    android_id = models.CharField(max_length=128)
-    ios_id = models.CharField(max_length=128)
+    android_id = models.CharField(max_length=128, null=True, blank=True)
+    ios_id = models.CharField(max_length=128, null=True, blank=True)
     support_region = models.IntegerField()
     project_logo = models.FileField(upload_to='imgs/app_review_project',
                                     default='imgs/app_review_project/Neulion.png')

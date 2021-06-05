@@ -34,7 +34,7 @@ CORS_ORIGIN_WHITELIST = []
 CORS_ALLOW_CREDENTIALS = True
 
 # declare server host and port
-LOCAL_HOST = 'http://124.71.60.153/'
+LOCAL_HOST = 'http://124.71.60.153'
 LOCAL_PORT = '30808'
 
 # Application definition

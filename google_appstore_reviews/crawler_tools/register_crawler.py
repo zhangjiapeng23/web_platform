@@ -159,12 +159,19 @@ class ProjectCrawler:
 
     def run(self):
         spider = CrawlerPerform(appid_android=self.android_id, appid_ios=self.ios_id, countries=self.countries)
-        t_ios = threading.Thread(target=spider.get_appstore)
-        t_android = threading.Thread(target=spider.get_googleplay)
-        t_ios.start()
-        t_android.start()
-        t_ios.join(timeout=60)
-        t_android.join(timeout=60)
+
+        if self.android_id:
+            t_android = threading.Thread(target=spider.get_googleplay)
+            t_android.start()
+
+        if self.ios_id:
+            t_ios = threading.Thread(target=spider.get_appstore)
+            t_ios.start()
+
+        if self.ios_id:
+            t_ios.join(timeout=120)
+        if self.android_id:
+            t_android.join(timeout=120)
 
         ios_data = FrozenJson(spider.resp_ios)
         android_data = FrozenJson(spider.resp_android)
