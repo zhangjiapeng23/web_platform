@@ -146,7 +146,7 @@ def reviews_project_detail_api(request, project, platform):
                 region_filter_list = country_list if country_list else []
 
             filter_list = dict()
-            filter_list['rating'] = rating_filter_list:
+            filter_list['rating'] = rating_filter_list
             filter_list['region'] = region_filter_list
             filter_list['version'] = version_filter_list
 
