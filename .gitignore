@@ -6,3 +6,5 @@
 venv/*
 media/android_mapping/*
 media/localization_file/*
+media/imgs/app_review_project/*
+!media/imgs/app_review_project/NeuLion.png
