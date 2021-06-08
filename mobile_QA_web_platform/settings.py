@@ -96,6 +96,8 @@ DATABASES = {
         'PASSWORD': 'NeuMobile123$',
         'HOST': '139.159.179.26',
         'PORT': 30306,
+        # 'HOST': '127.0.0.1',
+        # 'PORT': 3306
 
     }
 }

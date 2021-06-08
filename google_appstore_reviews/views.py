@@ -4,7 +4,9 @@ from functools import reduce
 from django.shortcuts import render
 from django.db.models import Avg, F
 from django.http.response import JsonResponse
+from django.views import View
 
+from .forms import ProjectForm
 from google_appstore_reviews import models
 from mobile_QA_web_platform import settings
 from google_appstore_reviews.crawler_tools.register_crawler import registered
@@ -20,75 +22,15 @@ def reviews_project_index(request, project):
              android_id = project_registed.android_id
              country = project_registed.countries[0].code
              break
-
     return render(request, 'google_appstore_reviews/reviews_project_index.html', context={'project': project,
                                                                                           'app_id': app_id,
                                                                                           'android_id': android_id,
                                                                                           'country': country})
 
 
-def reviews_projects_list(request):
-    # method post to create a project
-    if request.method == 'POST':
-        response = {
-            'code': 'failed',
-            'message': "Project create failed.",
-            'data': {
-                'project_name': '',
-                'android_id': '',
-                'ios_id': '',
-                'support_region': ''
-            }
-        }
-        project_name = request.POST.get('project_name')
-        android_id = request.POST.get('android_id')
-        ios_id = request.POST.get('ios_id')
-        support_region = request.POST.get('support_region')
-        project_logo = request.FILES.get('project_logo')
-        if not project_name:
-            response['data']['project_name'] = 'Project name is required.'
-        # if not android_id:
-        #     response['data']['android_id'] = 'Android id is required.'
-        # if not ios_id:
-        #     response['data']['ios_id'] = 'iOS id is required.'
-        if not support_region:
-            response['data']['support_region'] = 'Support region is required.'
-        else:
-            # check project name is whether unique
-            origin_name = project_name
-            project_name = origin_name.replace(' ', '_')
-            project_res = models.Project.objects.filter(project_name=project_name).first()
-            if project_res:
-                response['data']['project_name'] = f'Project name: {origin_name} is used.'
-            else:
-                support_region = reduce(lambda x,y: int(x)+int(y), support_region.split(','))
-                android_origin = f'https://play.google.com/store/apps/details?id={android_id}&showAllReviews=true'
-                ios_origin = f'https://itunes.apple.com/rss/customerreviews/page=1/id={ios_id}/sortby=mostrecent/json'
-                if project_logo:
-                    models.Project.objects.create(project_name=project_name,
-                                                  android_id=android_id,
-                                                  ios_id=ios_id,
-                                                  support_region=support_region,
-                                                  project_logo=project_logo,
-                                                  android_origin=android_origin,
-                                                  ios_origin=ios_origin)
-                else:
-                    models.Project.objects.create(project_name=project_name,
-                                                  android_id=android_id,
-                                                  ios_id=ios_id,
-                                                  support_region=support_region,
-                                                  android_origin=android_origin,
-                                                  ios_origin=ios_origin)
+class ReviewsProjectList(View):
 
-                response['code'] = 'success'
-                response['message'] = f'Project {project_name} create success.'
-                # run crawler to get review data for new project
-                crawler_start(model='once')
-
-        return JsonResponse(response, safe=False)
-
-    # method get to get project list
-    if request.method == 'GET':
+    def get(self, request):
         data_format = request.GET.get('format')
         if data_format == 'json':
             host = settings.LOCAL_HOST
@@ -100,7 +42,46 @@ def reviews_projects_list(request):
                 item['project_logo'] = f'{host}:{port}{media_path}{item["project_logo"]}'
             return JsonResponse(projects_list, safe=False)
 
-    return render(request, 'google_appstore_reviews/reviews_projects_list.html')
+        return render(request, 'google_appstore_reviews/reviews_projects_list.html')
+
+    def post(self, request):
+        create_response = {
+            'code': 'failed',
+            'message': "Project create failed.",
+            'data': {}
+        }
+        form = ProjectForm(request.POST, request.FILES)
+        if not form.is_valid():
+            create_response['data'] = form.errors
+        else:
+            project_name = form.cleaned_data.get('project_name')
+            android_id = form.cleaned_data.get('android_id')
+            ios_id = form.cleaned_data.get('ios_id')
+            support_region = form.cleaned_data.get('support_region')
+            project_logo = form.cleaned_data.get('project_logo')
+            android_origin = f'https://play.google.com/store/apps/details?id={android_id}&showAllReviews=true'
+            ios_origin = f'https://itunes.apple.com/rss/customerreviews/page=1/id={ios_id}/sortby=mostrecent/json'
+            if project_logo:
+                models.Project.objects.create(project_name=project_name,
+                                              android_id=android_id,
+                                              ios_id=ios_id,
+                                              support_region=support_region,
+                                              project_logo=project_logo,
+                                              android_origin=android_origin,
+                                              ios_origin=ios_origin)
+            else:
+                models.Project.objects.create(project_name=project_name,
+                                              android_id=android_id,
+                                              ios_id=ios_id,
+                                              support_region=support_region,
+                                              android_origin=android_origin,
+                                              ios_origin=ios_origin)
+            create_response['code'] = 'success'
+            create_response['message'] = f'Project {project_name} create success.'
+            # run crawler to get review data for new project
+            crawler_start(model='once')
+
+        return JsonResponse(create_response, safe=False)
 
 
 def reviews_project_detail_api(request, project, platform):
