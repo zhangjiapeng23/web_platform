@@ -9,6 +9,8 @@ chardet==3.0.4
 colorama==0.4.4
 Django==3.1.7
 django-cors-headers==3.7.0
+djangorestframework==3.12.4
+djangorestframework-simplejwt==4.7.1
 flake8==3.8.4
 google-play-scraper==0.1.2
 idna==2.10
@@ -23,6 +25,7 @@ pycodestyle==2.6.0
 pycryptodome==3.10.1
 pydocstyle==5.1.1
 pyflakes==2.2.0
+PyJWT==2.1.0
 pylama==7.7.1
 PyMySQL==0.10.1
 pyparsing==2.4.7
