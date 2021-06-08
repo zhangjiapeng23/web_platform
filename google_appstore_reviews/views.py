@@ -123,8 +123,8 @@ def reviews_project_detail_api(request, project, platform):
                 if international_count:
                     region_filter_list.append('International')
             else:
-                country = basic_data_obj.values_list("review_info__country").first()[0]
-                region_filter_list.append(country)
+                country_list = basic_data_obj.values_list("review_info__country").first()
+                region_filter_list = country_list if country_list else []
 
             filter_list = dict()
             filter_list['rating'] = rating_filter_list
