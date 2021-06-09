@@ -16,9 +16,9 @@ from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
 from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
-from mobile_QA_web_platform.settings import MEDIA_ROOT
-from mobile_QA_web_platform.settings import LOCAL_HOST as host
-from mobile_QA_web_platform.settings import LOCAL_PORT as port
+from mobile_QA_web_platform.settings.base import MEDIA_ROOT
+from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
+from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 # Create your views here.
 
 

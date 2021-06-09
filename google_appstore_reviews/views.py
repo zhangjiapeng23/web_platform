@@ -1,6 +1,3 @@
-import time
-from functools import reduce
-
 from django.shortcuts import render
 from django.db.models import Avg, F
 from django.http.response import JsonResponse
@@ -8,7 +5,7 @@ from django.views import View
 
 from .forms import ProjectForm
 from google_appstore_reviews import models
-from mobile_QA_web_platform import settings
+from mobile_QA_web_platform.settings import base
 from google_appstore_reviews.crawler_tools.register_crawler import registered
 from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 
@@ -33,9 +30,9 @@ class ReviewsProjectList(View):
     def get(self, request):
         data_format = request.GET.get('format')
         if data_format == 'json':
-            host = settings.LOCAL_HOST
-            port = settings.LOCAL_PORT
-            media_path = settings.MEDIA_URL
+            host = base.LOCAL_HOST
+            port = base.LOCAL_PORT
+            media_path = base.MEDIA_URL
             projects_obj = models.Project.objects.all().values()
             projects_list = list(projects_obj)
             for item in projects_list:

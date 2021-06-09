@@ -2,11 +2,11 @@ import json
 import re
 
 
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 from django.http.response import JsonResponse
 
-from mobile_QA_web_platform.settings import LOCAL_HOST as host
-from mobile_QA_web_platform.settings import LOCAL_PORT as port
+from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
+from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 from . import models
 
 # Create your views here.

@@ -13,8 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -69,7 +68,7 @@ ROOT_URLCONF = 'mobile_QA_web_platform.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -94,11 +93,8 @@ DATABASES = {
         'NAME': 'web_platform',
         'USER': 'root',
         'PASSWORD': 'NeuMobile123$',
-        'HOST': '139.159.179.26',
-        'PORT': 30306,
-        # 'HOST': '127.0.0.1',
-        # 'PORT': 3306
-
+        'HOST': '127.0.0.1',
+        'PORT': 3306
     }
 }
 

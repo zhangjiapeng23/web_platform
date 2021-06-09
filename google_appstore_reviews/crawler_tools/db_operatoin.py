@@ -1,6 +1,6 @@
 import pymysql
 
-from mobile_QA_web_platform.settings import DATABASES
+from mobile_QA_web_platform.settings.prod import DATABASES
 
 
 class CrawlerDb:
