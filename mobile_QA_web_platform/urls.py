@@ -21,7 +21,7 @@ from mobile_QA_web_platform.settings.base import MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT }, name='media'),
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}, name='media'),
     path('', include(('qa_tools.urls', 'qa_tools'))),
     path('deeplink/', include(('deeplink.urls', 'deeplink'))),
     path('appReviews/', include(('google_appstore_reviews.urls', 'app_review'))),

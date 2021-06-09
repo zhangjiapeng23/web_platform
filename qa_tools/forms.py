@@ -9,7 +9,6 @@ from .models import UserInfo
 
 
 class UserCreateForm(forms.Form):
-
     username = forms.CharField(required=True,
                                max_length=150)
     password = forms.CharField(required=True,
@@ -18,7 +17,7 @@ class UserCreateForm(forms.Form):
     confirm_password = forms.CharField(required=True,
                                        max_length=128,
                                        min_length=6)
-    user_logo = forms.FileField(required=False)
+    logo = forms.FileField(required=False)
     email = forms.EmailField(required=True)
 
     def clean_username(self):

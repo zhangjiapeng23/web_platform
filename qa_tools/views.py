@@ -18,7 +18,7 @@ from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
 from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
-from mobile_QA_web_platform.settings.base import MEDIA_ROOT
+from mobile_QA_web_platform.settings.base import MEDIA_ROOT, MEDIA_URL
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 from .forms import UserLoginForm, UserCreateForm
@@ -494,7 +494,7 @@ def register(request):
             'error': {}
         }
     }
-    form = UserCreateForm(request.POST)
+    form = UserCreateForm(request.POST, request.FILES)
     if not form.is_valid():
         response['data']['error'] = form.errors
     else:
@@ -505,7 +505,8 @@ def register(request):
         register_user = UserInfo()
         register_user.username = username
         register_user.password = password
-        register_user.logo = user_logo
+        if user_logo:
+            register_user.logo = user_logo
         register_user.email = email
         register_user.save()
         response['code'] = 'register success'
@@ -534,7 +535,7 @@ def login_view(request):
         response['data']['result']['username'] = user.username
         response['data']['result']['email'] = user.email
         response['data']['result']['is_superuser'] = user.is_superuser
-        response['data']['result']['logo'] = host + ':' + port + str(user.logo)
+        response['data']['result']['logo'] = host + ':' + port + MEDIA_URL + str(user.logo)
         return JsonResponse(response)
 
     else:
