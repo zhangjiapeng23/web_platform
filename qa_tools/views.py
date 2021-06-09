@@ -10,7 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -20,6 +21,8 @@ from project_info import models as project_info_models
 from mobile_QA_web_platform.settings.base import MEDIA_ROOT
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
+from .forms import UserLoginForm, UserCreateForm
+from .models import UserInfo
 # Create your views here.
 
 
@@ -483,8 +486,30 @@ def get_csrf_token(request):
 
 
 @require_POST
-def register(requset):
-    pass
+def register(request):
+    response = {
+        'code': 'register failed',
+        'data': {
+            'result': {},
+            'error': {}
+        }
+    }
+    form = UserCreateForm(request.POST)
+    if not form.is_valid():
+        response['data']['error'] = form.errors
+    else:
+        username = form.cleaned_data.get('username')
+        password = make_password(form.cleaned_data.get('password'))
+        user_logo = form.cleaned_data.get('logo')
+        email = form.cleaned_data.get('email')
+        register_user = UserInfo()
+        register_user.username = username
+        register_user.password = password
+        register_user.logo = user_logo
+        register_user.email = email
+        register_user.save()
+        response['code'] = 'register success'
+    return JsonResponse(response)
 
 
 @require_POST
@@ -496,31 +521,35 @@ def login_view(request):
             'error': {}
         }
     }
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    if not username:
-        response['data']['error']['username'] = ['username is required']
+    form = UserLoginForm(request.POST)
+    if not form.is_valid():
+        response['data']['error'] = form.errors
         return JsonResponse(response)
-    if not password:
-        response['data']['error']['password'] = ['password is required']
-        return JsonResponse(response)
+    username = form.cleaned_data.get('username')
+    password = form.cleaned_data.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
         login(request, user)
         response['code'] = 'login success'
         response['data']['result']['username'] = user.username
+        response['data']['result']['email'] = user.email
+        response['data']['result']['is_superuser'] = user.is_superuser
+        response['data']['result']['logo'] = host + ':' + port + str(user.logo)
         return JsonResponse(response)
 
     else:
-        response['data']['result'] = ['username or password is invalid']
+        response['data']['error'] = {'message': 'username or password is invalid'}
     return JsonResponse(response)
 
 
-
-
 @require_POST
-def logout(request):
-    pass
+def logout_view(request):
+    logout(request)
+    return JsonResponse({
+        'code': 'logout success',
+        'data': {}
+    })
+
 
 
 
