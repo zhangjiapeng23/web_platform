@@ -5,5 +5,6 @@ RUN pip3 install -r /djangoProj/mobileqaserve/requirements.txt
 
 EXPOSE 8080
 
-CMD ["python", "/djangoProj/mobileqaserve/manage.py", "runserver", "0.0.0.0:8080"]
+CMD ["python", "/djangoProj/mobileqaserve/manage.py", "runserver", "0.0.0.0:8080",
+"--settings=mobile_QA_web_platform.settings.prod"]
 
