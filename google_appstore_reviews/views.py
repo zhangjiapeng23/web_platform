@@ -3,6 +3,11 @@ from django.db.models import Avg, F
 from django.http.response import JsonResponse
 from django.views import View
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .forms import ProjectForm
 from google_appstore_reviews import models
 from mobile_QA_web_platform.settings import base
@@ -25,7 +30,9 @@ def reviews_project_index(request, project):
                                                                                           'country': country})
 
 
-class ReviewsProjectList(View):
+class ReviewsProjectList(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request):
         data_format = request.GET.get('format')

@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
+from django.contrib.auth import authenticate, login
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -476,8 +477,53 @@ def localization_upload(request):
                 response['downloadUrl'] = host + ":" + port + '/media/localization_file/' + file_modify_name
     return JsonResponse(response)
 
+
 def get_csrf_token(request):
     return get_token(request)
+
+
+@require_POST
+def register(requset):
+    pass
+
+
+@require_POST
+def login_view(request):
+    response = {
+        'code': 'login failed',
+        'data': {
+            'result': {},
+            'error': {}
+        }
+    }
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    if not username:
+        response['data']['error']['username'] = ['username is required']
+        return JsonResponse(response)
+    if not password:
+        response['data']['error']['password'] = ['password is required']
+        return JsonResponse(response)
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        response['code'] = 'login success'
+        response['data']['result']['username'] = user.username
+        return JsonResponse(response)
+
+    else:
+        response['data']['result'] = ['username or password is invalid']
+    return JsonResponse(response)
+
+
+
+
+@require_POST
+def logout(request):
+    pass
+
+
+
 
 
 

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'corsheaders',
     'deeplink',
     'qa_tools',
@@ -56,12 +57,22 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'qa_tools.middleware.DisableCSRF',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# rest_framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
 
 ROOT_URLCONF = 'mobile_QA_web_platform.urls'
 
@@ -82,6 +93,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mobile_QA_web_platform.wsgi.application'
+
+# User model
+AUTH_USER_MODEL = 'qa_tools.UserInfo'
 
 
 # Database
