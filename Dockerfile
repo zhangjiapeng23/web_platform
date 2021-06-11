@@ -6,5 +6,5 @@ RUN pip3 install -r /mobileqaserve/requirements.txt &&\
     python /mobileqaserve/manage.py collectstatic --settings=mobile_QA_web_platform.settings.prod
 
 EXPOSE 8023
-CMD ["uwsgi", "--ini", "/djangoProj/mobileqaserve/uwsgi.ini"]
+CMD ["uwsgi", "--ini", "/mobileqaserve/uwsgi.ini"]
 
