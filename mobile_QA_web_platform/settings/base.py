@@ -28,7 +28,8 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = ("*",)
+CORS_ORIGIN_WHITELIST = ("http://139.159.179.26:30080",
+                         "http://124.71.60.153:30080")
 CORS_ALLOW_METHODS = ('*',)
 CORS_ALLOW_HEADERS = ('*',)
 
@@ -155,6 +156,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

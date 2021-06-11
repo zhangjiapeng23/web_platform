@@ -1,10 +1,10 @@
 FROM python:3.8.10
 
-COPY ./ /djangoProj/mobileqaserve
-RUN pip3 install -r /djangoProj/mobileqaserve/requirements.txt &&\
-    pip3 install uwsgi
+COPY ./ /mobileqaserve
+RUN pip3 install -r /mobileqaserve/requirements.txt &&\
+    pip3 install uwsgi &&\
+    python /mobileqaserve/manage.py collectstatic --settings=mobile_QA_web_platform.settings.prod
 
 EXPOSE 8023
 CMD ["uwsgi", "--ini", "/djangoProj/mobileqaserve/uwsgi.ini"]
-#CMD ["python", "/djangoProj/mobileqaserve/manage.py", "runserver", "0.0.0.0:8080", "--settings=mobile_QA_web_platform.settings.prod"]
 
