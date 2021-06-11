@@ -27,10 +27,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-CORS_ORIGIN_WHITELIST = []
-
 CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = ("*",)
+CORS_ALLOW_METHODS = ('*',)
+CORS_ALLOW_HEADERS = ('*',)
+
 
 # declare server host and port
 LOCAL_HOST = 'http://124.71.60.153'
