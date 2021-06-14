@@ -6,10 +6,14 @@ from lxml import etree
 
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from deeplink import models
 
 
+@api_view(['POST', 'GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
 def index(request):
     if request.method == 'POST':
         project_name = request.POST.get('project_name')

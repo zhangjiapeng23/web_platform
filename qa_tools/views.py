@@ -12,6 +12,8 @@ from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
+from rest_framework.authtoken.models import Token
+
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -52,8 +54,6 @@ def braze_notification(request):
                 response['msg'] = '%s project name is used, Please input again.' % project_name
             else:
                 res = models.Project.objects.create(name=project_name, scheme=project_scheme, api_key=api_key, instance_url=instance_url)
-                print(type(res))
-                print(res)
                 if res:
                     response['code'] = 'success'
                     response['msg'] = 'Create %s project successful.' % project_name
@@ -530,8 +530,14 @@ def login_view(request):
     password = form.cleaned_data.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
-        login(request, user)
+        # login(request, user)
+        try:
+            token_obj = Token.objects.get(user_id=user.nid)
+        except Exception as e:
+            token_obj = Token.objects.create(user=user)
+        token = token_obj.key
         response['code'] = 'login success'
+        response['data']['result']['token'] = token
         response['data']['result']['username'] = user.username
         response['data']['result']['email'] = user.email
         response['data']['result']['is_superuser'] = user.is_superuser

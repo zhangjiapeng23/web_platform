@@ -1,9 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Avg, F
 from django.http.response import JsonResponse
-from django.views import View
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,7 +29,7 @@ def reviews_project_index(request, project):
 
 
 class ReviewsProjectList(APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request):
@@ -154,6 +152,8 @@ def reviews_project_detail_api(request, project, platform):
             total = basic_data_obj.count()
             paging_data_obj = basic_data_obj.order_by('-create_time').all()[(page - 1) * page_size:page * page_size]
             total_pages = total // page_size + 1 if total % page_size else total // page_size
+            # make sure total_pages greater than 0
+            total_pages = total_pages if total_pages > 0 else 1
 
             # get review summary info dict
             review_summary = dict()
