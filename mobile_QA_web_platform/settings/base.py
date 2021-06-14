@@ -75,12 +75,14 @@ MIDDLEWARE = [
 # rest_framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'qa_tools.auth.TokenExpireAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     )
 }
+TOKEN_EXPIRE = 60 * 60 * 24
 
 
 ROOT_URLCONF = 'mobile_QA_web_platform.urls'

@@ -2,9 +2,11 @@ import collections
 import json
 import os
 import re
+from datetime import timedelta
 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -20,7 +22,7 @@ from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
 from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
-from mobile_QA_web_platform.settings.base import MEDIA_ROOT, MEDIA_URL
+from mobile_QA_web_platform.settings.base import MEDIA_ROOT, MEDIA_URL, TOKEN_EXPIRE
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 from .forms import UserLoginForm, UserCreateForm
@@ -533,8 +535,13 @@ def login_view(request):
         # login(request, user)
         try:
             token_obj = Token.objects.get(user_id=user.nid)
-        except Exception as e:
+            # judge the token is or not expire
+            if timezone.now() > (token_obj.created + timedelta(seconds=TOKEN_EXPIRE)):
+                token_obj.delete()
+                raise Exception
+        except Exception:
             token_obj = Token.objects.create(user=user)
+
         token = token_obj.key
         response['code'] = 'login success'
         response['data']['result']['token'] = token
@@ -551,11 +558,22 @@ def login_view(request):
 
 @require_POST
 def logout_view(request):
-    logout(request)
-    return JsonResponse({
+    response = {
         'code': 'logout success',
         'data': {}
-    })
+    }
+    token = request.META.get('HTTP_AUTHORIZATION')
+    if token:
+        key = token.split(' ')[1]
+        try:
+            token_obj = Token.objects.get(key=key)
+            token_obj.delete()
+        except Exception:
+            response['code'] = 'logout failed'
+    else:
+        response['code'] = 'logout failed'
+        response['data'] = 'miss token'
+    return JsonResponse(response)
 
 
 
