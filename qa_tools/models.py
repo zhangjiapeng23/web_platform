@@ -8,8 +8,7 @@ class UserInfo(AbstractUser):
 
     nid = models.AutoField(primary_key=True)
     logo = models.FileField(upload_to='imgs/user_logo',
-                            default='imgs/user_logo/account_default')
-
+                            default='imgs/user_logo/account_default.png')
 
 
 class Project(models.Model):

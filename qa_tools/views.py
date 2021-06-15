@@ -560,7 +560,7 @@ def login_view(request):
 def logout_view(request):
     response = {
         'code': 'logout success',
-        'data': {}
+        'data': ""
     }
     token = request.META.get('HTTP_AUTHORIZATION')
     if token:
