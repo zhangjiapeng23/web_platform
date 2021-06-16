@@ -6,6 +6,7 @@ RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ &&\
     pip3 install uwsgi
 
 COPY ./ /mobileqaserve
+COPY ./media /media_backup
 RUN python /mobileqaserve/manage.py collectstatic --settings=mobile_QA_web_platform.settings.prod
 
 EXPOSE 8023
