@@ -552,7 +552,7 @@ def login_view(request):
         return JsonResponse(response)
 
     else:
-        response['data']['error'] = {'message': 'username or password is invalid'}
+        response['data']['error'] = {'message': ['Username or password is invalid']}
     return JsonResponse(response)
 
 
