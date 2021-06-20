@@ -10,4 +10,7 @@ media/imgs/app_review_project/*
 !media/imgs/app_review_project/NeuLion.png
 media/imgs/user_logo/*
 !media/imgs/user_logo/account_default.png
+media/imgs/testcase/*
+!media/imgs/testcase/account_default.png
+
 var/

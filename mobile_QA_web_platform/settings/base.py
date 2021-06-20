@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'qa_tools',
     'google_appstore_reviews',
     'project_info',
+    'testcase_management'
 ]
 
 MIDDLEWARE = [
@@ -79,10 +80,11 @@ REST_FRAMEWORK = {
         'qa_tools.auth.TokenExpireAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     )
 }
-TOKEN_EXPIRE = 60 * 60 * 24
+# TOKEN_EXPIRE = 60 * 60 * 24
+TOKEN_EXPIRE = 60 * 60
 
 
 ROOT_URLCONF = 'mobile_QA_web_platform.urls'
