@@ -10,7 +10,7 @@ from . import models
 
 class ProjectSerializer(serializers.Serializer):
     nid = serializers.IntegerField(read_only=True)
-    logo = serializers.FileField(read_only=True, required=False)
+    logo = serializers.FileField(required=False)
     name = serializers.CharField(max_length=64, required=True)
 
     def create(self, validated_data):
@@ -18,8 +18,16 @@ class ProjectSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
+        instance.logo = validated_data.get('logo', instance.logo)
         instance.save()
         return instance
+
+    def validate_name(self, value):
+        try:
+            models.Project.objects.get(name=value)
+            raise serializers.ValidationError(f'{value} is already existed')
+        except models.Project.DoesNotExist:
+            return value
 
 
 

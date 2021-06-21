@@ -80,7 +80,7 @@ REST_FRAMEWORK = {
         'qa_tools.auth.TokenExpireAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.AllowAny',
     )
 }
 # TOKEN_EXPIRE = 60 * 60 * 24
