@@ -27,6 +27,6 @@ urlpatterns = [
     path('deeplink/', include(('deeplink.urls', 'deeplink'))),
     path('appReviews/', include(('google_appstore_reviews.urls', 'google_appstore_reviews'), namespace='app_review')),
     path('projectInfo/', include(('project_info.urls', 'project_info'))),
-    path('testcase/', include(('testcase_management.urls', 'testcase_management'), namespace='testcase_management')),
+    path('testcase_manage/', include(('testcase_management.urls', 'testcase_management'), namespace='testcase_management')),
 
 ]

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 
@@ -48,9 +49,14 @@ class TestTask(models.Model):
                                 on_delete=models.CASCADE)
     create_time = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(to_field='nid',
+                              to='qa_tools.UserInfo',
+                              on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+
 
 
 class Report(models.Model):

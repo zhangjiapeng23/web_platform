@@ -30,7 +30,26 @@ class ProjectSerializer(serializers.Serializer):
             return value
 
 
+class TestcaseSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = models.Testcase
+        fields = '__all__'
+
+
+class TestTaskSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = models.TestTask
+        fields = '__all__'
+
+
+class ReportSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Report
+        fields = '__all__'
 
 
 

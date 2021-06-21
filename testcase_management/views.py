@@ -8,25 +8,10 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
 
-from .serializers import ProjectSerializer
-from .permissions import IsOwnerOrReadOnly
+from .serializers import ProjectSerializer, TestcaseSerializer, TestTaskSerializer, ReportSerializer
+from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 from . import models
-
-
-@api_view(['GET', 'POST'])
-def project_list(request):
-    if request.method == 'GET':
-        projects = models.Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = ProjectSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectList(mixins.ListModelMixin,
@@ -42,18 +27,6 @@ class ProjectList(mixins.ListModelMixin,
     def post(self, request, *args, **kwargs):
         return self.create(request, *args,  **kwargs)
 
-    # def get(self, request):
-    #     projects = models.Project.objects.all()
-    #     serializer = ProjectSerializer(projects, many=True)
-    #     return Response(serializer.data)
-    #
-    # def post(self, request):
-    #     serializer = ProjectSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class Project(mixins.RetrieveModelMixin,
               mixins.UpdateModelMixin,
@@ -62,8 +35,7 @@ class Project(mixins.RetrieveModelMixin,
 
     queryset = models.Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -99,7 +71,43 @@ class Project(mixins.RetrieveModelMixin,
     #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class TestcaseList(generics.ListCreateAPIView):
+    queryset = models.Testcase.objects.all()
+    serializer_class = TestcaseSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
+class Testcase(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Testcase.objects.all()
+    serializer_class = TestcaseSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class TestTaskList(generics.ListCreateAPIView):
+    queryset = models.TestTask.objects.all()
+    serializer_class = TestTaskSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class TestTask(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.TestTask.objects.all()
+    serializer_class = TestTaskSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+
+
+class TestReportList(generics.ListCreateAPIView):
+    queryset = models.Report.objects.all()
+    serializer_class = ReportSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class TestReport(generics.RetrieveDestroyAPIView):
+    queryset = models.Report.objects.all()
+    serializer_class = ReportSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 

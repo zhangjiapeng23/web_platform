@@ -110,6 +110,7 @@ WSGI_APPLICATION = 'mobile_QA_web_platform.wsgi.application'
 # User model
 AUTH_USER_MODEL = 'qa_tools.UserInfo'
 
+AUTHENTICATION_BACKENDS = ('qa_tools.auth.UsernameOrEmailBackend',)
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
