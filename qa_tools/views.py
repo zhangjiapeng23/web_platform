@@ -15,6 +15,8 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
+from rest_framework import permissions
 
 
 from qa_tools import models
@@ -27,6 +29,7 @@ from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 from .forms import UserLoginForm, UserCreateForm
 from .models import UserInfo
+from .serializers import UserInfoSerializer
 # Create your views here.
 
 
@@ -574,6 +577,13 @@ def logout_view(request):
         response['code'] = 'logout failed'
         response['data'] = 'miss token'
     return JsonResponse(response)
+
+
+class Account(generics.RetrieveAPIView):
+
+    queryset = models.UserInfo.objects.all()
+    serializer_class = UserInfoSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 

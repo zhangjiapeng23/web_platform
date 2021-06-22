@@ -32,7 +32,7 @@ class TokenExpireAuthentication(TokenAuthentication):
         if timezone.now() > (token.created + timedelta(seconds=TOKEN_EXPIRE)):
             raise exceptions.AuthenticationFailed(_('Token has expired'))
 
-        return (token.user, token)
+        return token.user, token
 
 
 class UsernameOrEmailBackend(ModelBackend):

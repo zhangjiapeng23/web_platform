@@ -20,5 +20,6 @@ urlpatterns = [
     # path('getCsrfToken/', views.get_csrf_token, name='get_csrf_token')
     path('login/', views.login_view, name='login'),
     path('register/', views.register, name='register'),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    re_path(r'^account/$', views.Account.as_view(), name='account_info')
 ]
