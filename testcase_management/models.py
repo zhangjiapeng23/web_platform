@@ -58,7 +58,6 @@ class TestTask(models.Model):
 
 
 
-
 class Report(models.Model):
 
     nid = models.AutoField(primary_key=True)

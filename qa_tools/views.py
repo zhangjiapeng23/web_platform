@@ -5,7 +5,7 @@ import re
 from datetime import timedelta
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -17,7 +17,8 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.authtoken.models import Token
 from rest_framework import generics
 from rest_framework import permissions
-
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -29,7 +30,7 @@ from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
 from .forms import UserLoginForm, UserCreateForm
 from .models import UserInfo
-from .serializers import UserInfoSerializer
+from .serializers import UserInfoSerializer, MoreTokenObtainPairSerializer
 # Create your views here.
 
 
@@ -579,11 +580,28 @@ def logout_view(request):
     return JsonResponse(response)
 
 
-class Account(generics.RetrieveAPIView):
+class Profile(generics.GenericAPIView):
 
     queryset = models.UserInfo.objects.all()
     serializer_class = UserInfoSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        accounts = self.get_queryset()
+        user = accounts.filter(pk=request.user.nid).first()
+        if user:
+            serializer = self.get_serializer(user)
+            return Response(serializer.data)
+        raise Http404
+
+class Login(TokenObtainPairView):
+
+    serializer_class = MoreTokenObtainPairSerializer
+
+
+
+
+
 
 
 

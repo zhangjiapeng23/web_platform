@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from qa_tools import views
 
@@ -18,8 +19,9 @@ urlpatterns = [
     re_path('^localizationtool/$', views.localization_tool, name='localization_tool'),
     re_path('^localizationUpload/$', views.localization_upload, name='localization_upload'),
     # path('getCsrfToken/', views.get_csrf_token, name='get_csrf_token')
-    path('login/', views.login_view, name='login'),
+    # path('login/', views.login_view, name='login'),
+    path('login/', views.Login.as_view()),
     path('register/', views.register, name='register'),
     path('logout/', views.logout_view, name='logout'),
-    re_path(r'^account/$', views.Account.as_view(), name='account_info')
+    re_path(r'^profile/$', views.Profile.as_view(), name='account_info')
 ]

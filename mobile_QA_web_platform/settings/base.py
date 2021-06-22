@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Quick-start development settings - unsuitable for production
@@ -77,14 +79,28 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.TokenAuthentication',
-        'qa_tools.auth.TokenExpireAuthentication',
+        # 'qa_tools.auth.TokenExpireAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
+    ),
+    'EXCEPTION_HANDLER': 'qa_tools.utils.exception.custom_exception_handler',
+    'DEFAULT_RENDERER_CLASSES': (
+        'qa_tools.utils.renderer_response.CustomRenderer',
     )
 }
+
 # TOKEN_EXPIRE = 60 * 60 * 24
 TOKEN_EXPIRE = 60 * 60
+
+# simple jwt
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'USER_ID_FIELD': 'nid',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 
 ROOT_URLCONF = 'mobile_QA_web_platform.urls'
