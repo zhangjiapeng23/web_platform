@@ -2,35 +2,25 @@ import collections
 import json
 import os
 import re
-from datetime import timedelta
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse, Http404
-from django.utils import timezone
+from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password
-from rest_framework.authtoken.models import Token
-from rest_framework import generics
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
 from qa_tools.tools.sdk_parse import SdkConfigParse
 from qa_tools.tools.localization_tool import localization_value2number
 from project_info import models as project_info_models
-from mobile_QA_web_platform.settings.base import MEDIA_ROOT, MEDIA_URL, TOKEN_EXPIRE
+from mobile_QA_web_platform.settings.base import MEDIA_ROOT
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
-from .forms import UserLoginForm, UserCreateForm
-from .models import UserInfo
-from .serializers import UserInfoSerializer, MoreTokenObtainPairSerializer
+
+
 # Create your views here.
 
 
@@ -491,112 +481,7 @@ def get_csrf_token(request):
     return get_token(request)
 
 
-@require_POST
-def register(request):
-    response = {
-        'code': 'register failed',
-        'data': {
-            'result': {},
-            'error': {}
-        }
-    }
-    form = UserCreateForm(request.POST, request.FILES)
-    if not form.is_valid():
-        response['data']['error'] = form.errors
-    else:
-        username = form.cleaned_data.get('username')
-        password = make_password(form.cleaned_data.get('password'))
-        user_logo = form.cleaned_data.get('logo')
-        email = form.cleaned_data.get('email')
-        register_user = UserInfo()
-        register_user.username = username
-        register_user.password = password
-        if user_logo:
-            register_user.logo = user_logo
-        register_user.email = email
-        register_user.save()
-        response['code'] = 'register success'
-    return JsonResponse(response)
 
-
-@require_POST
-def login_view(request):
-    response = {
-        'code': 'login failed',
-        'data': {
-            'result': {},
-            'error': {}
-        }
-    }
-    form = UserLoginForm(request.POST)
-    if not form.is_valid():
-        response['data']['error'] = form.errors
-        return JsonResponse(response)
-    username = form.cleaned_data.get('username')
-    password = form.cleaned_data.get('password')
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        # login(request, user)
-        try:
-            token_obj = Token.objects.get(user_id=user.nid)
-            # judge the token is or not expire
-            if timezone.now() > (token_obj.created + timedelta(seconds=TOKEN_EXPIRE)):
-                token_obj.delete()
-                raise Exception
-        except Exception:
-            token_obj = Token.objects.create(user=user)
-
-        token = token_obj.key
-        response['code'] = 'login success'
-        response['data']['result']['token'] = token
-        response['data']['result']['username'] = user.username
-        response['data']['result']['email'] = user.email
-        response['data']['result']['is_superuser'] = user.is_superuser
-        response['data']['result']['logo'] = host + ':' + port + MEDIA_URL + str(user.logo)
-        return JsonResponse(response)
-
-    else:
-        response['data']['error'] = {'message': ['Username or password is invalid']}
-    return JsonResponse(response)
-
-
-@require_POST
-def logout_view(request):
-    response = {
-        'code': 'logout success',
-        'data': ""
-    }
-    token = request.META.get('HTTP_AUTHORIZATION')
-    if token:
-        key = token.split(' ')[1]
-        try:
-            token_obj = Token.objects.get(key=key)
-            token_obj.delete()
-        except Exception:
-            response['code'] = 'logout failed'
-    else:
-        response['code'] = 'logout failed'
-        response['data'] = 'miss token'
-    return JsonResponse(response)
-
-
-class Profile(generics.GenericAPIView):
-
-    queryset = models.UserInfo.objects.all()
-    serializer_class = UserInfoSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, *args, **kwargs):
-        accounts = self.get_queryset()
-        user = accounts.filter(pk=request.user.nid).first()
-        if user:
-            serializer = self.get_serializer(user)
-            return Response(serializer.data)
-        raise Http404
-
-class Login(TokenObtainPairView):
-
-    serializer_class = MoreTokenObtainPairSerializer
 
 
 

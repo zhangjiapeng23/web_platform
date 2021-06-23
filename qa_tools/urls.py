@@ -18,10 +18,4 @@ urlpatterns = [
     path('NLAndroid/upload/', views.android_mapping_upload_api, name='android_mapping_upload_api'),
     re_path('^localizationtool/$', views.localization_tool, name='localization_tool'),
     re_path('^localizationUpload/$', views.localization_upload, name='localization_upload'),
-    # path('getCsrfToken/', views.get_csrf_token, name='get_csrf_token')
-    # path('login/', views.login_view, name='login'),
-    path('login/', views.Login.as_view()),
-    path('register/', views.register, name='register'),
-    path('logout/', views.logout_view, name='logout'),
-    re_path(r'^profile/$', views.Profile.as_view(), name='account_info')
 ]

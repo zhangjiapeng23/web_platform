@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'auths',
     'deeplink',
     'qa_tools',
     'google_appstore_reviews',
@@ -79,15 +80,15 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.TokenAuthentication',
-        # 'qa_tools.auth.TokenExpireAuthentication',
+        # 'qa_tools.auths.TokenExpireAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-    'EXCEPTION_HANDLER': 'qa_tools.utils.exception.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'auths.utils.exception.custom_exception_handler',
     'DEFAULT_RENDERER_CLASSES': (
-        'qa_tools.utils.renderer_response.CustomRenderer',
+        'auths.utils.renderer_response.CustomRenderer',
     )
 }
 
@@ -124,9 +125,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mobile_QA_web_platform.wsgi.application'
 
 # User model
-AUTH_USER_MODEL = 'qa_tools.UserInfo'
+AUTH_USER_MODEL = 'auths.UserInfo'
 
-AUTHENTICATION_BACKENDS = ('qa_tools.auth.UsernameOrEmailBackend',)
+AUTHENTICATION_BACKENDS = ('auths.utils.custom_auth_backends.UsernameOrEmailBackend',)
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases

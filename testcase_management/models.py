@@ -50,7 +50,7 @@ class TestTask(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(to_field='nid',
-                              to='qa_tools.UserInfo',
+                              to='auths.UserInfo',
                               on_delete=models.CASCADE)
 
     def __str__(self):
