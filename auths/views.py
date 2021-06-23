@@ -43,7 +43,7 @@ class Profile(generics.GenericAPIView):
         user = accounts.filter(pk=request.user.nid).first()
         if user:
             serializer = self.get_serializer(user, data=request.data)
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -70,9 +70,9 @@ class ModifyPassword(generics.GenericAPIView):
         accounts = self.get_queryset()
         user = accounts.filter(pk=self.request.user.nid).first()
         if user:
-            self.serializer_class.user = user
             serializer = self.get_serializer(user, request.data)
-            if serializer.is_valid():
+            serializer.user = user
+            if serializer.is_valid(raise_exception=True):
                 return Response(status=status.HTTP_202_ACCEPTED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Http404
@@ -82,6 +82,7 @@ class Register(generics.CreateAPIView):
 
     queryset = UserInfo.objects.all()
     serializer_class = CreateUserSerializer
+
 
 
 @require_POST

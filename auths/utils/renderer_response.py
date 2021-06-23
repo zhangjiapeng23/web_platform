@@ -17,7 +17,6 @@ class CustomRenderer(JSONRenderer):
                 status = 'success'
                 code = 1
 
-            print(data)
             if data:
                 for key in data:
                     if key == 'error_message':

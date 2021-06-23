@@ -5,7 +5,7 @@
 
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 
 from .models import UserInfo
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
@@ -30,7 +30,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150, required=True)
     email = serializers.EmailField(max_length=254, required=True)
-    password = serializers.CharField(max_length=128, required=True)
+    password = serializers.CharField(max_length=128, required=True, write_only=True)
     confirm_password = serializers.CharField(max_length=128, required=True, write_only=True)
     logo = serializers.FileField(required=False)
 
@@ -41,6 +41,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data.pop('confirm_password'):
             raise serializers.ValidationError("Password do not match")
+        data['password'] = make_password(data['password'])
         return data
 
     def validate_username(self, value):
@@ -68,7 +69,7 @@ class ModifyPasswordSerializer(serializers.ModelSerializer):
         fields = ('password', 'confirm_password', 'old_password')
 
     def validate_old_password(self, value):
-        if self.user.password != make_password(value):
+        if not check_password(value, self.user.password):
             raise serializers.ValidationError('Old password is incorrect')
         return value
 
@@ -76,9 +77,6 @@ class ModifyPasswordSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs.pop('confirm_password'):
             raise serializers.ValidationError('Password do not match')
         return attrs
-
-
-
 
 
 class MoreTokenObtainPairSerializer(TokenObtainPairSerializer):
