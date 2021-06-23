@@ -8,9 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import UserInfo
-from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
-from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
-from mobile_QA_web_platform.settings.base import MEDIA_URL
+from mobile_QA_web_platform.settings.base import MEDIA_URL, HTTP_PROTOCOL
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -85,7 +83,8 @@ class MoreTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         data['access_token'] = data['access']
         data['username'] = self.user.username
-        data['logo'] = host + ':' + port + MEDIA_URL + str(self.user.logo)
+        data['logo'] = HTTP_PROTOCOL + self.context['request'].get_host() \
+                       + MEDIA_URL + str(self.user.logo)
         data.pop('access')
         return data
 

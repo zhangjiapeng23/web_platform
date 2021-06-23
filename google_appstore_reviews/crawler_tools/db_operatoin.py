@@ -1,10 +1,10 @@
 import pymysql
 
-from mobile_QA_web_platform.settings.prod import DATABASES
+from mobile_QA_web_platform.settings.dev import DATABASES
 
 
 class CrawlerDb:
-    sql_insert_info = "insert into google_appstore_reviews_reviewinfo(project_name, review_id, author, platform, country)" \
+    sql_insert_info = "insert into google_appstore_reviews_reviewinfo(project_name_id, review_id, author, platform, country)" \
                       " values (%s,%s,%s,%s,%s)"
     sql_insert_detail = "insert into google_appstore_reviews_reviewdetail(review_info_id, title, content, rating," \
                         " version, create_time) values (%s,%s,%s,%s,%s,%s)"
@@ -30,7 +30,8 @@ class CrawlerDb:
         try:
             self.cursor.execute(self.sql_insert_info, data_info)
         # except pymysql.err.IntegrityError:
-        except Exception:
+        except Exception as e:
+            print(e)
             return None
         else:
             self.cursor.execute(self.sql_select, data_info[1])
@@ -38,6 +39,7 @@ class CrawlerDb:
             return nid
 
     def insert_data_to_reviewdetail(self, data_detail: tuple):
+        print(data_detail)
         self.cursor.execute(self.sql_insert_detail, data_detail)
 
     def get_project_list(self):

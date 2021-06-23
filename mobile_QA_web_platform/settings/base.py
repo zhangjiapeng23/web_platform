@@ -43,6 +43,8 @@ CSRF_COOKIE_SECURE = True
 # declare server host and port
 LOCAL_HOST = 'http://124.71.60.153'
 LOCAL_PORT = '30808'
+HTTP_PROTOCOL = 'http://'
+
 
 # Application definition
 

@@ -5,14 +5,42 @@ from django.http.response import JsonResponse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import permissions
 
 from .forms import ProjectForm
 from google_appstore_reviews import models
 from mobile_QA_web_platform.settings import base
 from google_appstore_reviews.crawler_tools.register_crawler import registered
 from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
+from .serializers import ProjectListSerializer, ProjectSerializer, \
+    ReviewInfoListSerializer, ReviewDetailListSerialzer
 
 # Create your views here.
+
+class ProjectList(generics.ListCreateAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectListSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+
+class Project(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class ReviewInfoList(generics.ListAPIView):
+
+    queryset = models.ReviewInfo.objects.all()
+    serializer_class = ReviewInfoListSerializer
+
+class ReviewDetailList(generics.ListAPIView):
+
+    queryset = models.ReviewDetail.objects.all()
+    serializer_class = ReviewDetailListSerialzer
 
 
 def reviews_project_index(request, project):

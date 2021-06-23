@@ -12,8 +12,8 @@ class Project(models.Model):
     support_region = models.IntegerField()
     project_logo = models.FileField(upload_to='imgs/app_review_project',
                                     default='imgs/app_review_project/Neulion.png')
-    android_origin = models.CharField(max_length=256)
-    ios_origin = models.CharField(max_length=256)
+    android_origin = models.CharField(max_length=256, null=True, blank=True)
+    ios_origin = models.CharField(max_length=256, null=True, blank=True)
 
     def __str__(self):
         return self.project_name
@@ -29,7 +29,9 @@ class ReviewInfo(models.Model):
     author = models.CharField(max_length=256)
     platform = models.IntegerField(choices=PLATFORM_OPTIONS)
     country = models.CharField(max_length=36)
-    project_name = models.CharField(max_length=36)
+    project_name = models.ForeignKey(to_field='project_name',
+                                     to='Project',
+                                     on_delete=models.CASCADE)
 
     def __str__(self):
         return self.country + '_' + self.author

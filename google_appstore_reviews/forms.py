@@ -25,7 +25,7 @@ class ProjectForm(forms.Form):
         project_name = origin_project_name.replace(' ', '_')
         res = Project.objects.filter(project_name=project_name).first()
         if res:
-            self.add_error('project_name', f'{project_name} project name has been used')
+            self.add_error('project_name', f'{origin_project_name} project name has been used')
         return project_name
 
     def clean_support_region(self):
