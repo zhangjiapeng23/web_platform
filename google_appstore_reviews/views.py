@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.response import Response
 
 from .forms import ProjectForm
 from google_appstore_reviews import models
@@ -13,8 +14,8 @@ from mobile_QA_web_platform.settings import base
 from google_appstore_reviews.crawler_tools.register_crawler import registered
 from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 from .serializers import ProjectListSerializer, ProjectSerializer, \
-    ReviewInfoListSerializer, ReviewDetailListSerializer
-from .utils.pagination import StandardResultsSetPagination
+    ReviewInfoListSerializer, ReviewDetailListSerializer, ReviewRatingSummarySerializer
+from .utils.pagination import StandardResultsSetPagination, ReviewResultSetPagination
 from .utils.review_filter import ReviewFilter
 
 
@@ -62,6 +63,38 @@ class ReviewDetailProjectList(generics.ListAPIView):
         """
         project = self.kwargs['project_name']
         return models.ReviewDetail.objects.filter(review_info__project_name=project)
+
+
+class ReviewRatingSummaryProjectList(generics.GenericAPIView):
+
+    serializer_class = ReviewRatingSummarySerializer
+    queryset = models.ReviewDetail.objects.all()
+    filter_class = ReviewFilter
+    # overwrite get_paginated_response(), to support show rating_summary data
+    pagination_class = ReviewResultSetPagination
+
+    def  get_queryset(self):
+        project = self.kwargs['project_name']
+        return models.ReviewDetail.objects.filter(review_info__project_name=project)
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
+        # default serializer is rating summary serializer
+        serializer_rating_summary = self.get_serializer(queryset)
+
+        # paginate review content list
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            # use Review detail serializer to serialize review content
+            serializer_review_list = ReviewDetailListSerializer(page, many=True)
+            data = (serializer_review_list.data, serializer_rating_summary.data)
+            return self.get_paginated_response(data)
+
+        serializer_review_list = ReviewDetailListSerializer(queryset, many=True)
+        data = serializer_rating_summary.data
+        data.update({'result': serializer_review_list.data})
+        return Response(data)
 
 
 def reviews_project_index(request, project):

@@ -12,6 +12,8 @@ urlpatterns = [
     re_path(r'^reviews_info/$', views.ReviewInfoList.as_view(), name='review_info_list'),
     re_path(r'^reviews_detail/$', views.ReviewDetailList.as_view(), name='review_detail_list'),
     re_path(r'^reviews_detail/(?P<project_name>.*)/$', views.ReviewDetailProjectList.as_view(),
-            name='review_detail_project_list')
+            name='review_detail_project_list'),
+    re_path(r'^reviews_rating/(?P<project_name>.*)/$', views.ReviewRatingSummaryProjectList.as_view(),
+            name='review_rating_summary_detail_project_list')
     # re_path()
 ]

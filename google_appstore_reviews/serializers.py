@@ -4,6 +4,7 @@
 # @data  : 2021/6/23
 
 from rest_framework import serializers
+from django.db.models import Avg, Count
 
 from . import models
 
@@ -78,6 +79,27 @@ class ReviewDetailListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ReviewDetail
         fields = '__all__'
+
+
+class ReviewRatingSummarySerializer(serializers.ModelSerializer):
+    rating_summary = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ReviewDetail
+        fields = ('rating_summary',)
+
+    def get_rating_summary(self, obj):
+        response = {}
+        rating_avg = obj.aggregate(avg=Avg('rating'))
+        rating_count = obj.aggregate(count=Count('rating'))
+        rating_percent = [obj.filter(rating=i).count() / rating_count['count']
+                          if rating_count['count'] > 0 else 0 for i in range(1, 6)]
+        rating_percent_format = ['{0:.2%}'.format(i) for i in rating_percent]
+        response.update(rating_avg)
+        response.update(rating_count)
+        response['rating_percent'] = rating_percent_format
+        return response
+
 
 
 
