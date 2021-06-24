@@ -22,11 +22,13 @@ class ReviewResultSetPagination(StandardResultsSetPagination):
         :param data: tuple: (base content, rating summary)
         :return:
         """
-        review_list, rating_summary = data
+        review_list, rating_summary, countries, versions = data
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('rating_summary', rating_summary),
+            ('countries', countries),
+            ('versions', versions),
             ('results', review_list)
         ]))
