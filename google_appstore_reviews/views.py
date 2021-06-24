@@ -3,7 +3,6 @@ from django.db.models import Avg, F
 from django.http.response import JsonResponse
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import permissions
@@ -14,7 +13,10 @@ from mobile_QA_web_platform.settings import base
 from google_appstore_reviews.crawler_tools.register_crawler import registered
 from google_appstore_reviews.crawler_tools.run_crawler import crawler_start
 from .serializers import ProjectListSerializer, ProjectSerializer, \
-    ReviewInfoListSerializer, ReviewDetailListSerialzer
+    ReviewInfoListSerializer, ReviewDetailListSerializer
+from .utils.pagination import StandardResultsSetPagination
+from .utils.review_filter import ReviewFilter
+
 
 # Create your views here.
 
@@ -25,22 +27,41 @@ class ProjectList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
-
 class Project(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = models.Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
 class ReviewInfoList(generics.ListAPIView):
 
     queryset = models.ReviewInfo.objects.all()
     serializer_class = ReviewInfoListSerializer
+    pagination_class = StandardResultsSetPagination
+
 
 class ReviewDetailList(generics.ListAPIView):
 
     queryset = models.ReviewDetail.objects.all()
-    serializer_class = ReviewDetailListSerialzer
+    serializer_class = ReviewDetailListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_class = ReviewFilter
+
+
+class ReviewDetailProjectList(generics.ListAPIView):
+
+    serializer_class = ReviewDetailListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_class = ReviewFilter
+
+    def get_queryset(self):
+        """
+        This view should return a list of corresponding project.
+        :return:
+        """
+        project = self.kwargs['project_name']
+        return models.ReviewDetail.objects.filter(review_info__project_name=project)
 
 
 def reviews_project_index(request, project):

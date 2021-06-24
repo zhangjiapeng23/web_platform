@@ -116,19 +116,3 @@ if __name__ == '__main__':
     #         res = await future
     #         resp[country] = res
 
-        # print(resp)
-
-
-
-
-        # msg = '{}: {}'
-        # for k,v in resp.items():
-        #     print(msg.format(k, v))
-        #     print(len(v))
-
-
-
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    loop.close()

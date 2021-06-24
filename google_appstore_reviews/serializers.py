@@ -59,23 +59,25 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ReviewDetailListSerialzer(serializers.ModelSerializer):
-
-    model = models.ReviewDetail
-    fields = '__all__'
-
-
 class ReviewInfoListSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
     review_id = serializers.ReadOnlyField()
     author = serializers.ReadOnlyField()
-    platform = serializers.ReadOnlyField()
+    platform = serializers.ReadOnlyField(source='get_platform_display')
     country = serializers.ReadOnlyField()
-    project_name = serializers.StringRelatedField()
-    review_detail = ReviewDetailListSerialzer(required=True)
+    project_name = serializers.StringRelatedField(source='project_name_id')
 
-    model = models.ReviewInfo
-    fields = ('uid', 'review_id', 'author', 'country', 'project_name', 'review_detail')
+    class Meta:
+        model = models.ReviewInfo
+        fields = ('nid', 'review_id', 'author', 'platform', 'country', 'project_name')
+
+
+class ReviewDetailListSerializer(serializers.ModelSerializer):
+    review_info = ReviewInfoListSerializer(read_only=True)
+
+    class Meta:
+        model = models.ReviewDetail
+        fields = '__all__'
 
 
 

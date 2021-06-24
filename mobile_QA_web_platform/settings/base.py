@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'django_filters',
     'auths',
     'deeplink',
     'qa_tools',
@@ -91,7 +92,11 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'auths.utils.exception.custom_exception_handler',
     'DEFAULT_RENDERER_CLASSES': (
         'auths.utils.renderer_response.CustomRenderer',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+
 }
 
 # TOKEN_EXPIRE = 60 * 60 * 24

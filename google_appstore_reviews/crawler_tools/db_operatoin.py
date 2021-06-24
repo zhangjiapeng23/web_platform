@@ -39,7 +39,6 @@ class CrawlerDb:
             return nid
 
     def insert_data_to_reviewdetail(self, data_detail: tuple):
-        print(data_detail)
         self.cursor.execute(self.sql_insert_detail, data_detail)
 
     def get_project_list(self):

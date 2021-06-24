@@ -269,7 +269,6 @@ class ProjectCrawler:
 
         db = CrawlerDb()
         for data in data_list:
-            print(data)
             nid = db.insert_data_to_reviewinfo(data[0:5])
             if nid is None:
                 break
