@@ -101,5 +101,29 @@ class ReviewRatingSummarySerializer(serializers.ModelSerializer):
         return response
 
 
+class ReviewCountrySerializer(serializers.ModelSerializer):
+    countries = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ReviewInfo
+        fields = ('countries',)
+
+    def get_countries(self, obj):
+        country = obj.values_list('country').distinct().order_by('country')
+        country = [i[0] for i in country]
+        return country
+
+
+class ReviewVersionSerializer(serializers.ModelSerializer):
+    versions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ReviewDetail
+        fields = ('versions', )
+
+    def get_versions(self, obj):
+        versions = obj.values_list('version').distinct().order_by('create_time')
+        versions = [i[0] for i in versions]
+        return versions
 
 
