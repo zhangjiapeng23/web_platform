@@ -26,12 +26,20 @@ class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def perform_create(self, serializer):
+        serializer.save()
+        crawler_start(model='once')
+
 
 class Project(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = models.Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        crawler_start(model='once')
 
 
 class ReviewInfoList(generics.ListAPIView):
