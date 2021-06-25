@@ -24,6 +24,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
         except models.Project.DoesNotExist:
             return value
 
+
 class ProjectSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=32, required=False)
@@ -74,6 +75,32 @@ class DeeplinkContentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Contents
         fields = ('nid', 'body', 'create_time', 'classification', 'project', 'deeplink')
+
+    def get_deeplink(self, obj):
+        project = self.context['view'].kwargs.get('project')
+        body = obj.body
+        return self._get_deeplink(project, body)
+
+    def _get_deeplink(self, project, body):
+        body_format = '%s://%s'
+        scheme = models.Project.objects.get(name=project).scheme
+        if body.startswith('http'):
+            return body
+        else:
+            return body_format % (scheme, body)
+
+
+class DeeplinkSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    body = serializers.CharField(max_length=128, required=False)
+    classification = serializers.CharField(max_length=32, required=False)
+    project = serializers.StringRelatedField(source='project.name')
+    deeplink = serializers.SerializerMethodField()
+    create_time = serializers.ReadOnlyField()
+
+    class Meta:
+        model = models.Contents
+        fields = '__all__'
 
     def get_deeplink(self, obj):
         project = self.context['view'].kwargs.get('project')

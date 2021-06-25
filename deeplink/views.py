@@ -49,13 +49,6 @@ class DeeplinkProjectList(generics.ListCreateAPIView):
         serializer = DeeplinkContentListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
     def perform_create(self, serializer):
         body = self.request.data['body']
         classification = self.get_classification(body)
@@ -70,6 +63,32 @@ class DeeplinkProjectList(generics.ListCreateAPIView):
             return _body[0]
         return 'default'
 
+
+class DeeplinkProject(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = DeeplinkSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Contents.objects.filter(project__name=project)
+
+    def perform_update(self, serializer):
+        project_instance = models.Project.objects.get(name=self.kwargs['project'])
+        body = self.request.data.get('body')
+        if body is not None:
+            classification = self.get_classification(body)
+            serializer.save(project=project_instance, classification=classification)
+        serializer.save(project=project_instance)
+
+    def get_classification(self, body):
+        _body = body.split('/')
+        if len(_body) > 1:
+            if _body[0].startswith('http'):
+                return 'branch'
+            return _body[0]
+        return 'default'
 
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
