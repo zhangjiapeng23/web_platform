@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
+from rest_framework import generics
+from rest_framework import permissions
 
 from qa_tools import models
 from qa_tools.tools.braze_notification import BrazePush
@@ -19,9 +21,27 @@ from project_info import models as project_info_models
 from mobile_QA_web_platform.settings.base import MEDIA_ROOT
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
+from .serializers import *
 
 
 # Create your views here.
+
+class ProjectList(generics.ListCreateAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectListSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class Project(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+
+
 
 
 def index(request):

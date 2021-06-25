@@ -5,6 +5,9 @@ from qa_tools import views
 
 
 urlpatterns = [
+    re_path(r'^projects/$', views.ProjectList.as_view(), name='project_list'),
+    re_path(r'^projects/(?P<pk>[0-9]+)/$', views.Project.as_view(), name='project'),
+
     path('', views.index, name='index'),
     path('brazeNotification/', views.braze_notification, name='braze_notification'),
     path('brazeNotification/delete/', views.braze_notification_delete, name='braze_notification_delete_project'),
