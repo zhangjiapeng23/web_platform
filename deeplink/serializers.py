@@ -24,6 +24,22 @@ class ProjectListSerializer(serializers.ModelSerializer):
         except models.Project.DoesNotExist:
             return value
 
+class ProjectSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    name = serializers.CharField(max_length=32, required=False)
+    scheme = serializers.CharField(max_length=64, required=False)
+
+    class Meta:
+        model = models.Project
+        fields = '__all__'
+
+    def validate_name(self, value):
+        try:
+            models.Project.objects.get(name=value)
+            raise serializers.ValidationError(f'{value} is existed')
+        except models.Project.DoesNotExist:
+            return value
+
 
 class DeeplinkContentListSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
