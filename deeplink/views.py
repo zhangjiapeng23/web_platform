@@ -8,8 +8,49 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import generics, status
+from rest_framework.response import Response
 
-from deeplink import models
+from . import models
+from .serializers import *
+
+
+class ProjectList(generics.ListCreateAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectListSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
+class Project(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.Project.objects.all()
+    serializer_class = ProjectListSerializer
+    permission_classes(IsAuthenticatedOrReadOnly,)
+
+
+class DeeplinkProjectList(generics.ListCreateAPIView):
+
+    queryset = models.Contents.objects.all()
+    serializer_class = DeeplinkContentListSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Contents.objects.filter(project__name=project)
+
+    def post(self, request, *args, **kwargs):
+        serializer = DeeplinkContentCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        project_instance = models.Project.objects.get(name=self.kwargs['project'])
+        serializer.save(project=project_instance)
+
+
 
 
 @api_view(['POST', 'GET'])

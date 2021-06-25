@@ -85,7 +85,7 @@ class ReviewRatingSummaryProjectList(generics.GenericAPIView):
         return models.ReviewDetail.objects.filter(review_info__project_name=project)
 
     def get_reviewInfo_queryset(self):
-        project= self.kwargs['project_name']
+        project = self.kwargs['project_name']
         return models.ReviewInfo.objects.filter(project_name=project)
 
     def get(self, request, *args, **kwargs):

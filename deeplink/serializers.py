@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# @author: James Zhang
+# @data  : 2021/6/24
+
+from rest_framework import serializers
+
+from . import models
+
+
+class ProjectListSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    name = serializers.CharField(max_length=32, required=True)
+    scheme = serializers.CharField(max_length=64, required=True)
+
+    class Meta:
+        model = models.Project
+        fields = '__all__'
+
+    def validate_name(self, value):
+        try:
+            models.Project.objects.get(name=value)
+            raise serializers.ValidationError(f'{value} is existed')
+        except models.Project.DoesNotExist:
+            return value
+
+
+class DeeplinkContentListSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    body = serializers.CharField(max_length=128)
+    create_time = serializers.ReadOnlyField()
+    classification = serializers.CharField(max_length=32, required=False)
+    project = serializers.StringRelatedField(source='Project')
+    deeplink = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Contents
+        fields = ('nid', 'body', 'create_time', 'classification', 'project', 'deeplink')
+
+    def get_deeplink(self, obj):
+        body_format = '%s://%s'
+        # body = obj.values_list('body').first()
+        # scheme = obj.values_list('project__scheme').first()
+        print(obj)
+        body = obj.body
+        scheme = models.Project.objects.get(pk=obj.project_id).scheme
+        if body.startswith('http'):
+            return body
+        else:
+            return body_format % (scheme, body)
+
+
+class DeeplinkContentCreateSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    body = serializers.CharField(max_length=128)
+    create_time = serializers.ReadOnlyField()
+    classification = serializers.CharField(max_length=32, required=False)
+    project = serializers.ReadOnlyField(source='project.name')
+    # deeplink = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Contents
+        fields = ('nid', 'body', 'create_time', 'classification', 'project')
+
+    # def get_deeplink(self, obj):
+    #     body_format = '%s://%s'
+    #     # body = obj.values_list('body').first()
+    #     # scheme = obj.values_list('project__scheme').first()
+    #     body = obj['body']
+    #     # scheme = models.Project.objects.get(self.project).scheme
+    #     scheme = obj.project.scheme
+    #     if body.startswith('http'):
+    #         return body
+    #     else:
+    #         return body_format % (scheme, body)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
