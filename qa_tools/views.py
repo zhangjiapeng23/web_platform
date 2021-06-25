@@ -40,7 +40,20 @@ class Project(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class NotificationList(generics.ListCreateAPIView):
 
+    queryset = models.Notification.objects.all()
+    serializer_class = NotificationListSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Notification.objects.filter(project__name=project)
+
+    def perform_create(self, serializer):
+        project = self.kwargs['project']
+        project_instance = models.Project.objects.get(name=project)
+        serializer.save(project=project_instance)
 
 
 

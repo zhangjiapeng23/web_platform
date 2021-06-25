@@ -46,3 +46,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class NotificationListSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    project = serializers.StringRelatedField(source='Project.nid')
+
+    class Meta:
+        model = models.Notification
+        fields = '__all__'
+

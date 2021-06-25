@@ -23,7 +23,6 @@ class Notification(models.Model):
     nid = models.AutoField(primary_key=True)
     push_type = models.IntegerField(choices=TYPE_OPTIONS, verbose_name='Notification Type')
     content = models.CharField(max_length=128, verbose_name='Notification Content')
-
     project = models.ForeignKey(to='Project', to_field='nid', verbose_name='Project Name', on_delete=models.CASCADE)
 
     def __str__(self):
