@@ -29,7 +29,7 @@ class DeeplinkContentListSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
     body = serializers.CharField(max_length=128)
     create_time = serializers.ReadOnlyField()
-    classification = serializers.CharField(max_length=32, required=False)
+    classification = serializers.ReadOnlyField()
     project = serializers.StringRelatedField(source='Project')
     deeplink = serializers.SerializerMethodField()
 
@@ -39,9 +39,6 @@ class DeeplinkContentListSerializer(serializers.ModelSerializer):
 
     def get_deeplink(self, obj):
         body_format = '%s://%s'
-        # body = obj.values_list('body').first()
-        # scheme = obj.values_list('project__scheme').first()
-        print(obj)
         body = obj.body
         scheme = models.Project.objects.get(pk=obj.project_id).scheme
         if body.startswith('http'):
@@ -56,24 +53,24 @@ class DeeplinkContentCreateSerializer(serializers.ModelSerializer):
     create_time = serializers.ReadOnlyField()
     classification = serializers.CharField(max_length=32, required=False)
     project = serializers.ReadOnlyField(source='project.name')
-    # deeplink = serializers.SerializerMethodField()
+    deeplink = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Contents
-        fields = ('nid', 'body', 'create_time', 'classification', 'project')
+        fields = ('nid', 'body', 'create_time', 'classification', 'project', 'deeplink')
 
-    # def get_deeplink(self, obj):
-    #     body_format = '%s://%s'
-    #     # body = obj.values_list('body').first()
-    #     # scheme = obj.values_list('project__scheme').first()
-    #     body = obj['body']
-    #     # scheme = models.Project.objects.get(self.project).scheme
-    #     scheme = obj.project.scheme
-    #     if body.startswith('http'):
-    #         return body
-    #     else:
-    #         return body_format % (scheme, body)
+    def get_deeplink(self, obj):
+        project = self.context['view'].kwargs.get('project')
+        body = obj.body
+        return self._get_deeplink(project, body)
 
+    def _get_deeplink(self, project, body):
+        body_format = '%s://%s'
+        scheme = models.Project.objects.get(name=project).scheme
+        if body.startswith('http'):
+            return body
+        else:
+            return body_format % (scheme, body)
 
 
 

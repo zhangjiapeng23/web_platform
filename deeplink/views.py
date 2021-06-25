@@ -11,7 +11,6 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from . import models
 from .serializers import *
 
 
@@ -32,25 +31,44 @@ class Project(generics.RetrieveUpdateDestroyAPIView):
 class DeeplinkProjectList(generics.ListCreateAPIView):
 
     queryset = models.Contents.objects.all()
-    serializer_class = DeeplinkContentListSerializer
+    serializer_class = DeeplinkContentCreateSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         project = self.kwargs['project']
         return models.Contents.objects.filter(project__name=project)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = DeeplinkContentListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = DeeplinkContentListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def post(self, request, *args, **kwargs):
-        serializer = DeeplinkContentCreateSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
+        body = self.request.data['body']
+        classification = self.get_classification(body)
         project_instance = models.Project.objects.get(name=self.kwargs['project'])
-        serializer.save(project=project_instance)
+        serializer.save(project=project_instance, classification=classification )
 
-
+    def get_classification(self, body):
+        _body = body.split('/')
+        if len(_body) > 1:
+            if _body[0].startswith('http'):
+                return 'branch'
+            return _body[0]
+        return 'default'
 
 
 @api_view(['POST', 'GET'])

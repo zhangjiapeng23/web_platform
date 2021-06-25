@@ -43,6 +43,7 @@ CSRF_COOKIE_SECURE = True
 # declare server host and port
 LOCAL_HOST = 'http://124.71.60.153'
 LOCAL_PORT = '30808'
+
 HTTP_PROTOCOL = 'http://'
 
 
@@ -104,8 +105,8 @@ TOKEN_EXPIRE = 60 * 60
 
 # simple jwt
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'USER_ID_FIELD': 'nid',
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
