@@ -46,11 +46,41 @@ class ProjectSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class DisplayChoiceField(serializers.ChoiceField):
+
+    def to_representation(self, value):
+        return self._choices[value]
+
+
 class NotificationListSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
-    project = serializers.StringRelatedField(source='Project.nid')
+    project = serializers.StringRelatedField()
+    push_type = DisplayChoiceField(choices=(
+        (0, 'PUSH_TYPE'),
+        (1, 'deeplink'),
+        (2, 'general')
+    ), help_text='0: PUSH_TYPE; 1: deeplink; 2: general')
 
     class Meta:
         model = models.Notification
         fields = '__all__'
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    project = serializers.StringRelatedField(read_only=True)
+    push_type = DisplayChoiceField(choices=(
+        (0, 'PUSH_TYPE'),
+        (1, 'deeplink'),
+        (2, 'general')
+    ), help_text='0: PUSH_TYPE; 1: deeplink; 2: general', read_only=True)
+    content = serializers.CharField(max_length=128, required=False)
+
+    class Meta:
+        model = models.Notification
+        fields = '__all__'
+
+
+
+
 

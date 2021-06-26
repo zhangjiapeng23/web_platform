@@ -8,9 +8,10 @@ from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from rest_framework.response import Response
 from werkzeug.utils import secure_filename
 from django.middleware.csrf import get_token
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework import permissions
 
 from qa_tools import models
@@ -54,6 +55,20 @@ class NotificationList(generics.ListCreateAPIView):
         project = self.kwargs['project']
         project_instance = models.Project.objects.get(name=project)
         serializer.save(project=project_instance)
+
+
+class Notification(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Notification.objects.filter(project__name=project)
+
+
+
 
 
 

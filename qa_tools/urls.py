@@ -9,6 +9,8 @@ urlpatterns = [
     re_path(r'^projects/(?P<pk>[0-9]+)/$', views.Project.as_view(), name='project'),
     re_path(r'^notifications/(?P<project>[0-9a-zA-Z]+)/$',
             views.NotificationList.as_view(), name='notification_list'),
+    re_path(r'^notifications/(?P<project>[0-9a-zA-Z]+)/(?P<pk>[0-9]+)/$',
+            views.Notification.as_view(), name='notification'),
     path('', views.index, name='index'),
     path('brazeNotification/', views.braze_notification, name='braze_notification'),
     path('brazeNotification/delete/', views.braze_notification_delete, name='braze_notification_delete_project'),
