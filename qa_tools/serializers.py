@@ -81,6 +81,34 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SdkConfigListSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    project = serializers.CharField(source='project_name', max_length=128)
+
+    class Meta:
+        model = models.SdkConifg
+        fields = ('nid', 'project', 'app_key', 'config_type')
+
+
+class SdkConfigSerializer(serializers.ModelSerializer):
+    nid = serializers.ReadOnlyField()
+    project = serializers.CharField(max_length=128, source='project_name', required=False)
+    app_key = serializers.CharField(max_length=218, required=False)
+    config_type = serializers.CharField(max_length=32, required=False)
+
+    class Meta:
+        model = models.SdkConifg
+        fields = ('nid', 'project', 'app_key', 'config_type')
+
+    def validate_app_key(self, value):
+        try:
+            models.SdkConifg.objects.get(app_key=value)
+            raise serializers.ValidationError(f'{value} is existed')
+        except models.SdkConifg.DoesNotExist:
+            return value
+
+
+
 
 
 

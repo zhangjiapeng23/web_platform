@@ -11,6 +11,14 @@ urlpatterns = [
             views.NotificationList.as_view(), name='notification_list'),
     re_path(r'^notifications/(?P<project>[0-9a-zA-Z]+)/(?P<pk>[0-9]+)/$',
             views.Notification.as_view(), name='notification'),
+    re_path(r'^sdkconfigs/$', views.SdkConfigList.as_view(), name='sdkconfig_list'),
+    re_path(r'^sdkconfigs/(?P<pk>[0-9]+)/$', views.SdkConfig.as_view(), name='sdkconfig'),
+    re_path('^localizationtool/$', views.localization_tool, name='localization_tool'),
+    re_path('^localizationUpload/$', views.localization_upload, name='localization_upload'),
+    path('NLiOS/', views.ios_upload_api, name='ios_upload_api'),
+    path('NLAndroid/', views.android_upload_api, name='android_upload_api'),
+    path('NLAndroid/upload/', views.android_mapping_upload_api, name='android_mapping_upload_api'),
+
     path('', views.index, name='index'),
     path('brazeNotification/', views.braze_notification, name='braze_notification'),
     path('brazeNotification/delete/', views.braze_notification_delete, name='braze_notification_delete_project'),
@@ -19,9 +27,5 @@ urlpatterns = [
     path('addPush/', views.add_push, name='addPush'),
     path('sdkconfig/', views.sdk_config, name='sdk_config'),
     path('sdkconfig/<path:appkey>', views.sdk_config_detail, name='sdk_config_detail'),
-    path('NLiOS/', views.ios_upload_api, name='ios_upload_api'),
-    path('NLAndroid/', views.android_upload_api, name='android_upload_api'),
-    path('NLAndroid/upload/', views.android_mapping_upload_api, name='android_mapping_upload_api'),
-    re_path('^localizationtool/$', views.localization_tool, name='localization_tool'),
-    re_path('^localizationUpload/$', views.localization_upload, name='localization_upload'),
+
 ]

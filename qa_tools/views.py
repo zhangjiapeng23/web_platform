@@ -68,6 +68,20 @@ class Notification(generics.RetrieveUpdateDestroyAPIView):
         return models.Notification.objects.filter(project__name=project)
 
 
+class SdkConfigList(generics.ListCreateAPIView):
+
+    queryset = models.SdkConifg.objects.all()
+    serializer_class = SdkConfigListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class SdkConfig(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.SdkConifg.objects.all()
+    serializer_class = SdkConfigSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
 
 
 
