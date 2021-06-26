@@ -4,12 +4,95 @@ import re
 
 from django.shortcuts import render
 from django.http.response import JsonResponse
+from rest_framework import generics
+from rest_framework import permissions
 
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
-from . import models
+from .serializers import *
+from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 
 # Create your views here.
+
+
+class ProjectAndroidList(generics.ListCreateAPIView):
+
+    queryset = models.AndroidProject.objects.all()
+    serializer_class = ProjectAndroidListSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class ProjectAndroid(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.AndroidProject.objects.all()
+    serializer_class = ProjectAndroidSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class ProjectIosList(generics.ListCreateAPIView):
+
+    queryset = models.IosProject.objects.all()
+    serializer_class = ProjectIOSListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class ProjectIos(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = models.IosProject.objects.all()
+    serializer_class = ProjectIOSSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class BuildAndroidList(generics.ListAPIView):
+
+    queryset = models.AndroidBuild.objects.all()
+    serializer_class = BuildAndroidListSerializer
+    permission_classes = (permissions.AllowAny,)
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.AndroidBuild.objects.filter(project__project_name=project)
+
+
+class BuildAndroid(generics.RetrieveDestroyAPIView):
+
+    queryset = models.AndroidBuild.objects.all()
+    serializer_class = BuildAndroidListSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.AndroidBuild.objects.filter(project__project_name=project)
+
+
+class BuildIosList(generics.ListAPIView):
+
+    queryset = models.IosBuild.objects.all()
+    serializer_class = BuildIosListSerializer
+    permission_classes = (permissions.AllowAny,)
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.IosBuild.objects.filter(project__project_name=project)
+
+
+class BuildIos(generics.RetrieveDestroyAPIView):
+
+    queryset = models.AndroidBuild.objects.all()
+    serializer_class = BuildIosListSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.IosBuild.objects.filter(project__project_name=project)
+
+
+
+
+
+
 
 def index(request):
     # project build info index page.

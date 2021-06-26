@@ -4,15 +4,8 @@
 # @data  : 2021/6/23
 from collections import OrderedDict
 
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-
-
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-    page_query_param = 'page'
+from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 
 
 class ReviewResultSetPagination(StandardResultsSetPagination):
