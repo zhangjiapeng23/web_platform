@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import filters
 
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port
@@ -20,6 +21,7 @@ class ProjectAndroidList(generics.ListCreateAPIView):
     queryset = models.AndroidProject.objects.all()
     serializer_class = ProjectAndroidListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    ordering_fields = ('update_date',)
 
 
 class ProjectAndroid(generics.RetrieveUpdateDestroyAPIView):
@@ -33,7 +35,8 @@ class ProjectIosList(generics.ListCreateAPIView):
 
     queryset = models.IosProject.objects.all()
     serializer_class = ProjectIOSListSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    ordering_fields = ('update_date',)
 
 
 class ProjectIos(generics.RetrieveUpdateDestroyAPIView):
