@@ -26,6 +26,7 @@ class Project(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes(IsAuthenticatedOrReadOnly,)
+    lookup_field = 'name'
 
 
 class DeeplinkProjectList(generics.ListCreateAPIView):

@@ -5,10 +5,11 @@ from deeplink import views
 
 urlpatterns = [
     re_path(r'^projects/$', views.ProjectList.as_view(), name='project_list'),
-    re_path(r'^projects/(?P<pk>[0-9]+)/$', views.Project.as_view(), name='project'),
-    re_path(r'^deeplinks/(?P<project>[0-9a-zA-Z\_]+)/$',
+    # re_path(r'^projects/(?P<pk>[0-9]+)/$', views.Project.as_view(), name='project'),
+    re_path(r'^projects/(?P<name>[^/]+)/$', views.Project.as_view(), name='project'),
+    re_path(r'^deeplinks/(?P<project>[^/]+)/$',
             views.DeeplinkProjectList.as_view(), name="deeplink_list"),
-    re_path(r'^deeplinks/(?P<project>[0-9a-zA-Z\_]+)/(?P<pk>[0-9]+)/$',
+    re_path(r'^deeplinks/(?P<project>[^/]+)/(?P<pk>[0-9]+)/$',
             views.DeeplinkProject.as_view(), name="deeplink"),
 
     # path('', views.index, name='index'),
