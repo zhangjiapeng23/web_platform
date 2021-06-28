@@ -6,10 +6,10 @@ from qa_tools import views
 
 urlpatterns = [
     re_path(r'^projects/$', views.ProjectList.as_view(), name='project_list'),
-    re_path(r'^projects/(?P<pk>[0-9]+)/$', views.Project.as_view(), name='project'),
-    re_path(r'^notifications/(?P<project>[0-9a-zA-Z]+)/$',
+    re_path(r'^projects/(?P<name>[^/]+)/$', views.Project.as_view(), name='project'),
+    re_path(r'^notifications/(?P<project>[^/]+)/$',
             views.NotificationList.as_view(), name='notification_list'),
-    re_path(r'^notifications/(?P<project>[0-9a-zA-Z]+)/(?P<pk>[0-9]+)/$',
+    re_path(r'^notifications/(?P<project>[^/]+)/(?P<pk>[0-9]+)/$',
             views.Notification.as_view(), name='notification'),
     re_path(r'^sdkconfigs/$', views.SdkConfigList.as_view(), name='sdkconfig_list'),
     re_path(r'^sdkconfigs/(?P<pk>[0-9]+)/$', views.SdkConfig.as_view(), name='sdkconfig'),
