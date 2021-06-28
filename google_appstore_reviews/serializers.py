@@ -5,6 +5,7 @@
 
 from rest_framework import serializers
 from django.db.models import Avg, Count
+from django.db.models.expressions import Func
 
 from . import models
 
@@ -89,12 +90,17 @@ class ReviewRatingSummarySerializer(serializers.ModelSerializer):
         fields = ('rating_summary',)
 
     def get_rating_summary(self, obj):
+
+        class Round(Func):
+            function = 'ROUND'
+            arity = 2
+
         response = {}
-        rating_avg = obj.aggregate(avg=Avg('rating'))
+        rating_avg = obj.aggregate(avg=Round(Avg('rating'), 2))
         rating_count = obj.aggregate(count=Count('rating'))
         rating_percent = [obj.filter(rating=i).count() / rating_count['count']
                           if rating_count['count'] > 0 else 0 for i in range(1, 6)]
-        rating_percent_format = ['{0:.2%}'.format(i) for i in rating_percent]
+        rating_percent_format = ['{:.2%}'.format(i) for i in rating_percent]
         response.update(rating_avg)
         response.update(rating_count)
         response['rating_percent'] = rating_percent_format
@@ -122,8 +128,18 @@ class ReviewVersionSerializer(serializers.ModelSerializer):
         fields = ('versions', )
 
     def get_versions(self, obj):
-        versions = obj.values_list('version').distinct().order_by('create_time')
+        versions = obj.order_by('create_time').values_list('version')
         versions = [i[0] for i in versions]
-        return versions
+
+        def distinct(nums):
+            record = set()
+            distinct_nums = []
+            for i in nums:
+                if i not in record:
+                    distinct_nums.append(i)
+                    record.add(i)
+            return distinct_nums
+
+        return distinct(versions)
 
 

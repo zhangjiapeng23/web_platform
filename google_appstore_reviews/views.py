@@ -104,7 +104,7 @@ class ReviewRatingSummaryProjectList(generics.GenericAPIView):
         if page is not None:
             # use Review detail serializer to serialize review content
             serializer_review_list = ReviewDetailListSerializer(page, many=True)
-            data = (serializer_review_list.data, serializer_rating_summary.data,
+            data = (serializer_review_list.data, serializer_rating_summary.data['rating_summary'],
                     serializer_country.data['countries'], serializer_version.data['versions'])
             return self.get_paginated_response(data)
 

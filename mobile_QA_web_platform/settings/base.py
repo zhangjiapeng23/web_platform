@@ -106,8 +106,8 @@ TOKEN_EXPIRE = 60 * 60
 
 # simple jwt
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=20),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'USER_ID_FIELD': 'nid',
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
