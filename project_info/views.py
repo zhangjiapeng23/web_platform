@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import filters
 
 from mobile_QA_web_platform.settings.base import LOCAL_HOST as host
 from mobile_QA_web_platform.settings.base import LOCAL_PORT as port

@@ -3,6 +3,9 @@
 # @author: James Zhang
 # @data  : 2021/6/26
 import json
+import re
+from typing import List
+from collections import deque
 
 from rest_framework import serializers
 
@@ -85,7 +88,24 @@ class BuildAndroidListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_library_coordinate_list(self, obj):
-        return json.loads(obj.library_coordinate_list)
+
+        def is_snapshot(library):
+            return True if '-SNAPSHOT' in library['currentVersion'] else False
+
+        def library_sorted(libraries: List, key=None):
+            if key is None:
+                return libraries
+            sort_library = deque()
+            for item in libraries:
+                if key(item):
+                    sort_library.appendleft(item)
+                else:
+                    sort_library.append(item)
+            libraries[:] = sort_library
+
+        library_list = json.loads(obj.library_coordinate_list)
+        library_sorted(library_list, key=is_snapshot)
+        return library_list
 
 
 class BuildIosListSerializer(serializers.ModelSerializer):
@@ -96,5 +116,26 @@ class BuildIosListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_framework(self, obj):
-        return json.loads(obj.framework)
+
+        def is_xframework(framework):
+            if re.match(r'\d+\.\d+\.0\d+', framework['frameworkVersion']) \
+                    or 'x' in framework['frameworkVersion']:
+                return True
+            return False
+
+        def framework_sorted(frameworks: List, key=None):
+            if key is None:
+                return frameworks
+            sort_frameworks = deque()
+            for item in frameworks:
+                if key(item):
+                    sort_frameworks.appendleft(item)
+                else:
+                    sort_frameworks.append(item)
+            frameworks[:] = sort_frameworks
+
+        framework_list = json.loads(obj.framework)
+        framework_sorted(framework_list, key=is_xframework)
+
+        return framework_list
 
