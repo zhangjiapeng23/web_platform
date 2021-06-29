@@ -87,6 +87,9 @@ class SdkConfig(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+
+
+
 def index(request):
 
     return render(request, 'qa_tools/index.html')
