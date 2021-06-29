@@ -49,3 +49,6 @@ class ReviewDetail(models.Model):
     def __str__(self):
         text = "{}, Rating: {}, Version: {}, Comment Date: {}"
         return text.format(self.title, self.rating, self.version, self.create_time)
+
+    class Meta:
+        ordering = ['-create_time']

@@ -128,7 +128,7 @@ class ReviewVersionSerializer(serializers.ModelSerializer):
         fields = ('versions', )
 
     def get_versions(self, obj):
-        versions = obj.order_by('create_time').values_list('version')
+        versions = obj.order_by('-create_time').values_list('version')
         versions = [i[0] for i in versions]
 
         def distinct(nums):
