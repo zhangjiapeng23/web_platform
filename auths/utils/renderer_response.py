@@ -12,7 +12,7 @@ class CustomRenderer(JSONRenderer):
         if renderer_context:
             if isinstance(data, dict):
                 status = data.pop('status', 'success')
-                code = data.pop('code', '1')
+                code = data.pop('code', 1)
             else:
                 status = 'success'
                 code = 1
