@@ -22,13 +22,26 @@ def custom_exception_handler(exc, context):
             exception=True
         )
     else:
-        for key in response.data:
-            value = response.data[key]
+        if isinstance(response.data, list):
+            error_message = []
+            for response_data in response.data:
+                for key in response_data:
+                    simple_error = {}
+                    value = response_data[key]
+                    if isinstance(value, str):
+                        simple_error[key] = value
+                    else:
+                        simple_error[key] = value[0]
 
-            if isinstance(value, str):
-                error_message[key] = value
-            else:
-                error_message[key] = value[0]
+                    error_message.append(simple_error)
+
+        else:
+            for key in response.data:
+                value = response.data[key]
+                if isinstance(value, list):
+                    error_message[key] = value[0]
+                else:
+                    error_message[key] = value
 
         return Response({
             'error_message': error_message

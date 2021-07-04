@@ -8,13 +8,14 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework import generics
 
 from .serializers import *
+from .utils.views import ListBatchCreateView
 
 
-class ProjectList(generics.ListCreateAPIView):
+class ProjectList(ListBatchCreateView):
 
     queryset = models.Project.objects.all()
     serializer_class = ProjectListSerializer
@@ -90,6 +91,7 @@ class DeeplinkProject(generics.RetrieveUpdateDestroyAPIView):
                 return 'branch'
             return _body[0]
         return 'default'
+
 
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))

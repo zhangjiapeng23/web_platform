@@ -8,6 +8,7 @@ from rest_framework import serializers
 from . import models
 
 
+
 class ProjectListSerializer(serializers.ModelSerializer):
     nid = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=32, required=True)
@@ -16,6 +17,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = '__all__'
+
 
     def validate_name(self, value):
         try:

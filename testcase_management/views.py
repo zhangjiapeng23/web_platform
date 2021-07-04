@@ -1,12 +1,14 @@
 
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.response import Response
 
-from .serializers import ProjectSerializer, TestcaseSerializer, TestTaskSerializer, ReportSerializer
+from .serializers import *
 from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 from . import models
+from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 
 
 class ProjectList(mixins.ListModelMixin,
@@ -31,6 +33,7 @@ class Project(mixins.RetrieveModelMixin,
     queryset = models.Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    lookup_field = 'name'
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -72,24 +75,78 @@ class TestcaseList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class TestcaseProjectList(generics.ListCreateAPIView):
+    queryset = models.Testcase.objects.all()
+    serializer_class = TestcaseSerializer
+    permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Testcase.objects.filter(project__name=project)
+
+    def create(self, request, *args, **kwargs):
+        serializer = TestcaseProjectCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        name = self.kwargs['project']
+        project = models.Project.objects.get(name=name)
+        serializer.save(project=project)
+
+
 class Testcase(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Testcase.objects.all()
     serializer_class = TestcaseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Testcase.objects.filter(project__name=project)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = TestcaseUpdateSerializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+
 
 class TestTaskList(generics.ListCreateAPIView):
     queryset = models.TestTask.objects.all()
-    serializer_class = TestTaskSerializer
+    serializer_class = TestTasklistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    def get_create_serializer(self, *args, **kwargs):
+        kwargs.setdefault('context', self.get_serializer_context())
+        return TestTaskCreateSerializer(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_create_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class TestTask(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.TestTask.objects.all()
-    serializer_class = TestTaskSerializer
+    serializer_class = TestTaskCreateSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 

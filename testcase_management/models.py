@@ -24,8 +24,9 @@ class Testcase(models.Model):
         API = 'Api', 'API'
 
     nid = models.AutoField(primary_key=True)
-    node_id = models.CharField(max_length=128)
-    description = models.CharField(max_length=128)
+    title = models.CharField(max_length=64)
+    node_id = models.CharField(max_length=128, unique=True)
+    description = models.TextField()
     project = models.ForeignKey(to_field='nid',
                                 to='Project',
                                 on_delete=models.CASCADE)
@@ -42,7 +43,7 @@ class Testcase(models.Model):
 class TestTask(models.Model):
 
     nid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
     testcase = models.ManyToManyField(to='Testcase')
     project = models.ForeignKey(to_field='nid',
                                 to='Project',
@@ -55,7 +56,6 @@ class TestTask(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class Report(models.Model):

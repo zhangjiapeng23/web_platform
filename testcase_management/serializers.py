@@ -37,7 +37,36 @@ class TestcaseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TestTaskSerializer(serializers.ModelSerializer):
+class TestcaseUpdateSerializer(serializers.ModelSerializer):
+    project = serializers.ReadOnlyField(source='project.name')
+    title = serializers.CharField(required=False, max_length=64)
+    node_id = serializers.CharField(required=False, max_length=128)
+    description = serializers.CharField(required=False)
+
+    class Meta:
+        model = models.Testcase
+        fields = '__all__'
+
+
+class TestcaseProjectCreateSerializer(serializers.ModelSerializer):
+    project = serializers.ReadOnlyField(source='project.name')
+
+    class Meta:
+        model = models.Testcase
+        fields = '__all__'
+
+
+class TestTasklistSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    project = ProjectSerializer()
+    testcase = TestcaseSerializer(many=True)
+
+    class Meta:
+        model = models.TestTask
+        fields = '__all__'
+
+
+class TestTaskCreateSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
