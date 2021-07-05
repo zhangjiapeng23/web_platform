@@ -146,6 +146,7 @@ class TestTaskList(generics.ListCreateAPIView):
 class TestTaskProjectList(generics.ListCreateAPIView):
     queryset = models.TestTask.objects.all()
     serializer_class = TestTasklistSerializer
+    pagination_class = StandardResultsSetPagination
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
