@@ -128,7 +128,6 @@ class TestTaskList(generics.ListCreateAPIView):
     serializer_class = TestTasklistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -142,6 +141,36 @@ class TestTaskList(generics.ListCreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class TestTaskProjectList(generics.ListCreateAPIView):
+    queryset = models.TestTask.objects.all()
+    serializer_class = TestTasklistSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.TestTask.objects.filter(project__name=project)
+
+    def perform_create(self, serializer):
+        project = self.kwargs['project']
+        name = models.Project.objects.get(name=project)
+        serializer.save(owner=self.request.user, project=name)
+
+    def get_create_serializer(self, *args, **kwargs):
+        kwargs.setdefault('context', self.get_serializer_context())
+        return TestTaskProjectCreateSerializer(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_create_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+
+
 
 
 class TestTask(generics.RetrieveUpdateDestroyAPIView):

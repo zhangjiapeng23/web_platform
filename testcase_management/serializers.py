@@ -40,7 +40,7 @@ class TestcaseSerializer(serializers.ModelSerializer):
 class TestcaseUpdateSerializer(serializers.ModelSerializer):
     project = serializers.ReadOnlyField(source='project.name')
     title = serializers.CharField(required=False, max_length=64)
-    node_id = serializers.CharField(required=False, max_length=128)
+    node_id = serializers.ReadOnlyField()
     description = serializers.CharField(required=False)
 
     class Meta:
@@ -68,6 +68,15 @@ class TestTasklistSerializer(serializers.ModelSerializer):
 
 class TestTaskCreateSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = models.TestTask
+        fields = '__all__'
+
+
+class TestTaskProjectCreateSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    project = serializers.ReadOnlyField(source='project.name')
 
     class Meta:
         model = models.TestTask

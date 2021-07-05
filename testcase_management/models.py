@@ -23,10 +23,13 @@ class Testcase(models.Model):
         ANDROID = 'Android', 'ANDROID'
         API = 'Api', 'API'
 
+    class Meta:
+        ordering = ['-last_modified']
+
     nid = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=64, default="testcase name")
     node_id = models.CharField(max_length=128, unique=True)
-    description = models.TextField()
+    description = models.TextField(default="testcase description")
     project = models.ForeignKey(to_field='nid',
                                 to='Project',
                                 on_delete=models.CASCADE)

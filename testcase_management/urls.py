@@ -15,7 +15,10 @@ urlpatterns = [
             name='testcase_project_list'),
     re_path(r'^testcases/(?P<project>[^/]+)/(?P<pk>[0-9]+)/$', views.Testcase.as_view(), name='testcase'),
     re_path(r'^test_tasks/$', views.TestTaskList.as_view(), name='test_task_list'),
-    re_path(r'^test_tasks/(?P<pk>[0-9]+)/$', views.TestTask.as_view(), name='test_task'),
+    re_path(r'^test_tasks/(?P<project>[^/]+)/$',
+            views.TestTaskProjectList.as_view(), name='test_task_list'),
+    re_path(r'^test_tasks/(?P<proejct>[^/]+)/(?P<pk>[0-9]+)/$',
+            views.TestTask.as_view(), name='test_task'),
     re_path(r'^test_reports/$', views.TestTaskList.as_view(), name='test_report_list'),
     re_path(r'^test_reprots/(?P<pk>[0-9]+)/$', views.TestReport.as_view(), name='test_report'),
 
