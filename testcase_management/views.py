@@ -3,11 +3,13 @@ from rest_framework import mixins, status
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 from .serializers import *
 from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 from . import models
+from .jenkins_controller.jenkins_controller import JenkinsController
 from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 
 
@@ -122,7 +124,6 @@ class Testcase(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-
 class TestTaskList(generics.ListCreateAPIView):
     queryset = models.TestTask.objects.all()
     serializer_class = TestTasklistSerializer
@@ -190,6 +191,17 @@ class TestReport(generics.RetrieveDestroyAPIView):
     queryset = models.Report.objects.all()
     serializer_class = ReportSerializer
     permission_classes = (IsAdminOrReadOnly,)
+
+
+@api_view(http_method_names=['GET'])
+@permission_classes(permission_classes=(permissions.IsAuthenticated,))
+def execute_task(request):
+    data = request.data
+    jenkins = JenkinsController()
+    jenkins.execute_test_task()
+    return Response()
+
+
 
 
 
