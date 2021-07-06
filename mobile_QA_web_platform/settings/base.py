@@ -199,3 +199,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+JENKINS_SERVER = 'http://139.159.179.26:30002/'
+JENKINS_USERNAME = 'web_platform'
+JENKINS_PASSWORD = 'lb15116188571j'

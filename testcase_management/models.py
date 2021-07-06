@@ -60,6 +60,9 @@ class TestTask(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-last_modified']
+
 
 class Report(models.Model):
 
