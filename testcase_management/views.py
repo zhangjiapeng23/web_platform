@@ -175,10 +175,6 @@ class TestTaskProjectList(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-
-
-
-
 class TestTask(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.TestTask.objects.all()
     serializer_class = TestTaskCreateSerializer
@@ -203,7 +199,7 @@ def execute_task(request):
     data = request.data
     job_name = data.get('job_name')
     task_name = data.get('name')
-    testcases = data.get('testcases')
+    testcases = data.getlist('testcases')
     test_task = TestTaskModel(job_name=job_name,
                               task_name=task_name,
                               testcases=testcases)
