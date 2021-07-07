@@ -3,7 +3,7 @@
 # @author: James Zhang
 # @data  : 2021/7/6
 
-class TestTask:
+class TestTaskModel:
 
     def __init__(self, job_name, task_name, testcases):
         '''
@@ -13,7 +13,11 @@ class TestTask:
         '''
         self._job_name = job_name
         self._task_name = task_name
-        self._testcases = list(testcases)
+        if isinstance(testcases, str):
+            self._testcases = []
+            self._testcases.append(testcases)
+        else:
+            self._testcases = list(testcases)
 
     @property
     def job_name(self):

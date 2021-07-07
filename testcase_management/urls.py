@@ -21,5 +21,6 @@ urlpatterns = [
             views.TestTask.as_view(), name='test_task'),
     re_path(r'^test_reports/$', views.TestTaskList.as_view(), name='test_report_list'),
     re_path(r'^test_reprots/(?P<pk>[0-9]+)/$', views.TestReport.as_view(), name='test_report'),
+    re_path(r'^test_task_execute/$', views.execute_task, name='test_task_execute')
 
 ]

@@ -1,3 +1,6 @@
+import json
+import time
+from threading import Thread
 
 from rest_framework import mixins, status
 from rest_framework import generics
@@ -10,6 +13,7 @@ from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 from . import models
 from .jenkins_controller.jenkins_controller import JenkinsController
+from .jenkins_controller.model import TestTaskModel
 from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 
 
@@ -193,15 +197,37 @@ class TestReport(generics.RetrieveDestroyAPIView):
     permission_classes = (IsAdminOrReadOnly,)
 
 
-@api_view(http_method_names=['GET'])
+@api_view(http_method_names=['POST'])
 @permission_classes(permission_classes=(permissions.IsAuthenticated,))
 def execute_task(request):
     data = request.data
+    job_name = data.get('job_name')
+    task_name = data.get('name')
+    testcases = data.get('testcases')
+    test_task = TestTaskModel(job_name=job_name,
+                              task_name=task_name,
+                              testcases=testcases)
     jenkins = JenkinsController()
-    jenkins.execute_test_task()
-    return Response()
+    queue_item = jenkins.execute_test_task(test_task)
+    task_instance = models.TestTask.objects.get(name=task_name)
+    task_instance.execute()
+    t = Thread(target=record_task_execute,
+               args=(jenkins.is_task_executable, queue_item, job_name, task_instance))
+    t.start()
+    serializer = TestTasklistSerializer(task_instance)
+    return Response(serializer.data)
 
 
-
-
-
+def record_task_execute(func, queue_item, job_name, task_instance):
+    while True:
+        executable = func(queue_item)
+        if executable is False:
+            time.sleep(10)
+            continue
+        else:
+            task_record = models.TaskExecuteRecord(job_name=job_name,
+                                                   task=task_instance,
+                                                   build_id=executable.get('number'),
+                                                   build_url=executable.get('url'))
+            task_record.save()
+            break

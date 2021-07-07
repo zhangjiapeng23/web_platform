@@ -9,6 +9,7 @@ chardet==3.0.4
 colorama==0.4.4
 Django==3.1.7
 django-cors-headers==3.7.0
+django-filter==2.4.0
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.1
 flake8==3.8.4
@@ -17,8 +18,10 @@ idna==2.10
 iniconfig==1.1.1
 lxml==4.6.2
 mccabe==0.6.1
+multi-key-dict==2.0.3
 multidict==5.1.0
 packaging==20.9
+pbr==5.6.0
 pluggy==0.13.1
 py==1.10.0
 pycodestyle==2.6.0
@@ -31,9 +34,11 @@ PyMySQL==0.10.1
 pyparsing==2.4.7
 pytest==6.2.2
 pytest-ordering==0.6
+python-jenkins==1.7.0
 pytz==2020.4
 requests==2.25.1
 rope==0.18.0
+six==1.16.0
 snowballstemmer==2.0.0
 sqlparse==0.4.1
 toml==0.10.2
@@ -41,4 +46,3 @@ typing-extensions==3.7.4.3
 urllib3==1.26.2
 Werkzeug==1.0.1
 yarl==1.6.3
-django-filter~=2.4.0

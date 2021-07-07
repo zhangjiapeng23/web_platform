@@ -2,6 +2,7 @@ from django.db import models
 
 
 # Create your models here.
+from django.db.models.functions import datetime
 
 
 class Project(models.Model):
@@ -47,6 +48,7 @@ class TestTask(models.Model):
 
     nid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, unique=True)
+    job_name = models.CharField(max_length=128)
     testcase = models.ManyToManyField(to='Testcase')
     project = models.ForeignKey(to_field='nid',
                                 to='Project',
@@ -56,12 +58,49 @@ class TestTask(models.Model):
     owner = models.ForeignKey(to_field='nid',
                               to='auths.UserInfo',
                               on_delete=models.CASCADE)
+    last_execute = models.DateTimeField(null=True, blank=True)
+    execute_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
+    def execute(self):
+        self.execute_count += 1
+        self.last_execute = datetime.datetime.now()
+        self.save()
+
     class Meta:
         ordering = ['-last_modified']
+
+
+class TaskExecuteRecord(models.Model):
+
+    class Status(models.TextChoices):
+        cancel = 'Cancel', 'CANCEL'
+        running = 'Running', 'RUNNING'
+        finish = 'Finish', 'FINISH'
+
+    nid = models.AutoField(primary_key=True)
+    task = models.ForeignKey(to_field='name', to='TestTask', on_delete=models.CASCADE)
+    job_name = models.CharField(max_length=128)
+    build_id = models.IntegerField()
+    build_url = models.CharField(max_length=256)
+    status = models.CharField(max_length=12,
+                              choices=Status.choices,
+                              default=Status.running)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(auto_now=True)
+    report = models.OneToOneField(to_field='nid',
+                                  to='Report',
+                                  blank=True,
+                                  null=True,
+                                  on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.build_url
+
+    class Meta:
+        ordering = ['-start_time']
 
 
 class Report(models.Model):
