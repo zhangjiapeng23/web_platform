@@ -56,7 +56,7 @@ class TestcaseProjectCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TestTasklistSerializer(serializers.ModelSerializer):
+class TestTaskListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     project = ProjectSerializer()
     testcase = TestcaseSerializer(many=True)
@@ -83,11 +83,26 @@ class TestTaskProjectCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ReportSerializer(serializers.ModelSerializer):
+class TaskReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Report
         fields = '__all__'
+
+
+class TaskRecordSerializer(serializers.ModelSerializer):
+    report = TaskReportSerializer(read_only=True)
+    status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.TaskExecuteRecord
+        fields = '__all__'
+
+    def get_status(self, obj):
+        return obj.status
+
+
+
 
 
 

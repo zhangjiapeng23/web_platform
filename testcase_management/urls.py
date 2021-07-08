@@ -17,10 +17,11 @@ urlpatterns = [
     re_path(r'^test_tasks/$', views.TestTaskList.as_view(), name='test_task_list'),
     re_path(r'^test_tasks/(?P<project>[^/]+)/$',
             views.TestTaskProjectList.as_view(), name='test_task_list'),
-    re_path(r'^test_tasks/(?P<proejct>[^/]+)/(?P<pk>[0-9]+)/$',
+    re_path(r'^test_tasks/(?P<project>[^/]+)/(?P<pk>[0-9]+)/$',
             views.TestTask.as_view(), name='test_task'),
-    re_path(r'^test_reports/$', views.TestTaskList.as_view(), name='test_report_list'),
-    re_path(r'^test_reprots/(?P<pk>[0-9]+)/$', views.TestReport.as_view(), name='test_report'),
+    re_path(r'^task_execute_record/(?P<project>[^/]+)/$', views.TaskRecordList.as_view(), name='task_record_list'),
+    re_path(r'^task_reports/$', views.TaskReportList.as_view(), name='test_report_list'),
+    re_path(r'^task_reports/(?P<pk>[0-9]+)/$', views.TaskReport.as_view(), name='test_report'),
     re_path(r'^test_task_execute/$', views.execute_task, name='test_task_execute')
 
 ]

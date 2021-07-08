@@ -1,5 +1,7 @@
-from django.db import models
 
+from datetime import timedelta
+
+from django.db import models
 
 # Create your models here.
 from django.db.models.functions import datetime
@@ -69,25 +71,21 @@ class TestTask(models.Model):
         self.last_execute = datetime.datetime.now()
         self.save()
 
+    @property
+    def testcases_count(self):
+        return len(self.testcase)
+
     class Meta:
         ordering = ['-last_modified']
 
 
 class TaskExecuteRecord(models.Model):
 
-    class Status(models.TextChoices):
-        cancel = 'Cancel', 'CANCEL'
-        running = 'Running', 'RUNNING'
-        finish = 'Finish', 'FINISH'
-
     nid = models.AutoField(primary_key=True)
     task = models.ForeignKey(to_field='name', to='TestTask', on_delete=models.CASCADE)
     job_name = models.CharField(max_length=128)
     build_id = models.IntegerField()
     build_url = models.CharField(max_length=256)
-    status = models.CharField(max_length=12,
-                              choices=Status.choices,
-                              default=Status.running)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
     report = models.OneToOneField(to_field='nid',
@@ -99,6 +97,15 @@ class TaskExecuteRecord(models.Model):
     def __str__(self):
         return self.build_url
 
+    @property
+    def status(self):
+        if self.report is not None:
+            return 'finish'
+        elif self.start_time + timedelta(days=2) > datetime.datetime.now():
+            return 'cancel'
+        else:
+            return 'running'
+
     class Meta:
         ordering = ['-start_time']
 
@@ -106,16 +113,18 @@ class TaskExecuteRecord(models.Model):
 class Report(models.Model):
 
     nid = models.AutoField(primary_key=True)
-    report = models.FileField(upload_to='report')
-    testcase_total = models.IntegerField()
-    pass_total = models.IntegerField()
-    failed_total = models.IntegerField()
-    ignore_total = models.IntegerField()
-    task = models.ForeignKey(to_field='nid', to='TestTask', on_delete=models.CASCADE)
+    allure_report_url = models.CharField(max_length=256)
+    testcases_total = models.IntegerField()
+    passed = models.IntegerField()
+    failed = models.IntegerField()
+    error = models.IntegerField()
+    skipped = models.IntegerField()
+    duration = models.DecimalField(decimal_places=2, max_digits=6)
+    passing_rate = models.CharField(max_length=12)
     create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s %s' % (self.task, self.create_time)
+        return '%s' % self.allure_report_url
 
 
 

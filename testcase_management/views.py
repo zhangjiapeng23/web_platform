@@ -130,7 +130,7 @@ class Testcase(generics.RetrieveUpdateDestroyAPIView):
 
 class TestTaskList(generics.ListCreateAPIView):
     queryset = models.TestTask.objects.all()
-    serializer_class = TestTasklistSerializer
+    serializer_class = TestTaskListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
@@ -150,7 +150,7 @@ class TestTaskList(generics.ListCreateAPIView):
 
 class TestTaskProjectList(generics.ListCreateAPIView):
     queryset = models.TestTask.objects.all()
-    serializer_class = TestTasklistSerializer
+    serializer_class = TestTaskListSerializer
     pagination_class = StandardResultsSetPagination
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -181,15 +181,43 @@ class TestTask(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
-class TestReportList(generics.ListCreateAPIView):
-    queryset = models.Report.objects.all()
-    serializer_class = ReportSerializer
+class TaskRecordList(generics.ListCreateAPIView):
+    queryset = models.TaskExecuteRecord.objects.all()
+    serializer_class = TaskRecordSerializer
     permission_classes = (permissions.AllowAny,)
 
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.TaskExecuteRecord.objects.filter(task__project__name=project)
 
-class TestReport(generics.RetrieveDestroyAPIView):
+
+class TaskReportList(generics.ListCreateAPIView):
     queryset = models.Report.objects.all()
-    serializer_class = ReportSerializer
+    serializer_class = TaskReportSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def create(self, request, *args, **kwargs):
+        build_url = request.data.get('build_url')
+        task_record_instance = models.TaskExecuteRecord.objects.get(build_url=build_url)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        report_instance = self.perform_create(serializer)
+
+        task_record_instance.report = report_instance
+        task_record_instance.status = 'Finish'
+        task_record_instance.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        report_instance = serializer.save()
+        return report_instance
+
+
+class TaskReport(generics.RetrieveDestroyAPIView):
+    queryset = models.Report.objects.all()
+    serializer_class = TaskReportSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
 
@@ -210,7 +238,7 @@ def execute_task(request):
     t = Thread(target=record_task_execute,
                args=(jenkins.is_task_executable, queue_item, job_name, task_instance))
     t.start()
-    serializer = TestTasklistSerializer(task_instance)
+    serializer = TestTaskListSerializer(task_instance)
     return Response(serializer.data)
 
 
