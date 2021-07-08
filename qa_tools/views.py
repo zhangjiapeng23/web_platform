@@ -83,13 +83,6 @@ class SdkConfig(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-
-
-
-
-
-
-
 def index(request):
 
     return render(request, 'qa_tools/index.html')

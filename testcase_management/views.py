@@ -15,6 +15,7 @@ from . import models
 from .jenkins_controller.jenkins_controller import JenkinsController
 from .jenkins_controller.model import TestTaskModel
 from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
+from mobile_QA_web_platform.utils.views_mixin import BatchCreateModelMixin
 
 
 class ProjectList(mixins.ListModelMixin,
@@ -79,6 +80,27 @@ class TestcaseList(generics.ListCreateAPIView):
     queryset = models.Testcase.objects.all()
     serializer_class = TestcaseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class BatchCreateView(BatchCreateModelMixin, generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class TestcaseProjectBatchCreate(BatchCreateView):
+    queryset = models.Testcase.objects.all()
+    serializer_class = TestcaseProjectCreateSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        project = self.kwargs['project']
+        return models.Testcase.objects.filter(project__name=project)
+
+    def perform_create(self, serializer):
+        project = self.kwargs['project']
+        project_instance = models.Project.objects.get(name=project)
+        serializer.save(project=project_instance)
 
 
 class TestcaseProjectList(generics.ListCreateAPIView):
