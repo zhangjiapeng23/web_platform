@@ -101,7 +101,7 @@ class TaskExecuteRecord(models.Model):
     def status(self):
         if self.report is not None:
             return 'finish'
-        elif self.start_time + timedelta(days=2) > datetime.datetime.now():
+        elif self.start_time + timedelta(days=1) < datetime.datetime.now():
             return 'cancel'
         else:
             return 'running'

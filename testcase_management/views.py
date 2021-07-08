@@ -198,15 +198,12 @@ class TaskReportList(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         build_url = request.data.get('build_url')
-        task_record_instance = models.TaskExecuteRecord.objects.get(build_url=build_url)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         report_instance = self.perform_create(serializer)
-
+        task_record_instance = models.TaskExecuteRecord.objects.get(build_url=build_url)
         task_record_instance.report = report_instance
-        task_record_instance.status = 'Finish'
         task_record_instance.save()
-
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

@@ -84,10 +84,15 @@ class TestTaskProjectCreateSerializer(serializers.ModelSerializer):
 
 
 class TaskReportSerializer(serializers.ModelSerializer):
+    build_url = serializers.CharField(write_only=True)
 
     class Meta:
         model = models.Report
         fields = '__all__'
+
+    def validate(self, attrs):
+        attrs.pop('build_url')
+        return attrs
 
 
 class TaskRecordSerializer(serializers.ModelSerializer):
