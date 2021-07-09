@@ -7,8 +7,7 @@ RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ &&\
 
 COPY ./ /mobileqaserve
 COPY ./media /media_backup
-RUN python /mobileqaserve/manage.py collectstatic --settings=mobile_QA_web_platform.settings.prod &&\
-    python /mobileqaserve/manage.py migrate --settings=mobile_QA_web_platform.settings.prod
+RUN python /mobileqaserve/manage.py collectstatic --settings=mobile_QA_web_platform.settings.prod
 
 EXPOSE 8023
 CMD ["uwsgi", "--ini", "/mobileqaserve/uwsgi.ini"]

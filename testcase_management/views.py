@@ -1,6 +1,6 @@
 import json
 import time
-from threading import Thread
+from threading import Thread, Lock
 
 from rest_framework import mixins, status
 from rest_framework import generics
@@ -16,6 +16,8 @@ from .jenkins_controller.jenkins_controller import JenkinsController
 from .jenkins_controller.model import TestTaskModel
 from mobile_QA_web_platform.utils.pagination import StandardResultsSetPagination
 from mobile_QA_web_platform.utils.views_mixin import BatchCreateModelMixin
+
+lock = Lock()
 
 
 class ProjectList(mixins.ListModelMixin,
@@ -207,6 +209,7 @@ class TaskRecordList(generics.ListCreateAPIView):
     queryset = models.TaskExecuteRecord.objects.all()
     serializer_class = TaskRecordSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         project = self.kwargs['project']
@@ -253,7 +256,6 @@ def execute_task(request):
     jenkins = JenkinsController()
     queue_item = jenkins.execute_test_task(test_task)
     task_instance = models.TestTask.objects.get(name=task_name)
-    task_instance.execute()
     t = Thread(target=record_task_execute,
                args=(jenkins.is_task_executable, queue_item, job_name, task_instance))
     t.start()
@@ -268,9 +270,16 @@ def record_task_execute(func, queue_item, job_name, task_instance):
             time.sleep(10)
             continue
         else:
-            task_record = models.TaskExecuteRecord(job_name=job_name,
-                                                   task=task_instance,
-                                                   build_id=executable.get('number'),
-                                                   build_url=executable.get('url'))
-            task_record.save()
+            lock.acquire()
+            try:
+                models.TaskExecuteRecord.objects.get(build_url=executable.get('url'))
+            except models.TaskExecuteRecord.DoesNotExist:
+                task_record = models.TaskExecuteRecord(job_name=job_name,
+                                                       task=task_instance,
+                                                       build_id=executable.get('number'),
+                                                       build_url=executable.get('url'))
+                task_record.save()
+                task_instance.execute()
+
+            lock.release()
             break
