@@ -47,7 +47,7 @@ class Testcase(models.Model):
 
 
 class TestTask(models.Model):
-
+    # todo: change name unique to name and project combination unique
     nid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, unique=True)
     job_name = models.CharField(max_length=128)
@@ -85,7 +85,7 @@ class TaskExecuteRecord(models.Model):
     task = models.ForeignKey(to_field='name', to='TestTask', on_delete=models.CASCADE)
     job_name = models.CharField(max_length=128)
     build_id = models.IntegerField()
-    build_url = models.CharField(max_length=256)
+    build_url = models.CharField(max_length=245, unique=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
     report = models.OneToOneField(to_field='nid',
