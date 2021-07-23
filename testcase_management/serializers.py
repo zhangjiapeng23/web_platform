@@ -59,11 +59,14 @@ class TestcaseProjectCreateSerializer(serializers.ModelSerializer):
 class TestTaskListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     project = ProjectSerializer()
-    testcase = TestcaseSerializer(many=True)
+    testcase_total = serializers.SerializerMethodField()
 
     class Meta:
         model = models.TestTask
-        fields = '__all__'
+        exclude = ['testcase']
+
+    def get_testcase_total(self, obj):
+        return obj.testcases_count
 
 
 class TestTaskCreateSerializer(serializers.ModelSerializer):
@@ -81,6 +84,15 @@ class TestTaskProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TestTask
         fields = '__all__'
+
+    def validate_name(self, value):
+        project = self.context['project']
+        try:
+            models.TestTask.objects.filter(project__name=project).get(name=value)
+            err_msg = '%s project has task named: %s' % (project, value)
+            raise serializers.ValidationError(err_msg)
+        except models.TestTask.DoesNotExist:
+            return value
 
 
 class TaskReportSerializer(serializers.ModelSerializer):

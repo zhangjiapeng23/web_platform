@@ -189,6 +189,8 @@ class TestTaskProjectList(generics.ListCreateAPIView):
 
     def get_create_serializer(self, *args, **kwargs):
         kwargs.setdefault('context', self.get_serializer_context())
+        project = self.kwargs['project']
+        kwargs['context']['project'] = project
         return TestTaskProjectCreateSerializer(*args, **kwargs)
 
     def create(self, request, *args, **kwargs):
