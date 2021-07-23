@@ -60,7 +60,8 @@ class IosBuild(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['project', 'project_version'], name='%(class)s_unique_build')]
+            models.UniqueConstraint(fields=['project', 'project_version'], name='%(class)s_unique_build')
+        ]
 
 
 

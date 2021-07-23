@@ -47,9 +47,8 @@ class Testcase(models.Model):
 
 
 class TestTask(models.Model):
-    # todo: change name unique to name and project combination unique
     nid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64)
     job_name = models.CharField(max_length=128)
     testcase = models.ManyToManyField(to='Testcase')
     project = models.ForeignKey(to_field='nid',
@@ -73,16 +72,19 @@ class TestTask(models.Model):
 
     @property
     def testcases_count(self):
-        return len(self.testcase)
+        return len(self.testcase.values_list())
 
     class Meta:
         ordering = ['-last_modified']
+        constraints = [
+            models.UniqueConstraint(fields=['project', 'name'], name='%(class)s_unique_task_name')
+        ]
 
 
 class TaskExecuteRecord(models.Model):
 
     nid = models.AutoField(primary_key=True)
-    task = models.ForeignKey(to_field='name', to='TestTask', on_delete=models.CASCADE)
+    task = models.ForeignKey(to_field='nid', to='TestTask', on_delete=models.CASCADE)
     job_name = models.CharField(max_length=128)
     build_id = models.IntegerField()
     build_url = models.CharField(max_length=245, unique=True)
