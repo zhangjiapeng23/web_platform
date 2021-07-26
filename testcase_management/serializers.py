@@ -38,6 +38,13 @@ class TestcaseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TestcaseNodeIdSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Testcase
+        fields = ['node_id']
+
+
 class TestcaseUpdateSerializer(serializers.ModelSerializer):
     project = serializers.ReadOnlyField(source='project.name')
     title = serializers.CharField(required=False, max_length=64)
@@ -60,11 +67,12 @@ class TestcaseProjectCreateSerializer(serializers.ModelSerializer):
 class TestTaskListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     project = ProjectSerializer()
+    testcase = TestcaseNodeIdSerializer(many=True)
     testcase_total = serializers.SerializerMethodField()
 
     class Meta:
         model = models.TestTask
-        exclude = ['testcase']
+        fields = '__all__'
 
     def get_testcase_total(self, obj):
         return obj.testcases_count
