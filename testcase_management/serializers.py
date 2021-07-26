@@ -31,6 +31,7 @@ class ProjectSerializer(serializers.Serializer):
 
 
 class TestcaseSerializer(serializers.ModelSerializer):
+    project = serializers.ReadOnlyField(source='project.name')
 
     class Meta:
         model = models.Testcase

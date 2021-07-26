@@ -19,7 +19,7 @@ class Project(models.Model):
 
 
 class Testcase(models.Model):
-
+    # todo: node_id should be and project unique.
     class Classification(models.TextChoices):
         WEB = 'web', 'WEB'
         IOS = 'iOS', 'IOS'
