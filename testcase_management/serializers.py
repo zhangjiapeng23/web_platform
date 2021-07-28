@@ -119,6 +119,7 @@ class TaskReportSerializer(serializers.ModelSerializer):
 class TaskRecordSerializer(serializers.ModelSerializer):
     report = TaskReportSerializer(read_only=True)
     status = serializers.SerializerMethodField()
+    task = serializers.ReadOnlyField(source='task.name')
 
     class Meta:
         model = models.TaskExecuteRecord
